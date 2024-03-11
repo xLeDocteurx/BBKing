@@ -1,0 +1,85 @@
+[
+    {
+        "title": "Demo Song",
+        "tempo": 155,
+        "beats": 4,
+        "measures": 4,
+        "drumRack": {
+            "sample1": 0,
+            "sample2": 1,
+            "sample3": 2,
+            "sample4": 3,
+            "sample5": 4,
+            "sample6": 5,
+            "sample7": 6
+        },
+        "slicer": {
+            "sample": 6,
+            "slices": [
+                {
+                    "sliceStartBeatIndex": 0
+                },
+                {
+                    "sliceStartBeatIndex": 4
+                },
+                {
+                    "sliceStartBeatIndex": 8
+                },
+                {
+                    "sliceStartBeatIndex": 12
+                }
+            ]
+        },
+        "keyboard": {
+            "sample": 5,
+            "sampleStart": 0,
+            "loopStart": 1000,
+            "loopEnd": 5000
+        },
+        "synth": {
+            "waveform": "square"
+        },
+        "parts": {
+            "part1": {
+                "staves": 1,
+                "steps": []
+            },
+            "part2": {
+                "staves": 1,
+                "steps": []
+            },
+            "part3": {
+                "staves": 1,
+                "steps": []
+            },
+            "part4": {
+                "staves": 1,
+                "steps": []
+            },
+            "part5": {
+                "staves": 1,
+                "steps": []
+            },
+            "part6": {
+                "staves": 1,
+                "steps": []
+            },
+            "part7": {
+                "staves": 1,
+                "steps": []
+            },
+            "part8": {
+                "staves": 1,
+                "steps": []
+            },
+            "part9": {
+                "staves": 1,
+                "steps": []
+            },
+            "part10": {
+                "staves": 1,
+                "steps": []
+            }
+        }
+    }
+]
