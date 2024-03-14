@@ -15,6 +15,7 @@
 #include <Sample.h>
 #include <State.h>
 // -----
+#include <initPSRAM.h>
 #include <initFileSystem.h>
 #include <initWifi.h>
 #include <initWebServer.h>
@@ -56,6 +57,7 @@ void testTask(void *parameter)
         }
         // printf("2\n");
 
+        // rewind(file);
         fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
         // printf("3\n");
 
@@ -105,7 +107,15 @@ extern "C" void app_main()
 
     vTaskDelay(pdMS_TO_TICKS(1000));
     bool initRes = true;
-    printf("----- INIT FILE SYSTEM -----\n");
+    printf("----- INIT PSRAM -----\n");
+    initRes = initPSRAM();
+    if (!initRes)
+    {
+        printf("----- INIT PSRAM FAILED -----\n");
+        return;
+    }
+    printf("----- INIT PSRAM DONE -----\n");
+    printf("----- INIT PSRAM -----\n");
     initRes = initFileSystem();
     if (!initRes)
     {

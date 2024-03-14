@@ -1,11 +1,64 @@
 #include <vector>
 #include <string>
 
+#include <esp_psram.h>
+#include <esp_system.h>
+#include <driver/spi_master.h>
+
 #include <GlobalVars.h>
 
 #include <readJsonFile.h>
 #include <Sample.h>
 #include <State.h>
+
+void freeFileFromPSRAM(FILE *filePointer)
+{
+    free(filePointer);
+}
+
+// FILE *loadFileInPSRAM(char *filePath)
+void loadFileInPSRAM(char *filePath)
+{
+    printf("loadFileInPSRAM(%s);\n", filePath);
+
+    FILE *file = fopen(filePath, "rb");
+    if (file == NULL)
+    {
+        printf("Failed to open file\n");
+        // return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    size_t fSize = ftell(file);
+    // rewind(file);
+    fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+
+    int16_t buffer[PLAY_WAV_WAV_BUFFER_SIZE];
+    // int16_t *buffer[fSize] = (int16_t **)ps_malloc(fSize);
+    // int16_t *buffer[fSize] = (int16_t **)esp_hime(fSize);
+
+    while (1)
+    {
+        // printf("4.51\n");
+        size_t bytes_read = fread(buffer, sizeof(int16_t) / 2, fSize, file);
+        if (bytes_read <= 0)
+        {
+            printf("stop(%s);\n", filePath);
+            break; // End of file or error
+        }
+        size_t bytes_written; // Initialize bytes_written variable
+        // printf("4.52\n");
+        // i2s_write(I2S_NUM_0, buffer, bytes_read, NULL, portMAX_DELAY);
+
+        i2s_write(I2S_NUM_0, buffer, bytes_read, &bytes_written, portMAX_DELAY);
+        // writeToMasterBuffer(buffer);
+
+        // printf("4.53\n");
+    }
+    // printf("5\n");
+
+    fclose(file);
+}
 
 // bool initState(&statePointer auto)
 bool initState(State *statePointer)
@@ -37,10 +90,6 @@ bool initState(State *statePointer)
     statePointer->currentSongIndex = 0;
     statePointer->songName = "Demo song";
     statePointer->songTempo = 151;
-    // statePointer->songTempo = 138;
-    // statePointer->songTempo = 80;
-    // statePointer->songBeats = 4;
-    // statePointer->songMeasures = 4;
 
     statePointer->samples = {};
     FILE *sample1 = fopen("/data/kick.wav", "rb");
