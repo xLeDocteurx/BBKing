@@ -40,9 +40,9 @@ httpd_uri_t root_uri = {
     .handler = root_handler,
     .user_ctx = NULL,
 
-    .is_websocket = true,              // Mandatory: set to `true` to handler websocket protocol
-    .handle_ws_control_frames = false, // Optional: set to `true` for the handler to receive control packets, too
-    .supported_subprotocol = "chat",   // Optional: set supported subprotocol for this handler
+    // .is_websocket = true,              // Mandatory: set to `true` to handler websocket protocol
+    // .handle_ws_control_frames = false, // Optional: set to `true` for the handler to receive control packets, too
+    // .supported_subprotocol = "chat",   // Optional: set supported subprotocol for this handler
 };
 
 static esp_err_t state_handler(httpd_req_t *req)
