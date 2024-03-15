@@ -24,9 +24,9 @@
 // #define I2S_DATA_OUT_NUM 22
 
 // For freenove_esp32_s3_wroom
-#define I2S_BCK_IO_NUM 26
-#define I2S_WS_IO_NUM 25
-#define I2S_DATA_OUT_NUM 22
+#define I2S_BCK_IO_NUM 46
+#define I2S_WS_IO_NUM 47
+#define I2S_DATA_OUT_NUM 45
 
 // #define STATE_PART_STEPS_LENGTH 64
 #define STATE_PART_STEPS_LENGTH 16

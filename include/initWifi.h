@@ -32,7 +32,7 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
         // printf("----- INIT WEB SERVER DONE -----\n");
 
         // Turn off the LED
-        gpio_set_level(LED_PIN, 1);
+        gpio_set_level(LED_PIN, 0);
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
@@ -43,7 +43,7 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
 // bool initWifi(std::vector<wifi_config_t> *wifiConfigsPointer, esp_netif_t *netif)
 esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointer)
 {
-    gpio_set_level(LED_PIN, 0);
+    gpio_set_level(LED_PIN, 1);
     // esp_netif_t *netif_v = netif;
     // char charss[JSON_BUFFER_SIZE];
     std::string jsonString;
@@ -58,7 +58,7 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointer)
         printf("initWifi readJsonFile wifiConfigs.json : %s\n", jsonString.c_str());
     }
 
-    wifiConfigsPointer->push_back({
+    wifi_config_t wifi_config_1 = {
         .sta = {
             .ssid = "SFR_25AF",
             .password = "pk88u26tgpg1k48xrue2",
@@ -69,9 +69,9 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointer)
             // .failure_retry_cnt = 5,
             .failure_retry_cnt = 10,
         },
-    });
-    wifiConfigsPointer->push_back({"Tardigrad", "blblblbl"});
-    wifiConfigsPointer->push_back({
+    };
+    wifiConfigsPointer->push_back(wifi_config_1);
+    wifi_config_t wifi_config_2 = {
         .sta = {
             .ssid = "Tardigrad",
             .password = "blblblbl",
@@ -82,9 +82,9 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointer)
             // .failure_retry_cnt = 5,
             .failure_retry_cnt = 10,
         },
-    });
-    wifiConfigsPointer->push_back({"Backstage-WiFi", "44VWSvwMpXXqy3b0GXedTi5R1LtGVnYS"});
-    wifiConfigsPointer->push_back({
+    };
+    wifiConfigsPointer->push_back(wifi_config_2);
+    wifi_config_t wifi_config_3 = {
         .sta = {
             .ssid = "Backstage-WiFi",
             .password = "44VWSvwMpXXqy3b0GXedTi5R1LtGVnYS",
@@ -95,7 +95,8 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointer)
             // .failure_retry_cnt = 5,
             .failure_retry_cnt = 10,
         },
-    });
+    };
+    wifiConfigsPointer->push_back(wifi_config_3);
 
     esp_err_t nvs_flash_init_ret = nvs_flash_init();
     if (nvs_flash_init_ret != ESP_OK)

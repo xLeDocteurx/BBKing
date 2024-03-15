@@ -6,6 +6,7 @@ bool initFileSystem()
         .base_path = "/data",
         .partition_label = "data",
         // .partition_label = "NULL",
+        // .max_files = 1,
         // .max_files = 7,
         .max_files = 10,
         .format_if_mount_failed = false

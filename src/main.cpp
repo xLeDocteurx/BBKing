@@ -105,7 +105,7 @@ extern "C" void app_main()
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     // gpio_set_level(LED_PIN, 0);
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    // vTaskDelay(pdMS_TO_TICKS(1000));
     bool initRes = true;
     printf("----- INIT PSRAM -----\n");
     initRes = initPSRAM();
@@ -115,7 +115,7 @@ extern "C" void app_main()
         return;
     }
     printf("----- INIT PSRAM DONE -----\n");
-    printf("----- INIT PSRAM -----\n");
+    printf("----- INIT FILE SYSTEM -----\n");
     initRes = initFileSystem();
     if (!initRes)
     {
@@ -123,32 +123,6 @@ extern "C" void app_main()
         return;
     }
     printf("----- INIT FILE SYSTEM DONE -----\n");
-    printf("----- INIT WIFI -----\n");
-    // initRes = initWifi(&wifiConfigs, sta_netif);
-    esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
-    if (initWifiRes == NULL)
-    {
-        printf("----- INIT WIFI FAILED -----\n");
-        return;
-    }
-    else
-    {
-        sta_netif = initWifiRes;
-        printf("----- INIT WIFI DONE -----\n");
-        // vTaskDelay(pdMS_TO_TICKS(10000));
-        printf("iwd sta_netif int : %p\n", (void *)sta_netif);
-        printf("iwd sta_netif int : %p\n", sta_netif);
-        // vTaskDelay(pdMS_TO_TICKS(5000));
-        printf("----- INIT WEB SERVER -----\n");
-        initRes = initWebServer(&state, &httpServer, sta_netif);
-        if (!initRes)
-        {
-            printf("----- INIT WEB SERVER FAILED -----\n");
-            return;
-        }
-        printf("----- INIT WEB SERVER DONE -----\n");
-    }
-    // TODO : Uncomment
     printf("----- INIT STATE -----\n");
     initRes = initState(&state);
     if (!initRes)
@@ -182,6 +156,34 @@ extern "C" void app_main()
     printf("----- INIT TASKS DONE -----\n");
 
     printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
+
+
+    printf("----- INIT WIFI -----\n");
+    // initRes = initWifi(&wifiConfigs, sta_netif);
+    esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
+    if (initWifiRes == NULL)
+    {
+        printf("----- INIT WIFI FAILED -----\n");
+        return;
+    }
+    else
+    {
+        sta_netif = initWifiRes;
+        printf("----- INIT WIFI DONE -----\n");
+        // vTaskDelay(pdMS_TO_TICKS(10000));
+        printf("iwd sta_netif int : %p\n", (void *)sta_netif);
+        printf("iwd sta_netif int : %p\n", sta_netif);
+        // vTaskDelay(pdMS_TO_TICKS(5000));
+        printf("----- INIT WEB SERVER -----\n");
+        initRes = initWebServer(&state, &httpServer, sta_netif);
+        if (!initRes)
+        {
+            printf("----- INIT WEB SERVER FAILED -----\n");
+            return;
+        }
+        printf("----- INIT WEB SERVER DONE -----\n");
+    }
+    // TODO : Uncomment
 
     // printf("----- SONG DEBUGING -----\n");
     // printf("state.songIndex : %i\n", state.currentPartIndex);

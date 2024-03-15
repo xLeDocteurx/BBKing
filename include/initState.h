@@ -63,28 +63,28 @@ void loadFileInPSRAM(char *filePath)
 // bool initState(&statePointer auto)
 bool initState(State *statePointer)
 {
-    std::string samplesJsonString;
-    bool readJsonFile_ret = readJsonFile("/data/samples.json", &samplesJsonString);
-    if (!readJsonFile_ret)
-    {
-        printf("Failed to read samples.json file\n");
-        return false;
-    }
-    else
-    {
-        // printf("initWifi readJsonFile songs.json : %s\n", samplesJsonString.c_str());
-    }
-    std::string songsJsonString;
-    readJsonFile_ret = readJsonFile("/data/songs.json", &songsJsonString);
-    if (!readJsonFile_ret)
-    {
-        printf("Failed to read wifiConfigs.json file\n");
-        return false;
-    }
-    else
-    {
-        // printf("initWifi readJsonFile wifiConfigs.json : %s\n", songsJsonString.c_str());
-    }
+    // std::string samplesJsonString;
+    // bool readJsonFile_ret = readJsonFile("/data/samples.json", &samplesJsonString);
+    // if (!readJsonFile_ret)
+    // {
+    //     printf("Failed to read samples.json file\n");
+    //     return false;
+    // }
+    // else
+    // {
+    //     // printf("initWifi readJsonFile songs.json : %s\n", samplesJsonString.c_str());
+    // }
+    // std::string songsJsonString;
+    // readJsonFile_ret = readJsonFile("/data/songs.json", &songsJsonString);
+    // if (!readJsonFile_ret)
+    // {
+    //     printf("Failed to read wifiConfigs.json file\n");
+    //     return false;
+    // }
+    // else
+    // {
+    //     // printf("initWifi readJsonFile wifiConfigs.json : %s\n", songsJsonString.c_str());
+    // }
 
     // Init state
     statePointer->currentSongIndex = 0;
