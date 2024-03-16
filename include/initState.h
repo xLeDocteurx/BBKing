@@ -11,53 +11,39 @@
 #include <Sample.h>
 #include <State.h>
 
-void freeFileFromPSRAM(FILE *filePointer)
+void freeFile(void *filePointer)
 {
     free(filePointer);
 }
 
-// FILE *loadFileInPSRAM(char *filePath)
-void loadFileInPSRAM(char *filePath)
+bool loadFile(char *filePath, Sample *samplePointer)
 {
-    printf("loadFileInPSRAM(%s);\n", filePath);
+    printf("loadFile(%s);\n", filePath);
 
     FILE *file = fopen(filePath, "rb");
     if (file == NULL)
     {
-        printf("Failed to open file\n");
-        // return;
+        printf("Failed to open file %s\n", filePath);
+        return false;
     }
-
     fseek(file, 0, SEEK_END);
-    size_t fSize = ftell(file);
-    // rewind(file);
+    size_t fileSize = ftell(file) - 44;
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-    int16_t buffer[PLAY_WAV_WAV_BUFFER_SIZE];
-    // int16_t *buffer[fSize] = (int16_t **)ps_malloc(fSize);
-    // int16_t *buffer[fSize] = (int16_t **)esp_hime(fSize);
+    size_t freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
 
-    while (1)
-    {
-        // printf("4.51\n");
-        size_t bytes_read = fread(buffer, sizeof(int16_t) / 2, fSize, file);
-        if (bytes_read <= 0)
-        {
-            printf("stop(%s);\n", filePath);
-            break; // End of file or error
-        }
-        size_t bytes_written; // Initialize bytes_written variable
-        // printf("4.52\n");
-        // i2s_write(I2S_NUM_0, buffer, bytes_read, NULL, portMAX_DELAY);
+    int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
 
-        i2s_write(I2S_NUM_0, buffer, bytes_read, &bytes_written, portMAX_DELAY);
-        // writeToMasterBuffer(buffer);
+    freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
 
-        // printf("4.53\n");
-    }
-    // printf("5\n");
+    size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t) / 2, fileSize, file);
 
     fclose(file);
+
+    *samplePointer = {"/data/kick.wav", fileSize, fileBufferPointer, false, 0};
+    return true;
 }
 
 // bool initState(&statePointer auto)
@@ -92,55 +78,28 @@ bool initState(State *statePointer)
     statePointer->songTempo = 151;
 
     statePointer->samples = {};
-    FILE *sample1 = fopen("/data/kick.wav", "rb");
-    if (sample1 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/kick.json");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/kick.wav", sample1, false, 0});
-    FILE *sample2 = fopen("/data/snare.wav", "rb");
-    if (sample2 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/snare.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/snare.wav", sample2, false, 0});
-    FILE *sample3 = fopen("/data/hithat.wav", "rb");
-    if (sample3 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/hithat.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/hithat.wav", sample3, false, 0});
-    FILE *sample4 = fopen("/data/shake.wav", "rb");
-    if (sample4 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/shake.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/shake.wav", sample4, false, 0});
-    FILE *sample5 = fopen("/data/tom1.wav", "rb");
-    if (sample5 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/tom1.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/tom1.wav", sample5, false, 0});
-    FILE *sample6 = fopen("/data/tom2.wav", "rb");
-    if (sample6 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/tom2.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/tom2.wav", sample6, false, 0});
-    FILE *sample7 = fopen("/data/flo1.wav", "rb");
-    if (sample7 == NULL)
-    {
-        printf("Failed to open file %s\n", "/data/flo1.wav");
-        return false;
-    }
-    statePointer->samples.push_back({"/data/flo1.wav", sample7, false, 0});
+
+    Sample sample1;
+    loadFile("/data/kick.wav", &sample1);
+    statePointer->samples.push_back(sample1);
+    Sample sample2;
+    loadFile("/data/snare.wav", &sample2);
+    statePointer->samples.push_back(sample2);
+    Sample sample3;
+    loadFile("/data/hithat.wav", &sample3);
+    statePointer->samples.push_back(sample3);
+    Sample sample4;
+    loadFile("/data/shake.wav", &sample4);
+    statePointer->samples.push_back(sample4);
+    Sample sample5;
+    loadFile("/data/tom1.wav", &sample5);
+    statePointer->samples.push_back(sample5);
+    Sample sample6;
+    loadFile("/data/tom2.wav", &sample6);
+    statePointer->samples.push_back(sample6);
+    Sample sample7;
+    loadFile("/data/flo1.wav", &sample7);
+    statePointer->samples.push_back(sample7);
 
     // drumRack
     statePointer->drumRackSampleFileRefIndex1 = 0;

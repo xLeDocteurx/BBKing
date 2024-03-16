@@ -6,7 +6,10 @@ struct Sample
 {
     // TODO : Remove filePath
     char *filePath;
-    FILE *file;
+    // FILE *file;
+    size_t fileSize;
+    // TODO : malloc pointer for free()
+    int16_t *buffer;    
     bool isPlaying;
     int bufferBytesReadCounter;
 };
