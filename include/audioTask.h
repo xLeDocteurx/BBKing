@@ -48,7 +48,8 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + round(i * playbackSpeed)] * sample->volume;
+                    // statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + roundf(i * playbackSpeed)] * sample->volume;
+                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
                 }
 
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
