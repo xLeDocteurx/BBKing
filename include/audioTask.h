@@ -18,20 +18,22 @@ void audioTask(void *parameter)
 
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
 
-                float playbackSpeed = 1.0;
-                if (sample->pitch >= 0)
-                {
-                    playbackSpeed = 1.0 + ((float)sample->pitch / 12);
-                }
-                else
-                {
-                    playbackSpeed = 1.0 + (1 / 2 / ((float)sample->pitch / 12));
-                }
+                // float playbackSpeed = 1.0;
+                // if (sample->pitch >= 0)
+                // {
+                //     playbackSpeed = 1.0 + ((float)sample->pitch / 12);
+                // }
+                // else
+                // {
+                //     playbackSpeed = 1.0 + (1 / 2 / ((float)sample->pitch / 12));
+                // }
 
                 int sizeToWriteInSamples = 0;
-                if ((fileSizeInSamples - sample->bufferSamplesReadCounter) * playbackSpeed < PLAY_WAV_WAV_BUFFER_SIZE)
+                // if ((fileSizeInSamples - sample->bufferSamplesReadCounter) * playbackSpeed < PLAY_WAV_WAV_BUFFER_SIZE)
+                if (fileSizeInSamples - sample->bufferSamplesReadCounter < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
-                    sizeToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
+                    // sizeToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
+                    sizeToWriteInSamples = fileSizeInSamples - sample->bufferSamplesReadCounter;
                 }
                 else
                 {
@@ -40,6 +42,7 @@ void audioTask(void *parameter)
 
                 if (sizeToWriteInSamples <= 0)
                 {
+                    printf("stop : %s\n", sample->filePath);
                     sample->isPlaying = false;
                     sample->bufferSamplesReadCounter = 0;
                     continue; // End of file or error
@@ -49,10 +52,12 @@ void audioTask(void *parameter)
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
                     // statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + roundf(i * playbackSpeed)] * sample->volume;
-                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
+                    // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
+                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * sample->volume;
                 }
 
-                sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
+                // sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
+                sample->bufferSamplesReadCounter += sizeToWriteInSamples;
             }
         }
 

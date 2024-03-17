@@ -12,14 +12,17 @@ void sequencerTask(void *parameter)
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size() * statePointer->parts[statePointer->currentPartIndex].staves; stepContentIndex++)
             {
                 const int stepInstrumentSampleIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex];
-                // Interruption group for sample 5 and 6
-                if(stepInstrumentSampleIndex == 4 && statePointer->samples[5].isPlaying) {
-                    statePointer->samples[5].isPlaying = false;
-                    statePointer->samples[5].bufferSamplesReadCounter = 0;
-                } else if(stepInstrumentSampleIndex == 5 && statePointer->samples[4].isPlaying) {
-                    statePointer->samples[4].isPlaying = false;
-                    statePointer->samples[4].bufferSamplesReadCounter = 0;
-                }
+                // // Interruption group for sample 5 and 6
+                // if (stepInstrumentSampleIndex == 4 && statePointer->samples[5].isPlaying)
+                // {
+                //     statePointer->samples[5].isPlaying = false;
+                //     statePointer->samples[5].bufferSamplesReadCounter = 0;
+                // }
+                // else if (stepInstrumentSampleIndex == 5 && statePointer->samples[4].isPlaying)
+                // {
+                //     statePointer->samples[4].isPlaying = false;
+                //     statePointer->samples[4].bufferSamplesReadCounter = 0;
+                // }
 
                 int sampleFileRefIndex = 0;
                 switch (stepInstrumentSampleIndex)
@@ -49,6 +52,10 @@ void sequencerTask(void *parameter)
                 default:
                     break;
                 }
+                // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleFileRefIndex, statePointer->samples[sampleFileRefIndex].filePath);
+                // printf("0 : %s\n", statePointer->samples[0].filePath);
+                // printf("1 : %s\n", statePointer->samples[1].filePath);
+                // printf("2 : %s\n", statePointer->samples[2].filePath);
                 statePointer->samples[sampleFileRefIndex].isPlaying = true;
                 statePointer->samples[sampleFileRefIndex].bufferSamplesReadCounter = 0;
             }

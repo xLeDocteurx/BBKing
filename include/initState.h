@@ -36,7 +36,7 @@ bool loadFile(char *filePath, float volume, int pitch, Sample *samplePointer)
 
     fclose(file);
 
-    *samplePointer = {"/data/kick.wav", volume, pitch, fileSize, fileBufferPointer, false, 0};
+    *samplePointer = {filePath, volume, pitch, fileSize, fileBufferPointer, false, 0};
     return true;
 }
 
