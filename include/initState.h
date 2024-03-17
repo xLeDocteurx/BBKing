@@ -16,7 +16,7 @@ void freeFile(void *filePointer)
     free(filePointer);
 }
 
-bool loadFile(char *filePath, Sample *samplePointer)
+bool loadFile(char *filePath, float volume, int pitch, Sample *samplePointer)
 {
     printf("loadFile(%s);\n", filePath);
 
@@ -30,14 +30,13 @@ bool loadFile(char *filePath, Sample *samplePointer)
     size_t fileSize = ftell(file) - 44;
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-
     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
 
     size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
     fclose(file);
 
-    *samplePointer = {"/data/kick.wav", fileSize, fileBufferPointer, false, 0};
+    *samplePointer = {"/data/kick.wav", volume, pitch, fileSize, fileBufferPointer, false, 0};
     return true;
 }
 
@@ -75,25 +74,25 @@ bool initState(State *statePointer)
     statePointer->samples = {};
 
     Sample sample1;
-    loadFile("/data/kick.wav", &sample1);
+    loadFile("/data/kick.wav", 0.5, 0, &sample1);
     statePointer->samples.push_back(sample1);
     Sample sample2;
-    loadFile("/data/snare.wav", &sample2);
+    loadFile("/data/snare.wav", 0.5, 0, &sample2);
     statePointer->samples.push_back(sample2);
     Sample sample3;
-    loadFile("/data/hithat.wav", &sample3);
+    loadFile("/data/clap.wav", 0.5, 0, &sample3);
     statePointer->samples.push_back(sample3);
     Sample sample4;
-    loadFile("/data/shake.wav", &sample4);
+    loadFile("/data/rim.wav", 0.5, 0, &sample4);
     statePointer->samples.push_back(sample4);
     Sample sample5;
-    loadFile("/data/tom1.wav", &sample5);
+    loadFile("/data/hhc.wav", 0.5, 0, &sample5);
     statePointer->samples.push_back(sample5);
     Sample sample6;
-    loadFile("/data/tom2.wav", &sample6);
+    loadFile("/data/hho.wav", 0.5, 0, &sample6);
     statePointer->samples.push_back(sample6);
     Sample sample7;
-    loadFile("/data/flo1.wav", &sample7);
+    loadFile("/data/flo1.wav", 0.5, 0, &sample7);
     statePointer->samples.push_back(sample7);
 
     // drumRack

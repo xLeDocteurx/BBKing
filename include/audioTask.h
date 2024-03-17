@@ -1,5 +1,7 @@
 #include <Sample.h>
 
+#include <math.h>
+
 TaskHandle_t audioTaskHandle;
 
 void audioTask(void *parameter)
@@ -13,11 +15,23 @@ void audioTask(void *parameter)
             Sample *sample = &statePointer->samples[sampleFileRefIndex];
             if (sample->isPlaying)
             {
+
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
-                int sizeToWriteInSamples = 0;
-                if (fileSizeInSamples - sample->bufferSamplesReadCounter < PLAY_WAV_WAV_BUFFER_SIZE)
+
+                float playbackSpeed = 1.0;
+                if (sample->pitch >= 0)
                 {
-                    sizeToWriteInSamples = fileSizeInSamples - sample->bufferSamplesReadCounter;
+                    playbackSpeed = 1.0 + ((float)sample->pitch / 12);
+                }
+                else
+                {
+                    playbackSpeed = 1.0 + (1 / 2 / ((float)sample->pitch / 12));
+                }
+
+                int sizeToWriteInSamples = 0;
+                if ((fileSizeInSamples - sample->bufferSamplesReadCounter) * playbackSpeed < PLAY_WAV_WAV_BUFFER_SIZE)
+                {
+                    sizeToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
                 }
                 else
                 {
@@ -34,10 +48,10 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * 0.5;
+                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + round(i * playbackSpeed)] * sample->volume;
                 }
 
-                sample->bufferSamplesReadCounter += sizeToWriteInSamples;
+                sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
             }
         }
 

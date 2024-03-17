@@ -3,41 +3,13 @@
         "title": "Demo Song",
         "tempo": 120,
         "samples": [
-            {
-                "filePath": "/data/kick.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/snare.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/hithat.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/shake.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/clap.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/bass.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/flo.wav",
-                "volume": 0.5,
-                "pitch": 0
-            }
+            "/data/kick.wav",
+            "/data/snare.wav",
+            "/data/hithat.wav",
+            "/data/shake.wav",
+            "/data/clap.wav",
+            "/data/bass.wav",
+            "/data/flo.wav"
         ],
         "drumRack": {
             "sample1": 0,

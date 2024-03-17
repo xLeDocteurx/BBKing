@@ -5,6 +5,9 @@
 struct Sample
 {
     char *filePath;
+    float volume;
+    int pitch;
+
     size_t fileSize;
     int16_t *buffer;    
     bool isPlaying;
