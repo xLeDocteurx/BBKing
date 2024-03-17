@@ -26,7 +26,6 @@ bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter) {
         {
             printf("Trying to connect to %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
 
-            // ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
             esp_err_t esp_wifi_set_config_ret = esp_wifi_set_config(WIFI_IF_STA, &wifiConfigsPointerParameter->at(i));
             if (esp_wifi_set_config_ret != ESP_OK)
             {
@@ -34,8 +33,6 @@ bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter) {
             }
             else
             {
-                // printf("4\n");
-                // ESP_ERROR_CHECK(esp_wifi_start());
                 esp_err_t esp_wifi_start_ret = esp_wifi_start();
                 if (esp_wifi_start_ret != ESP_OK)
                 {
@@ -59,9 +56,6 @@ bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter) {
                         printf("Connected to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
                         hasEstablishedConnection = true;
                     }
-                    // printf("esp_wifi_start_ret : %i\n", esp_wifi_start_ret);
-                    // printf("5\n");
-                    // esp_wifi_
                 }
             }
         }
@@ -75,15 +69,6 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
     {
         printf("!!! Event !!! Wi-Fi connected\n");
-        // vTaskDelay(pdMS_TO_TICKS(5000));
-        // printf("----- INIT WEB SERVER -----\n");
-        // bool initRes = initWebServer(&httpServer, sta_netif);
-        // if (!initRes)
-        // {
-        //     printf("----- INIT WEB SERVER FAILED -----\n");
-        //     // return;
-        // }
-        // printf("----- INIT WEB SERVER DONE -----\n");
 
         // Turn off the LED
         gpio_set_level(LED_PIN, 0);
@@ -110,8 +95,6 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
     wifiConfigsPointer = wifiConfigsPointerParameter;
 
     gpio_set_level(LED_PIN, 1);
-    // esp_netif_t *netif_v = netif;
-    // char charss[JSON_BUFFER_SIZE];
     std::string jsonString;
     bool readJsonFile_ret = readJsonFile("/data/wifiConfigs.json", &jsonString);
     if (!readJsonFile_ret)
@@ -145,7 +128,6 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
                 .capable = true,
                 .required = false,
             },
-            // .failure_retry_cnt = 5,
             .failure_retry_cnt = 10,
         },
     };
@@ -158,7 +140,6 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
                 .capable = true,
                 .required = false,
             },
-            // .failure_retry_cnt = 5,
             .failure_retry_cnt = 10,
         },
     };

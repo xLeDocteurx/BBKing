@@ -30,15 +30,9 @@ bool loadFile(char *filePath, Sample *samplePointer)
     size_t fileSize = ftell(file) - 44;
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-    // size_t freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    // size_t freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
 
     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
 
-    // freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    // freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
-
-    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t) / 2, fileSize, file);
     size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
     fclose(file);
@@ -130,48 +124,26 @@ bool initState(State *statePointer)
         switch (i)
         {
         case 0:
-            // part1Steps.push_back({0, 2, 6});
             part1Steps.push_back({0});
-            // part1Steps.push_back({0, 2});
-            // part1Steps.push_back({0, 2, 5});
-            // part1Steps.push_back({6});
             break;
         case 2:
-            // part1Steps.push_back({0, 3});
             part1Steps.push_back({0});
             break;
         case 4:
             part1Steps.push_back({1});
-            // part1Steps.push_back({1, 2});
             break;
         case 6:
-            // part1Steps.push_back({0, 3});
             part1Steps.push_back({0});
             break;
         case 8:
             part1Steps.push_back({0});
-            // part1Steps.push_back({0, 2});
             break;
-        // case 10:
-        //     // part1Steps.push_back({3});
-        //     break;
         case 12:
             part1Steps.push_back({1});
-            // part1Steps.push_back({1, 2});
             break;
         case 13:
             part1Steps.push_back({0});
             break;
-        // case 14:
-        //     // part1Steps.push_back({3});
-        //     part1Steps.push_back({4});
-        //     break;
-        // case 15:
-        //     // part1Steps.push_back({3});
-        //     // part1Steps.push_back({4});
-        //     part1Steps.push_back({5});
-        //     // part1Steps.push_back({6});
-        //     break;
         default:
             part1Steps.push_back({});
             break;
@@ -180,11 +152,6 @@ bool initState(State *statePointer)
     Part part1 = {part1Staves, part1Steps};
     statePointer->parts.push_back(part1);
 
-    // statePointer->_masterBuffer[PLAY_WAV_WAV_BUFFER_SIZE];
-    // for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
-    // {
-    //     statePointer->_masterBuffer[i] = 0;
-    // }
     statePointer->isPlaying = false;
 
     return true;

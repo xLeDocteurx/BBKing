@@ -47,9 +47,6 @@ httpd_uri_t root_uri = {
 
 static esp_err_t state_handler(httpd_req_t *req)
 {
-    // int staves;
-    // std::vector<std::vector<int>> steps;
-
     std::string partsString = "[";
     for (int i = 0; i < statePointer->parts.size(); i++)
     {
@@ -86,13 +83,9 @@ static esp_err_t state_handler(httpd_req_t *req)
     }
     partsString += "]";
 
-    // ,\"parts\":[]
     std::string jsonString =
         "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrument) + ",\"parts\":" + partsString + "}";
-    // bool readJsonFile_ret = readJsonFile("/data/state.json", &jsonString);
-    // httpd_resp_set_status(req, "200");
     httpd_resp_set_type(req, "text/json");
-    // httpd_resp_set_hdr();
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
@@ -169,8 +162,6 @@ static esp_err_t action_handler(httpd_req_t *req)
             if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i] == statePointer->currentPartInstrument)
             {
                 isDrumRackSampleStepActive = true;
-
-                // statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(std::next(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + i));
 
                 // Find the position of the number 3
                 std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);

@@ -25,8 +25,6 @@ struct State
     int currentSongIndex;
     char *songName;
     int songTempo;
-    // int songBeats;
-    // int songMeasures;
 
     std::vector<Sample> samples;
     // drumRack
@@ -50,7 +48,6 @@ struct State
     std::vector<Part> parts;
 
     int currentStepIndex;
-    // parts steps
 
     int16_t _masterBuffer[PLAY_WAV_WAV_BUFFER_SIZE];
     bool isPlaying;

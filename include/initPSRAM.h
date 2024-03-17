@@ -11,8 +11,6 @@ bool initPSRAM()
     else
     {
         esp_err_t ret_init_psram = esp_psram_init();
-        // printf("ret_init_psram \%i : %i\n", ret_init_psram);
-        // printf("ret_init_psram \%d : %d\n", ret_init_psram);
         if (ret_init_psram != ESP_OK)
         {
             printf("Failed to run esp_psram_init\n");
