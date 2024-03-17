@@ -30,15 +30,16 @@ bool loadFile(char *filePath, Sample *samplePointer)
     size_t fileSize = ftell(file) - 44;
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-    size_t freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    size_t freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    // size_t freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    // size_t freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
 
     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
 
-    freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    // freePsramSize = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    // freeInternalRamSize = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
 
-    size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t) / 2, fileSize, file);
+    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t) / 2, fileSize, file);
+    size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
     fclose(file);
 

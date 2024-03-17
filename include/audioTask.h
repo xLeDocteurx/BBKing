@@ -16,7 +16,7 @@ void audioTask(void *parameter)
             // if (sampleFileRefIndex == 6)
             {
                 // // const FILE *fileRefPointer = sample->file;
-                // const int fseekReturn = fseek(sample->file, 44 + sample->bufferBytesReadCounter, SEEK_SET); // Skip WAV file header (44 bytes) + bufferBytesReadCounter
+                // const int fseekReturn = fseek(sample->file, 44 + sample->bufferSamplesReadCounter, SEEK_SET); // Skip WAV file header (44 bytes) + bufferSamplesReadCounter
 
                 // int16_t standardSizeBuffer[PLAY_WAV_WAV_BUFFER_SIZE];
 
@@ -28,44 +28,48 @@ void audioTask(void *parameter)
                 //     // printf("stop : %s\n", statePointer->samples[sampleFileRefIndex].filePath);
                 //     // fclose(file);
                 //     sample->isPlaying = false;
-                //     sample->bufferBytesReadCounter = 0;
+                //     sample->bufferSamplesReadCounter = 0;
                 //     continue; // End of file or error
                 // }
-                int fileSizeInSamples = sample->fileSize / 2;
-                int sizeToWrite = 0;
-                if (fileSizeInSamples - sample->bufferBytesReadCounter < PLAY_WAV_WAV_BUFFER_SIZE)
+
+                int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
+                int sizeToWriteInSamples = 0;
+                if (fileSizeInSamples - sample->bufferSamplesReadCounter < PLAY_WAV_WAV_BUFFER_SIZE)
+                // if (sample->fileSize - sample->bufferSamplesReadCounter < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
-                    sizeToWrite = fileSizeInSamples - sample->bufferBytesReadCounter;
+                    sizeToWriteInSamples = fileSizeInSamples - sample->bufferSamplesReadCounter;
                 }
                 else
                 {
-                    sizeToWrite = PLAY_WAV_WAV_BUFFER_SIZE;
+                    sizeToWriteInSamples = PLAY_WAV_WAV_BUFFER_SIZE;
                 }
 
-                if (sizeToWrite <= 0)
+                // TODO : En secu ?
+                // if (sizeToWriteInSamples <= 1)
+                if (sizeToWriteInSamples <= 0)
                 {
                     // printf("stop sample : %s\n", sample->filePath);
                     sample->isPlaying = false;
-                    sample->bufferBytesReadCounter = 0;
+                    sample->bufferSamplesReadCounter = 0;
                     continue; // End of file or error
                 }
 
                 // Write sample buffer to _masterBuffer
-                for (int i = 0; i < sizeToWrite; i++)
+                for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
                     // statePointer->_masterBuffer[i] += standardSizeBuffer[i] * 0.5;
-                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferBytesReadCounter + i] * 0.5;
+                    statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * 0.5;
                 }
 
-                // sample->bufferBytesReadCounter += sizeToRead;
-                // sample->bufferBytesReadCounter += bytes_read;
-                sample->bufferBytesReadCounter += sizeToWrite;
+                // sample->bufferSamplesReadCounter += sizeToRead;
+                // sample->bufferSamplesReadCounter += bytes_read;
+                sample->bufferSamplesReadCounter += sizeToWriteInSamples;
             }
         }
 
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable
-        i2s_write(I2S_NUM_0, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE, &bytes_written, 1);
+        i2s_write(I2S_NUM_0, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
         for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
         {
             statePointer->_masterBuffer[i] = 0;

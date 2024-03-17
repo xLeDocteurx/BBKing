@@ -11,6 +11,6 @@ struct Sample
     // TODO : malloc pointer for free()
     int16_t *buffer;    
     bool isPlaying;
-    int bufferBytesReadCounter;
+    int bufferSamplesReadCounter;
 };
 #endif // SAMPLESTRUCT_H

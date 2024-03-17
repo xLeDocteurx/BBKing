@@ -59,7 +59,7 @@ void sequencerTask(void *parameter)
                 }
                 // printf("play : %s\n", statePointer->samples[sampleFileRefIndex].filePath);
                 statePointer->samples[sampleFileRefIndex].isPlaying = true;
-                statePointer->samples[sampleFileRefIndex].bufferBytesReadCounter = 0;
+                statePointer->samples[sampleFileRefIndex].bufferSamplesReadCounter = 0;
             }
 
             statePointer->currentStepIndex += 1;
