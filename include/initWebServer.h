@@ -9,13 +9,60 @@
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_http_server.h>
+// #include <esp_websocket.h>
 #include <esp_netif.h>
 #include <esp_netif_defaults.h>
 
 #include <WifiConfig.h>
 #include <readJsonFile.h>
 
+#include <GlobalVars.h>
+
 State *statePointer;
+
+/*
+ * Structure holding server handle
+ * and internal socket fd in order
+ * to use out of request send
+ */
+struct async_resp_arg {
+    httpd_handle_t hd;
+    int fd;
+};
+
+/*
+ * async send function, which we put into the httpd work queue
+ */
+static void ws_async_send(void *arg)
+{
+    static const char * data = "Async data";
+    struct async_resp_arg *resp_arg = arg;
+    httpd_handle_t hd = resp_arg->hd;
+    int fd = resp_arg->fd;
+    httpd_ws_frame_t ws_pkt;
+    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+    ws_pkt.payload = (uint8_t*)data;
+    ws_pkt.len = strlen(data);
+    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+
+    httpd_ws_send_frame_async(hd, fd, &ws_pkt);
+    free(resp_arg);
+}
+
+static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
+{
+    struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
+    if (resp_arg == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+    resp_arg->hd = req->handle;
+    resp_arg->fd = httpd_req_to_sockfd(req);
+    esp_err_t ret = httpd_queue_work(handle, ws_async_send, resp_arg);
+    if (ret != ESP_OK) {
+        free(resp_arg);
+    }
+    return ret;
+}
 
 static esp_err_t root_handler(httpd_req_t *req)
 {
@@ -24,14 +71,57 @@ static esp_err_t root_handler(httpd_req_t *req)
     {
         // action before ws handshake
         std::string htmlString;
-        bool readJsonFile_ret = readJsonFile("/data/index.html", &htmlString);
+        // bool readJsonFile_ret = readJsonFile("/data/index.html", &htmlString);
+        readJsonFile("/data/index.html", &htmlString);
         // httpd_resp_set_status(req, "200");
         httpd_resp_set_type(req, "text/html");
         // httpd_resp_set_hdr();
         httpd_resp_send(req, htmlString.c_str(), HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
     }
-    // action after the handshake (read frames)
+
+    httpd_ws_frame_t ws_pkt;
+    uint8_t *buf = NULL;
+    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+    esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
+    if (ret != ESP_OK)
+    {
+        printf("httpd_ws_recv_frame failed to get frame len with %d\n", ret);
+        return ret;
+    }
+    printf("frame len is %d\n", ws_pkt.len);
+    if (ws_pkt.len)
+    {
+        httpd_ws_frame_t ws_pkt;
+        uint8_t *buf = NULL;
+        memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+        ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+        /* Set max_len = 0 to get the frame len */
+        esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
+        if (ret != ESP_OK)
+        {
+            printf("httpd_ws_recv_frame failed with %d\n", ret);
+            free(buf);
+            return ret;
+        }
+        printf("Got packet with message: %s\n", ws_pkt.payload);
+    }
+    printf("Packet type: %d\n", ws_pkt.type);
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
+        strcmp((char *)ws_pkt.payload, "Trigger async") == 0)
+    {
+        free(buf);
+        return trigger_async_send(req->handle, req);
+    }
+
+    ret = httpd_ws_send_frame(req, &ws_pkt);
+    if (ret != ESP_OK)
+    {
+        printf("httpd_ws_send_frame failed with %d\n", ret);
+    }
+    free(buf);
+    return ret;
     return ESP_OK;
 }
 httpd_uri_t root_uri = {

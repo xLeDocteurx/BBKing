@@ -42,7 +42,7 @@ void audioTask(void *parameter)
 
                 if (sizeToWriteInSamples <= 0)
                 {
-                    printf("stop : %s\n", sample->filePath);
+                    // printf("stop : %s\n", sample->filePath);
                     sample->isPlaying = false;
                     sample->bufferSamplesReadCounter = 0;
                     continue; // End of file or error
@@ -51,7 +51,6 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    // statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + roundf(i * playbackSpeed)] * sample->volume;
                     // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
                     statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * sample->volume;
                 }

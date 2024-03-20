@@ -119,7 +119,6 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
-    wifiConfigsPointerParameter->push_back(wifi_config_1);
     wifi_config_t wifi_config_2 = {
         .sta = {
             .ssid = "Tardigrad",
@@ -131,7 +130,6 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
-    wifiConfigsPointerParameter->push_back(wifi_config_2);
     wifi_config_t wifi_config_3 = {
         .sta = {
             .ssid = "Backstage-WiFi",
@@ -143,6 +141,8 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
+    wifiConfigsPointerParameter->push_back(wifi_config_1);
+    wifiConfigsPointerParameter->push_back(wifi_config_2);
     wifiConfigsPointerParameter->push_back(wifi_config_3);
 
     esp_err_t nvs_flash_init_ret = nvs_flash_init();
