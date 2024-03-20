@@ -39,6 +39,10 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
+  <h1>WebSocket Ping Pong Client</h1>
+  <p>État : <span id="status">Déconnecté</span></p>
+  <button id="connect">Connecter</button>
+  <button id="send-ping">Envoyer un ping</button>
   <div id="app">
     <div class="topnav">
       <h1 class="text-center">BBKing</h1>
@@ -491,41 +495,49 @@
       return json;
     }
 
-    const wsUri = `ws://${window.location}/`;
+    const wsUri = `ws://${window.location.host}/`;
     console.log("wsUri : ", wsUri);
-    // const statusEl = document.getElementById("status");
-    // const connectBtn = document.getElementById("connect");
-    // const sendPingBtn = document.getElementById("send-ping");
+    const statusEl = document.getElementById("status");
+    const connectBtn = document.getElementById("connect");
+    const sendPingBtn = document.getElementById("send-ping");
 
-    // let ws;
-    let ws = new WebSocket(wsUri);
+    let ws;
+    // let ws = new WebSocket(wsUri);
 
-    // connectBtn.addEventListener("click", () => {
-    // ws = new WebSocket(wsUri);
+    connectBtn.addEventListener("click", () => {
+      ws = new WebSocket(wsUri);
 
-    ws.onopen = () => {
-      console.log("connected");
-      statusEl.textContent = "Connecté";
-      connectBtn.disabled = true;
-      sendPingBtn.disabled = false;
-    };
+      ws.onopen = () => {
+        console.log("connected");
+        statusEl.textContent = "Connecté";
+        connectBtn.disabled = true;
+        sendPingBtn.disabled = false;
+      };
 
-    ws.onclose = () => {
-      console.log("disconnected");
-      statusEl.textContent = "Déconnecté";
-      connectBtn.disabled = false;
-      sendPingBtn.disabled = true;
-    };
+      ws.onclose = () => {
+        console.log("disconnected");
+        statusEl.textContent = "Déconnecté";
+        connectBtn.disabled = false;
+        sendPingBtn.disabled = true;
+      };
 
-    ws.onmessage = (event) => {
-      const message = event.data;
-      if (message === "pong") {
-        console.log("Pong reçu !");
+      ws.onmessage = (event) => {
+        const message = event.data;
+        if (message === "pong") {
+          console.log("Pong reçu !");
+        } else {
+          console.log("Message reçu :", message);
+        }
+      };
+    });
+
+    sendPingBtn.addEventListener("click", () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send("ping");
       } else {
-        console.log("Message reçu :", message);
+        console.log("WebSocket non connecté !");
       }
-    };
-    // });
+    });
 
     const allPromises = Promise.all([httpGet("/state")]);
 
