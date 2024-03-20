@@ -9,7 +9,6 @@
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_http_server.h>
-// #include <esp_websocket.h>
 #include <esp_netif.h>
 #include <esp_netif_defaults.h>
 
@@ -36,9 +35,11 @@ struct async_resp_arg {
 static void ws_async_send(void *arg)
 {
     static const char * data = "Async data";
-    struct async_resp_arg *resp_arg = arg;
-    httpd_handle_t hd = resp_arg->hd;
-    int fd = resp_arg->fd;
+    // struct async_resp_arg *resp_arg = arg;
+    // httpd_handle_t hd = resp_arg->hd;
+    // int fd = resp_arg->fd;
+    httpd_handle_t hd = ((async_resp_arg *)arg)->hd;
+    int fd = ((async_resp_arg *)arg)->fd;
     httpd_ws_frame_t ws_pkt;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.payload = (uint8_t*)data;
@@ -46,12 +47,14 @@ static void ws_async_send(void *arg)
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
 
     httpd_ws_send_frame_async(hd, fd, &ws_pkt);
-    free(resp_arg);
+    // free(resp_arg);
+    free(arg);
 }
 
 static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 {
-    struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
+    // struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
+    async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(async_resp_arg));
     if (resp_arg == NULL) {
         return ESP_ERR_NO_MEM;
     }
