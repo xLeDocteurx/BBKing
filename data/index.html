@@ -207,7 +207,7 @@
                       max="1"
                       step="0.0025"
                       id="volumeRange"
-                      :value="getCurrentInstrumentSample().pitch"
+                      :value="getCurrentInstrumentSample().volume"
                       @change="($event) => { updateInstrumentSampleVolume($event); }"
                     />
                   </fieldset>
@@ -341,6 +341,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 8 }"
+                    disabled
                   >
                     Si
                   </button>
@@ -349,6 +350,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 9 }"
+                    disabled
                   >
                     Sa
                   </button>
@@ -357,6 +359,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 7 }"
+                    disabled
                   >
                     Sy
                   </button>
@@ -528,7 +531,7 @@
           };
 
           const updateSongName = function (event) {
-            httpAction("UPDATESONGNAME", Number(event.target.value));
+            httpAction("UPDATESONGNAME", event.target.value);
             songName.value = event.target.value;
           };
           const updateTempo = function (event) {
@@ -593,14 +596,22 @@
             }
           };
 
-          const updateInstrumentSampleVolume = function (volume) {
-            httpAction("UPDATEINSTRUMENTSAMPLEVOLUME", volume);
-            getCurrentInstrumentSample().volume.value = volume;
+          const updateInstrumentSampleVolume = function (event) {
+            // console.log("eventtargetvalue", event.target.value)
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEVOLUME",
+              Number(event.target.value)
+            );
+            getCurrentInstrumentSample().volume = event.target.value;
           };
 
-          const updateInstrumentSamplePitch = function (pitch) {
-            httpAction("UPDATEINSTRUMENTSAMPLEPITCH", pitch);
-            getCurrentInstrumentSample().pitch.value = pitch;
+          const updateInstrumentSamplePitch = function (event) {
+            // console.log("eventtargetvalue", event.target.value)
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEPITCH",
+              Number(event.target.value)
+            );
+            getCurrentInstrumentSample().pitch = event.target.value;
           };
 
           return {
