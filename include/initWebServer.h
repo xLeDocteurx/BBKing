@@ -24,7 +24,8 @@ State *statePointer;
  * and internal socket fd in order
  * to use out of request send
  */
-struct async_resp_arg {
+struct async_resp_arg
+{
     httpd_handle_t hd;
     int fd;
 };
@@ -34,7 +35,7 @@ struct async_resp_arg {
  */
 static void ws_async_send(void *arg)
 {
-    static const char * data = "Async data";
+    static const char *data = "Async data";
     // struct async_resp_arg *resp_arg = arg;
     // httpd_handle_t hd = resp_arg->hd;
     // int fd = resp_arg->fd;
@@ -42,7 +43,7 @@ static void ws_async_send(void *arg)
     int fd = ((async_resp_arg *)arg)->fd;
     httpd_ws_frame_t ws_pkt;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-    ws_pkt.payload = (uint8_t*)data;
+    ws_pkt.payload = (uint8_t *)data;
     ws_pkt.len = strlen(data);
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
 
@@ -55,13 +56,15 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 {
     // struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
     async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(async_resp_arg));
-    if (resp_arg == NULL) {
+    if (resp_arg == NULL)
+    {
         return ESP_ERR_NO_MEM;
     }
     resp_arg->hd = req->handle;
     resp_arg->fd = httpd_req_to_sockfd(req);
     esp_err_t ret = httpd_queue_work(handle, ws_async_send, resp_arg);
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         free(resp_arg);
     }
     return ret;
@@ -93,11 +96,12 @@ httpd_uri_t root_uri = {
 static esp_err_t websocket_handler(httpd_req_t *req)
 {
     // beginning of the ws URI handler
-    if (req->method == HTTP_GET) {
+    if (req->method == HTTP_GET)
+    {
         printf("Handshake done, the new connection was opened\n");
         return ESP_OK;
     }
-    
+
     httpd_ws_frame_t ws_pkt;
     uint8_t *buf = NULL;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
@@ -157,6 +161,18 @@ httpd_uri_t websocket_uri = {
 
 static esp_err_t state_handler(httpd_req_t *req)
 {
+    std::string samplesString = "[";
+    for (int i = 0; i < statePointer->samples.size(); i++)
+    {
+        std::string sampleString = "{\"filePath\": \"" + std::string(statePointer->samples[i].filePath) + "\", \"pitch\":" + std::to_string(statePointer->samples[i].pitch) + ", \"volume\":\"" + std::to_string(statePointer->samples[i].volume) + "\"}";
+        if (i != 0)
+        {
+            samplesString += ",";
+        }
+        samplesString += sampleString;
+    }
+    samplesString += "]";
+
     std::string partsString = "[";
     for (int i = 0; i < statePointer->parts.size(); i++)
     {
@@ -194,7 +210,7 @@ static esp_err_t state_handler(httpd_req_t *req)
     partsString += "]";
 
     std::string jsonString =
-        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrument) + ",\"parts\":" + partsString + "}";
+        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + "\",\"drumRackSampleFileRefIndex2\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + "\",\"drumRackSampleFileRefIndex3\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + "\",\"drumRackSampleFileRefIndex4\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + "\",\"drumRackSampleFileRefIndex5\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + "\",\"drumRackSampleFileRefIndex6\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + "\",\"drumRackSampleFileRefIndex7\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + "\",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrument) + ",\"parts\":" + partsString + "}";
     httpd_resp_set_type(req, "text/json");
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -243,7 +259,15 @@ static esp_err_t action_handler(httpd_req_t *req)
     printf("actionParameters.c_str() : %s\n", actionParameters.c_str());
 
     // TODO : In a separate file to server for other purposes (keyboard, etc...)
-    if (actionType == "PLAYFROMSTART")
+    if (actionType == "UPDATESONGNAME")
+    {
+        statePointer->songName = (char *)actionParameters.c_str();
+    }
+    else if (actionType == "UPDATETEMPO")
+    {
+        statePointer->songTempo = stoi(actionParameters);
+    }
+    else if (actionType == "PLAYFROMSTART")
     {
         statePointer->currentStepIndex = 0;
         statePointer->isPlaying = true;
@@ -260,6 +284,64 @@ static esp_err_t action_handler(httpd_req_t *req)
     else if (actionType == "SELECTINSTRUMENT")
     {
         statePointer->currentPartInstrument = stoi(actionParameters);
+    }
+    else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
+    {
+        int sampleIndex = 0;
+        switch (statePointer->currentPartInstrument)
+        {
+        case 0:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex1;
+            break;
+        case 1:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex2;
+            break;
+        case 2:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex3;
+            break;
+        case 3:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex4;
+            break;
+        case 4:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex5;
+            break;
+        case 5:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex6;
+            break;
+        case 6:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex7;
+            break;
+        }
+        statePointer->samples[sampleIndex].volume = stoi(actionParameters);
+    }
+    else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
+    {
+        int sampleIndex = 0;
+        switch (statePointer->currentPartInstrument)
+        {
+        case 0:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex1;
+            break;
+        case 1:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex2;
+            break;
+        case 2:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex3;
+            break;
+        case 3:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex4;
+            break;
+        case 4:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex5;
+            break;
+        case 5:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex6;
+            break;
+        case 6:
+            sampleIndex = statePointer->drumRackSampleFileRefIndex7;
+            break;
+        }
+        statePointer->samples[sampleIndex].pitch = stoi(actionParameters);
     }
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
     {
@@ -289,10 +371,6 @@ static esp_err_t action_handler(httpd_req_t *req)
         {
             statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back(statePointer->currentPartInstrument);
         }
-    }
-    else if (actionType == "UPDATETEMPO")
-    {
-        statePointer->songTempo = stoi(actionParameters);
     }
     else
     {
@@ -344,7 +422,7 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *server, esp_netif_t *n
     httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &action_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
-        printf("Failed to register /state uri handler\n");
+        printf("Failed to register /action uri handler\n");
         return false;
     }
 
