@@ -69,7 +69,6 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 
 static esp_err_t root_handler(httpd_req_t *req)
 {
-    // beginning of the ws URI handler
     if (req->method == HTTP_GET)
     {
         // action before ws handshake
@@ -82,17 +81,35 @@ static esp_err_t root_handler(httpd_req_t *req)
         httpd_resp_send(req, htmlString.c_str(), HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
     }
+    return ESP_OK;
+}
+httpd_uri_t root_uri = {
+    .uri = "/",
+    .method = HTTP_GET,
+    .handler = root_handler,
+    .user_ctx = NULL,
+};
 
+static esp_err_t websocket_handler(httpd_req_t *req)
+{
+    // beginning of the ws URI handler
+    if (req->method == HTTP_GET) {
+        printf("Handshake done, the new connection was opened\n");
+        return ESP_OK;
+    }
+    
     httpd_ws_frame_t ws_pkt;
     uint8_t *buf = NULL;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+
     esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
     if (ret != ESP_OK)
     {
         printf("httpd_ws_recv_frame failed to get frame len with %d\n", ret);
         return ret;
     }
+
     printf("frame len is %d\n", ws_pkt.len);
     if (ws_pkt.len)
     {
@@ -125,12 +142,12 @@ static esp_err_t root_handler(httpd_req_t *req)
     }
     free(buf);
     return ret;
-    return ESP_OK;
+    // return ESP_OK;
 }
-httpd_uri_t root_uri = {
-    .uri = "/",
+httpd_uri_t websocket_uri = {
+    .uri = "/ws",
     .method = HTTP_GET,
-    .handler = root_handler,
+    .handler = websocket_handler,
     .user_ctx = NULL,
 
     .is_websocket = true,              // Mandatory: set to `true` to handler websocket protocol
@@ -310,6 +327,12 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *server, esp_netif_t *n
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register root uri handler\n");
+        return false;
+    }
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &websocket_uri);
+    if (httpd_register_uri_handler_ret != ESP_OK)
+    {
+        printf("Failed to register /ws uri handler\n");
         return false;
     }
     httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &state_uri);

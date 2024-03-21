@@ -39,10 +39,9 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-  <h1>WebSocket Ping Pong Client</h1>
-  <p>État : <span id="status">Déconnecté</span></p>
   <button id="connect">Connecter</button>
-  <button id="send-ping">Envoyer un ping</button>
+  <button id="send-ping" disabled>Envoyer un ping</button>
+  <span id="status">Déconnecté</span>
   <div id="app">
     <div class="topnav">
       <h1 class="text-center">BBKing</h1>
@@ -495,7 +494,7 @@
       return json;
     }
 
-    const wsUri = `ws://${window.location.host}/`;
+    const wsUri = `ws://${window.location.host}/ws`;
     console.log("wsUri : ", wsUri);
     const statusEl = document.getElementById("status");
     const connectBtn = document.getElementById("connect");
