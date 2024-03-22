@@ -170,7 +170,9 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">Common / Instrument</div>
-            <div class="card-header">{{getCurrentInstrumentSample().filePath}}</div>
+            <div class="card-header">
+              {{getCurrentInstrumentSample().filePath}}
+            </div>
             <div class="card-body">
               <div class="card-text">
                 <form>
@@ -180,9 +182,7 @@
                     <input type="range" class="form-range" id="startAttackRange" />
                     <label for="durationDecayRange" class="form-label">Duration / Decay</label>
                     <input type="range" class="form-range" id="durationDecayRange" /> -->
-                    <label for="pitchSustainRange" class="form-label"
-                      >Pitch / Sustain : {{getCurrentInstrumentSample().pitch}}</label
-                    >
+                    <label for="pitchSustainRange" class="form-label">Pitch / Sustain :</label>
                     <!-- <input type="range" class="form-range" min="0" max="5" step="0.5" id="pitchSustainRange" /> -->
                     <input
                       type="number"
@@ -194,7 +194,7 @@
                       :value="getCurrentInstrumentSample().pitch"
                       @change="($event) => { updateInstrumentSamplePitch($event); }"
                     />
-                    <label for="volumeRange" class="form-label">Volume : {{getCurrentInstrumentSample().volume}}</label>
+                    <label for="volumeRange" class="form-label">Volume :</label>
                     <input
                       type="range"
                       class="form-range"
@@ -202,7 +202,7 @@
                       max="1"
                       step="0.0025"
                       id="volumeRange"
-                      :value="getCurrentInstrumentSample().pitch"
+                      :value="getCurrentInstrumentSample().volume"
                       @change="($event) => { updateInstrumentSampleVolume($event); }"
                     />
                   </fieldset>
@@ -336,6 +336,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 8 }"
+                    disabled
                   >
                     Si
                   </button>
@@ -344,6 +345,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 9 }"
+                    disabled
                   >
                     Sa
                   </button>
@@ -352,6 +354,7 @@
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': currentPartInstrument == 7 }"
+                    disabled
                   >
                     Sy
                   </button>
@@ -366,132 +369,13 @@
                   role="group"
                 >
                   <button
-                    @click="($event) => { toggleInstrumentStep(0); }"
+                    v-for="n in 16"
+                    @click="($event) => { toggleInstrumentStep(n-1); }"
                     type="button"
                     class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[0].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[0].includes(currentPartInstrument) }"
+                    :class="{ 'btn-primary': parts[currentPartIndex].steps[n-1].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[n-1].includes(currentPartInstrument) }"
                   >
-                    <b>1</b>
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(1); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[1].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[1].includes(currentPartInstrument) }"
-                  >
-                    2
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(2); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[2].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[2].includes(currentPartInstrument) }"
-                  >
-                    3
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(3); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[3].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[3].includes(currentPartInstrument) }"
-                  >
-                    4
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(4); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[4].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[4].includes(currentPartInstrument) }"
-                  >
-                    <b>5</b>
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(5); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[5].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[5].includes(currentPartInstrument) }"
-                  >
-                    6
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(6); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[6].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[6].includes(currentPartInstrument) }"
-                  >
-                    7
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(7); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[7].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[7].includes(currentPartInstrument) }"
-                  >
-                    8
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(8); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[8].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[8].includes(currentPartInstrument) }"
-                  >
-                    <b>9</b>
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(9); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[9].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[9].includes(currentPartInstrument) }"
-                  >
-                    10
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(10); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[10].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[10].includes(currentPartInstrument) }"
-                  >
-                    11
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(11); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[11].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[11].includes(currentPartInstrument) }"
-                  >
-                    12
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(12); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[12].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[12].includes(currentPartInstrument) }"
-                  >
-                    <b>13</b>
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(13); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[13].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[13].includes(currentPartInstrument) }"
-                  >
-                    14
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(14); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[14].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[14].includes(currentPartInstrument) }"
-                  >
-                    15
-                  </button>
-                  <button
-                    @click="($event) => { toggleInstrumentStep(15); }"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[15].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[15].includes(currentPartInstrument) }"
-                  >
-                    16
+                    <b>{{n}}</b>
                   </button>
                 </div>
               </div>
@@ -582,13 +466,27 @@
             allPromisesRet[0].currentPartInstrument
           );
 
-          const drumRackSampleFileRefIndex1 = ref(allPromisesRet[0].drumRackSampleFileRefIndex1);
-          const drumRackSampleFileRefIndex2 = ref(allPromisesRet[0].drumRackSampleFileRefIndex2);
-          const drumRackSampleFileRefIndex3 = ref(allPromisesRet[0].drumRackSampleFileRefIndex3);
-          const drumRackSampleFileRefIndex4 = ref(allPromisesRet[0].drumRackSampleFileRefIndex4);
-          const drumRackSampleFileRefIndex5 = ref(allPromisesRet[0].drumRackSampleFileRefIndex5);
-          const drumRackSampleFileRefIndex6 = ref(allPromisesRet[0].drumRackSampleFileRefIndex6);
-          const drumRackSampleFileRefIndex7 = ref(allPromisesRet[0].drumRackSampleFileRefIndex7);
+          const drumRackSampleFileRefIndex1 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex1
+          );
+          const drumRackSampleFileRefIndex2 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex2
+          );
+          const drumRackSampleFileRefIndex3 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex3
+          );
+          const drumRackSampleFileRefIndex4 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex4
+          );
+          const drumRackSampleFileRefIndex5 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex5
+          );
+          const drumRackSampleFileRefIndex6 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex6
+          );
+          const drumRackSampleFileRefIndex7 = ref(
+            allPromisesRet[0].drumRackSampleFileRefIndex7
+          );
           const samples = ref(allPromisesRet[0].samples);
           const parts = ref(allPromisesRet[0].parts);
 
@@ -628,7 +526,7 @@
           };
 
           const updateSongName = function (event) {
-            httpAction("UPDATESONGNAME", Number(event.target.value));
+            httpAction("UPDATESONGNAME", event.target.value);
             songName.value = event.target.value;
           };
           const updateTempo = function (event) {
@@ -646,35 +544,34 @@
             currentPartInstrument.value = instrumentIndex;
           };
           const getCurrentInstrumentSample = function () {
-            let sample = null;
+            return samples.value[getCurrentInstrumentSampleIndex()];
+          };
+          const getCurrentInstrumentSampleIndex = function () {
+            let sampleIndex = 0;
             switch (currentPartInstrument.value) {
               case 0:
-                sample = samples.value[drumRackSampleFileRefIndex1.value];
+                sampleIndex = drumRackSampleFileRefIndex1.value;
                 break;
               case 1:
-                sample = samples.value[drumRackSampleFileRefIndex2.value];
+                sampleIndex = drumRackSampleFileRefIndex2.value;
                 break;
               case 2:
-                sample = samples.value[drumRackSampleFileRefIndex3.value];
+                sampleIndex = drumRackSampleFileRefIndex3.value;
                 break;
               case 3:
-                sample = samples.value[drumRackSampleFileRefIndex4.value];
+                sampleIndex = drumRackSampleFileRefIndex4.value;
                 break;
               case 4:
-                sample = samples.value[drumRackSampleFileRefIndex5.value];
+                sampleIndex = drumRackSampleFileRefIndex5.value;
                 break;
               case 5:
-                sample = samples.value[drumRackSampleFileRefIndex6.value];
+                sampleIndex = drumRackSampleFileRefIndex6.value;
                 break;
               case 6:
-                sample = samples.value[drumRackSampleFileRefIndex7.value];
-                break;
-
-              default:
-                sample = samples.value[drumRackSampleFileRefIndex1.value];
+                sampleIndex = drumRackSampleFileRefIndex7.value;
                 break;
             }
-            return sample;
+            return sampleIndex;
           };
           const toggleInstrumentStep = function (stepIndex) {
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
@@ -683,28 +580,35 @@
                 currentPartInstrument.value
               )
             ) {
-              console.log("deja présent");
               parts.value[currentPartIndex.value].steps[stepIndex] =
                 parts.value[currentPartIndex.value].steps[stepIndex].filter(
-                  (i) => i != stepIndex
+                  (i) => i != currentPartInstrument.value
                 );
             } else {
-              console.log("à rajouter");
               parts.value[currentPartIndex.value].steps[stepIndex].push(
-                stepIndex
+                currentPartInstrument.value
               );
             }
           };
 
-          const updateInstrumentSampleVolume = function (volume) {
-            httpAction("UPDATEINSTRUMENTSAMPLEVOLUME", volume);
-            getCurrentInstrumentSample().volume.value = volume;
+          const updateInstrumentSampleVolume = function (event) {
+            // console.log("eventtargetvalue", event.target.value)
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEVOLUME",
+              Number(event.target.value)
+            );
+            getCurrentInstrumentSample().volume = event.target.value;
           };
 
-          const updateInstrumentSamplePitch = function (pitch) {
-            httpAction("UPDATEINSTRUMENTSAMPLEPITCH", pitch);
-            getCurrentInstrumentSample().pitch.value = pitch;
+          const updateInstrumentSamplePitch = function (event) {
+            // console.log("eventtargetvalue", event.target.value)
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEPITCH",
+              Number(event.target.value)
+            );
+            getCurrentInstrumentSample().pitch = event.target.value;
           };
+
           return {
             songIndex,
             songName,
@@ -721,6 +625,7 @@
             stop,
             selectInstrument,
             getCurrentInstrumentSample,
+            getCurrentInstrumentSampleIndex,
             toggleInstrumentStep,
             updateTempo,
             updateInstrumentSampleVolume,
