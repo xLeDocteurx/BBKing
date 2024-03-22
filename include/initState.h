@@ -86,13 +86,13 @@ bool initState(State *statePointer)
     loadFile("/data/rim.wav", 0.5, 0, &sample4);
     statePointer->samples.push_back(sample4);
     Sample sample5;
-    loadFile("/data/hhc.wav", 0.5, 0, &sample5);
+    loadFile("/data/bass-C.wav", 0.5, -12, &sample5);
     statePointer->samples.push_back(sample5);
     Sample sample6;
-    loadFile("/data/hho.wav", 0.5, 0, &sample6);
+    loadFile("/data/hhc.wav", 0.5, 0, &sample6);
     statePointer->samples.push_back(sample6);
     Sample sample7;
-    loadFile("/data/bass-C.wav", 0.5, -12, &sample7);
+    loadFile("/data/hho.wav", 0.5, 0, &sample7);
     statePointer->samples.push_back(sample7);
 
     // drumRack
