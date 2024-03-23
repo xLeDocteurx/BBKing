@@ -12,17 +12,17 @@ void sequencerTask(void *parameter)
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size() * statePointer->parts[statePointer->currentPartIndex].staves; stepContentIndex++)
             {
                 const int stepInstrumentSampleIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex];
-                // // Interruption group for sample 6 and 7
-                // if (stepInstrumentSampleIndex == 5 && statePointer->samples[6].isPlaying)
-                // {
-                //     statePointer->samples[6].isPlaying = false;
-                //     statePointer->samples[6].bufferSamplesReadCounter = 0;
-                // }
-                // else if (stepInstrumentSampleIndex == 6 && statePointer->samples[5].isPlaying)
-                // {
-                //     statePointer->samples[5].isPlaying = false;
-                //     statePointer->samples[5].bufferSamplesReadCounter = 0;
-                // }
+                // Interruption group for sample 6 and 7
+                if (stepInstrumentSampleIndex == 5 && statePointer->samples[6].isPlaying)
+                {
+                    statePointer->samples[6].isPlaying = false;
+                    statePointer->samples[6].bufferSamplesReadCounter = 0;
+                }
+                else if (stepInstrumentSampleIndex == 6 && statePointer->samples[5].isPlaying)
+                {
+                    statePointer->samples[5].isPlaying = false;
+                    statePointer->samples[5].bufferSamplesReadCounter = 0;
+                }
 
                 int sampleFileRefIndex = 0;
                 switch (stepInstrumentSampleIndex)

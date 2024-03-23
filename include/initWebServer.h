@@ -1,3 +1,4 @@
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <stdio.h>
@@ -312,7 +313,7 @@ static esp_err_t action_handler(httpd_req_t *req)
             sampleIndex = statePointer->drumRackSampleFileRefIndex7;
             break;
         }
-        statePointer->samples[sampleIndex].volume = stoi(actionParameters);
+        statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {

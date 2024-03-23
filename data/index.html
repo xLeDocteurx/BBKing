@@ -73,7 +73,7 @@
                   :value="songName"
                   @change="($event) => { updateSongName($event); }"
                 />
-                <!-- <span class="input-group-text">bpm</span> -->
+                <span class="input-group-text">Part : {{ currentPartIndex }}</span>
               </div>
             </div>
             <div class="card-body">
@@ -182,11 +182,13 @@
                     <input type="range" class="form-range" id="startAttackRange" />
                     <label for="durationDecayRange" class="form-label">Duration / Decay</label>
                     <input type="range" class="form-range" id="durationDecayRange" /> -->
-                    <label for="pitchSustainRange" class="form-label">Pitch / Sustain :</label>
+                    <label for="pitchSustainRange" class="form-label"
+                      >Pitch / Sustain :</label
+                    >
                     <!-- <input type="range" class="form-range" min="0" max="5" step="0.5" id="pitchSustainRange" /> -->
                     <input
                       type="number"
-                      class="form-range"
+                      class="form-control"
                       min="-48"
                       max="48"
                       step="1"
@@ -212,14 +214,6 @@
           </div>
         </div>
         <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">Effects</div>
-            <div class="card-body">
-              <div class="card-text"></div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
           <div class="row pb-2 h-50">
             <div class="col">
               <div class="card border-primary h-100">
@@ -238,6 +232,14 @@
                   <div class="card-text"></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-primary h-100">
+            <div class="card-header">Effects</div>
+            <div class="card-body">
+              <div class="card-text"></div>
             </div>
           </div>
         </div>

@@ -69,7 +69,7 @@ bool initState(State *statePointer)
     // Init state
     statePointer->currentSongIndex = 0;
     statePointer->songName = "Demo song";
-    statePointer->songTempo = 151;
+    statePointer->songTempo = 120;
 
     statePointer->samples = {};
 
@@ -86,13 +86,15 @@ bool initState(State *statePointer)
     loadFile("/data/rim.wav", 0.5, 0, &sample4);
     statePointer->samples.push_back(sample4);
     Sample sample5;
-    loadFile("/data/hhc.wav", 0.5, 0, &sample5);
+    // loadFile("/data/bass-C.wav", 0.5, -12, &sample5);
+    // loadFile("/data/bass-C.wav", 0.5, 12, &sample5);
+    loadFile("/data/bass-C.wav", 0.5, 0, &sample5);
     statePointer->samples.push_back(sample5);
     Sample sample6;
-    loadFile("/data/hho.wav", 0.5, 0, &sample6);
+    loadFile("/data/hhc.wav", 0.5, 0, &sample6);
     statePointer->samples.push_back(sample6);
     Sample sample7;
-    loadFile("/data/bass-C.wav", 0.5, -12, &sample7);
+    loadFile("/data/hho.wav", 0.5, 0, &sample7);
     statePointer->samples.push_back(sample7);
 
     // drumRack
@@ -126,22 +128,25 @@ bool initState(State *statePointer)
             part1Steps.push_back({0});
             break;
         case 2:
-            part1Steps.push_back({0});
+            part1Steps.push_back({});
             break;
         case 4:
-            part1Steps.push_back({1});
+            part1Steps.push_back({0,2});
             break;
         case 6:
-            part1Steps.push_back({0});
+            part1Steps.push_back({});
             break;
         case 8:
             part1Steps.push_back({0});
             break;
-        case 12:
-            part1Steps.push_back({1});
+        case 10:
+            part1Steps.push_back({});
             break;
-        case 13:
-            part1Steps.push_back({0});
+        case 12:
+            part1Steps.push_back({0,2});
+            break;
+        case 14:
+            part1Steps.push_back({});
             break;
         default:
             part1Steps.push_back({});
