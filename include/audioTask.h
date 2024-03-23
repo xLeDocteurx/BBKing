@@ -18,27 +18,11 @@ void audioTask(void *parameter)
 
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
 
-                // float playbackSpeed = 1.0;
-                // if (sample->pitch >= 0)
-                // {
-                //     playbackSpeed = 1.0 + ((float)sample->pitch / 12);
-                // }
-                // else
-                // {
-                //     // playbackSpeed = 1.0 + ((float)1 / 2 / ((float)sample->pitch / 12));
-                //     playbackSpeed = abs(1.0 / 2.0 / (sample->pitch / 12.0));
-                //     if (sampleFileRefIndex == 4)
-                //     {
-                //         printf("playbackSpeed : %f\n", playbackSpeed);
-                //     }
-                // }
-                
                 // TODO : En function utils "pitchToSpeed"
                 float playbackSpeed = pow(2, static_cast<float>(sample->pitch) / 12.0);
 
                 int sizeToWriteInSamples = 0;
                 int sizeIWantToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
-                // sizeToWriteInSamples = sizeIWantToWriteInSamples;
                 if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
                     sizeToWriteInSamples = sizeIWantToWriteInSamples;
@@ -61,14 +45,10 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
                     statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
-
-                    // statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * sample->volume;
                 }
 
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
-                // sample->bufferSamplesReadCounter += sizeToWriteInSamples;
             }
         }
 
