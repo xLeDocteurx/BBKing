@@ -8,8 +8,9 @@
 #include <GlobalVars.h>
 
 #include <readJsonFile.h>
-#include <Sample.h>
 #include <State.h>
+#include <Step.h>
+#include <Sample.h>
 
 void freeFile(void *filePointer)
 {
@@ -118,32 +119,32 @@ bool initState(State *statePointer)
 
     statePointer->currentStepIndex = 0;
     // parts steps
-    std::vector<std::vector<int>> part1Steps = {};
+    std::vector<std::vector<Step>> part1Steps = {};
     const int part1Staves = 1;
     for (int i = 0; i < STATE_PART_STEPS_LENGTH * part1Staves; i++)
     {
         switch (i)
         {
         case 0:
-            part1Steps.push_back({0});
+            part1Steps.push_back({{0,0,1.0}});
             break;
         case 2:
             part1Steps.push_back({});
             break;
         case 4:
-            part1Steps.push_back({0,2});
+            part1Steps.push_back({{0,0,1.0}, {2,0,1.0}});
             break;
         case 6:
             part1Steps.push_back({});
             break;
         case 8:
-            part1Steps.push_back({0});
+            part1Steps.push_back({{0,0,1.0}});
             break;
         case 10:
             part1Steps.push_back({});
             break;
         case 12:
-            part1Steps.push_back({0,2});
+            part1Steps.push_back({{0,0,1.0}, {2,0,1.0}});
             break;
         case 14:
             part1Steps.push_back({});

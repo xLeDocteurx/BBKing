@@ -15,6 +15,7 @@
 
 #include <WifiConfig.h>
 #include <readJsonFile.h>
+#include <getInstrumentSampleIndex.h>
 
 #include <GlobalVars.h>
 
@@ -288,31 +289,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
-        int sampleIndex = 0;
-        switch (statePointer->currentPartInstrument)
-        {
-        case 0:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex1;
-            break;
-        case 1:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex2;
-            break;
-        case 2:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex3;
-            break;
-        case 3:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex4;
-            break;
-        case 4:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex5;
-            break;
-        case 5:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex6;
-            break;
-        case 6:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex7;
-            break;
-        }
+        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrument);
         statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")

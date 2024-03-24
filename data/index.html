@@ -39,22 +39,17 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-  <!-- <button id="connect">Connecter</button>
-  <button id="send-ping" disabled>Envoyer un ping</button>
-  <span id="status">Déconnecté</span> -->
   <div id="app">
     <div class="topnav">
       <button id="connect" @click="($event) => { connectToWebsocket(); }">
         Connecter
       </button>
-      <!-- disabled -->
       <button
         id="send-ping"
         @click="($event) => { sendMessageViaWebsocket('ping'); }"
       >
         Envoyer un ping
       </button>
-      <!-- <span id="status">Déconnecté</span> -->
       <span id="status">xxx</span>
       <h1 class="text-center">BBKing</h1>
     </div>
@@ -63,9 +58,6 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <!-- {{ songIndex }} /  -->
-              <!-- {{ songName }} -->
-
               <div class="input-group">
                 <input
                   type="text"

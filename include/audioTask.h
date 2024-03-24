@@ -1,6 +1,8 @@
-#include <Sample.h>
-
 #include <math.h>
+
+#include <Step.h>
+#include <Sample.h>
+#include <getInstrumentSampleIndex.h>
 
 TaskHandle_t audioTaskHandle;
 
@@ -17,6 +19,21 @@ void audioTask(void *parameter)
             {
 
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
+
+                // Step playbackSpeed and pitch
+
+                int stepPitch = 0;
+                float stepVolume = 1.0;
+                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+                {
+                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+                    int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+                    if (sampleIndex == sampleFileRefIndex)
+                    {
+                        stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].pitch;
+                        stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].volume;
+                    }
+                }
 
                 // TODO : En function utils "pitchToSpeed"
                 float playbackSpeed = pow(2, static_cast<float>(sample->pitch) / 12.0);
@@ -45,7 +62,7 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
+                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * stepVolume;
                 }
 
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
