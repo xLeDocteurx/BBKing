@@ -21,7 +21,6 @@ void audioTask(void *parameter)
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
 
                 // Step playbackSpeed and pitch
-
                 int stepPitch = 0;
                 float stepVolume = 1.0;
                 for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
@@ -36,7 +35,7 @@ void audioTask(void *parameter)
                 }
 
                 // TODO : En function utils "pitchToSpeed"
-                float playbackSpeed = pow(2, static_cast<float>(sample->pitch) / 12.0);
+                float playbackSpeed = pow(2, static_cast<float>(sample->pitch + stepPitch) / 12.0);
 
                 int sizeToWriteInSamples = 0;
                 int sizeIWantToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
