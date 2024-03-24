@@ -1,6 +1,8 @@
-#include <Sample.h>
-
 #include <math.h>
+
+#include <Step.h>
+#include <Sample.h>
+#include <getInstrumentSampleIndex.h>
 
 TaskHandle_t audioTaskHandle;
 
@@ -18,24 +20,33 @@ void audioTask(void *parameter)
 
                 int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
 
-                float playbackSpeed = 1.0;
-                if (sample->pitch >= 0)
+                // Step playbackSpeed and pitch
+                int stepPitch = 0;
+                float stepVolume = 1.0;
+                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
                 {
-                    playbackSpeed = 1.0 + ((float)sample->pitch / 12);
-                }
-                else
-                {
-                    // playbackSpeed = 1.0 + ((float)1 / 2 / ((float)sample->pitch / 12));
-                    playbackSpeed = abs((float)1 / 2 / ((float)sample->pitch / 12));
-                    if (sampleFileRefIndex == 4)
+                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+                    int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+                    if (sampleIndex == sampleFileRefIndex)
                     {
-                        printf("playbackSpeed : %f\n", playbackSpeed);
+                        stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].pitch;
+                        stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].volume;
                     }
+
+                    // TODO : Check alternate solution via find
+                    // std::vector<Step>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].end(), i);
+                    // if (it. != NULL)
+                    // {
+                    //     stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].pitch;
+                    //     stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].volume;
+                    // }
                 }
+
+                // TODO : En function utils "pitchToSpeed"
+                float playbackSpeed = pow(2, static_cast<float>(sample->pitch + stepPitch) / 12.0);
 
                 int sizeToWriteInSamples = 0;
                 int sizeIWantToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
-                // sizeToWriteInSamples = sizeIWantToWriteInSamples;
                 if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
                     sizeToWriteInSamples = sizeIWantToWriteInSamples;
@@ -58,14 +69,10 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + roundf(i * playbackSpeed))] * sample->volume;
-                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
-
-                    // statePointer->_masterBuffer[i] += sample->buffer[sample->bufferSamplesReadCounter + i] * sample->volume;
+                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * stepVolume;
                 }
 
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
-                // sample->bufferSamplesReadCounter += sizeToWriteInSamples;
             }
         }
 
