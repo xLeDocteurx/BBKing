@@ -13,7 +13,7 @@ void sequencerTask(void *parameter)
             {
                 const int stepInstrumentSampleIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
 
-                int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrument);
+                int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
 
                 // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleIndex, statePointer->samples[sampleIndex].filePath);
                 statePointer->samples[sampleIndex].isPlaying = true;

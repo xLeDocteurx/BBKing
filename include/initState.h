@@ -113,7 +113,7 @@ bool initState(State *statePointer)
 
     statePointer->currentPartIndex = 0;
     // statePointer->currentPartInstrument = INTRUMENT_DRUMRACK1;
-    statePointer->currentPartInstrument = 0;
+    statePointer->currentPartInstrumentIndex = 0;
     // parts
     statePointer->parts = {};
 

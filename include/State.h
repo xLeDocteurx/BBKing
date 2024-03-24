@@ -43,7 +43,7 @@ struct State
 
     int currentPartIndex;
     // Instrument currentPartInstrument;
-    int currentPartInstrument;
+    int currentPartInstrumentIndex;
     // parts
     std::vector<Part> parts;
 

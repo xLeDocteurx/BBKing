@@ -189,7 +189,10 @@ static esp_err_t state_handler(httpd_req_t *req)
                 {
                     stepString += ",";
                 }
-                stepString += std::to_string(statePointer->parts[i].steps[j][k]);
+                // stepString += std::to_string(statePointer->parts[i].steps[j][k]);
+                statePointer->parts[i].steps[j][k].pitch;
+                statePointer->parts[i].steps[j][k].volume;
+                stepString += "{\"instrumentIndex\":" + std::to_string(statePointer->parts[i].steps[j][k].instrumentIndex) + ",\"pitch\":" + std::to_string(statePointer->parts[i].steps[j][k].pitch) + ",\"volume\":" + std::to_string(statePointer->parts[i].steps[j][k].volume) + "}";
             }
             stepString += "]";
 
@@ -212,7 +215,7 @@ static esp_err_t state_handler(httpd_req_t *req)
     partsString += "]";
 
     std::string jsonString =
-        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + "\",\"drumRackSampleFileRefIndex2\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + "\",\"drumRackSampleFileRefIndex3\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + "\",\"drumRackSampleFileRefIndex4\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + "\",\"drumRackSampleFileRefIndex5\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + "\",\"drumRackSampleFileRefIndex6\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + "\",\"drumRackSampleFileRefIndex7\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + "\",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrument) + ",\"parts\":" + partsString + "}";
+        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + "\",\"drumRackSampleFileRefIndex2\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + "\",\"drumRackSampleFileRefIndex3\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + "\",\"drumRackSampleFileRefIndex4\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + "\",\"drumRackSampleFileRefIndex5\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + "\",\"drumRackSampleFileRefIndex6\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + "\",\"drumRackSampleFileRefIndex7\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + "\",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrumentIndex) + ",\"parts\":" + partsString + "}";
     httpd_resp_set_type(req, "text/json");
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -285,40 +288,16 @@ static esp_err_t action_handler(httpd_req_t *req)
     }
     else if (actionType == "SELECTINSTRUMENT")
     {
-        statePointer->currentPartInstrument = stoi(actionParameters);
+        statePointer->currentPartInstrumentIndex = stoi(actionParameters);
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
-        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrument);
+        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
         statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
-        int sampleIndex = 0;
-        switch (statePointer->currentPartInstrument)
-        {
-        case 0:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex1;
-            break;
-        case 1:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex2;
-            break;
-        case 2:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex3;
-            break;
-        case 3:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex4;
-            break;
-        case 4:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex5;
-            break;
-        case 5:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex6;
-            break;
-        case 6:
-            sampleIndex = statePointer->drumRackSampleFileRefIndex7;
-            break;
-        }
+        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
         statePointer->samples[sampleIndex].pitch = stoi(actionParameters);
     }
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
@@ -329,12 +308,22 @@ static esp_err_t action_handler(httpd_req_t *req)
         bool isDrumRackSampleStepActive = false;
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); i++)
         {
-            if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i] == statePointer->currentPartInstrument)
+            if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i].instrumentIndex == statePointer->currentPartInstrumentIndex)
             {
-                isDrumRackSampleStepActive = true;
+                int it = 0;
+                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+                {
+                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+                    int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+                    if (sampleIndex == statePointer->currentPartInstrumentIndex)
+                    {
+                        it = i;
+                    }
+                }
 
+                // TODO : Check alternate solution via find
                 // Find the position of the number 3
-                std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);
+                // std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);
 
                 // If the number 3 is found, remove it
                 if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
@@ -347,7 +336,7 @@ static esp_err_t action_handler(httpd_req_t *req)
 
         if (!isDrumRackSampleStepActive)
         {
-            statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back(statePointer->currentPartInstrument);
+            statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 0, 1.0});
         }
     }
     else

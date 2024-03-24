@@ -32,6 +32,14 @@ void audioTask(void *parameter)
                         stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].pitch;
                         stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].volume;
                     }
+
+                    // TODO : Check alternate solution via find
+                    // std::vector<Step>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].end(), i);
+                    // if (it. != NULL)
+                    // {
+                    //     stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].pitch;
+                    //     stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].volume;
+                    // }
                 }
 
                 // TODO : En function utils "pitchToSpeed"
