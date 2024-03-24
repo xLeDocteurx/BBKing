@@ -310,14 +310,14 @@ static esp_err_t action_handler(httpd_req_t *req)
         {
             if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i].instrumentIndex == statePointer->currentPartInstrumentIndex)
             {
-                int it = 0;
+                int xxxIndex = 0;
                 for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
                 {
                     int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
                     int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
                     if (sampleIndex == statePointer->currentPartInstrumentIndex)
                     {
-                        it = i;
+                        xxxIndex = i;
                     }
                 }
 
@@ -326,6 +326,7 @@ static esp_err_t action_handler(httpd_req_t *req)
                 // std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);
 
                 // If the number 3 is found, remove it
+                std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + xxxIndex;
                 if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
                 {
                     statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(it);
