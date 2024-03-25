@@ -1,5 +1,8 @@
 #include <State.h>
 
+#ifndef GETINSTRUMENTSAMPLEINDEX_H
+#define GETINSTRUMENTSAMPLEINDEX_H
+
 int getInstrumentSampleIndex(State *statePointer, int instrumentIndex)
 {
     int instrumentSampleIndex = 0;
@@ -30,3 +33,4 @@ int getInstrumentSampleIndex(State *statePointer, int instrumentIndex)
 
     return instrumentSampleIndex;
 }
+#endif // GETINSTRUMENTSAMPLEINDEX_H

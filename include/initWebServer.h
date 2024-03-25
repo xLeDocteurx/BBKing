@@ -215,7 +215,7 @@ static esp_err_t state_handler(httpd_req_t *req)
     partsString += "]";
 
     std::string jsonString =
-        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + "\",\"drumRackSampleFileRefIndex2\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + "\",\"drumRackSampleFileRefIndex3\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + "\",\"drumRackSampleFileRefIndex4\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + "\",\"drumRackSampleFileRefIndex5\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + "\",\"drumRackSampleFileRefIndex6\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + "\",\"drumRackSampleFileRefIndex7\":\"" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + "\",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrumentIndex) + ",\"parts\":" + partsString + "}";
+        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + ",\"drumRackSampleFileRefIndex2\":" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + ",\"drumRackSampleFileRefIndex3\":" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + ",\"drumRackSampleFileRefIndex4\":" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + ",\"drumRackSampleFileRefIndex5\":" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + ",\"drumRackSampleFileRefIndex6\":" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + ",\"drumRackSampleFileRefIndex7\":" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + ",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrumentIndex) + ",\"parts\":" + partsString + "}";
     httpd_resp_set_type(req, "text/json");
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -329,6 +329,7 @@ static esp_err_t action_handler(httpd_req_t *req)
                 std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + xxxIndex;
                 if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
                 {
+                    isDrumRackSampleStepActive = true;
                     statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(it);
                 }
                 break;

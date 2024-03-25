@@ -65,7 +65,9 @@
                   :value="songName"
                   @change="($event) => { updateSongName($event); }"
                 />
-                <span class="input-group-text">Part : {{ currentPartIndex + 1 }}</span>
+                <span class="input-group-text"
+                  >Part : {{ currentPartIndex + 1 }}</span
+                >
               </div>
             </div>
             <div class="card-body">
@@ -367,7 +369,7 @@
                     @click="($event) => { toggleInstrumentStep(n-1); }"
                     type="button"
                     class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[n-1].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[n-1].includes(currentPartInstrument) }"
+                    :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1) }"
                   >
                     <b>{{n}}</b>
                   </button>
@@ -382,14 +384,12 @@
 
   <script>
     async function httpGet(path) {
-      //   const response = await fetch(`${window.location.hostname}${path}`);
       const response = await fetch(`${path}`);
       const json = await response.json();
       console.log("httpGet res : ", json);
       return json;
     }
     async function httpAction(actionName, actionParameters) {
-      //   const response = await fetch(`${window.location.hostname}${path}`);
       const response = await fetch(`/action`, {
         method: "POST",
         body: `${actionName}@${JSON.stringify(actionParameters)}`,
@@ -567,21 +567,26 @@
             }
             return sampleIndex;
           };
+
+          const isStepActive = function (stepIndex) {
+            return parts.value[currentPartIndex.value].steps[stepIndex].some(
+              (st) => st.instrumentIndex == currentPartInstrument.value
+            );
+          };
+
           const toggleInstrumentStep = function (stepIndex) {
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
-            if (
-              parts.value[currentPartIndex.value].steps[stepIndex].includes(
-                currentPartInstrument.value
-              )
-            ) {
+            if (isStepActive(stepIndex)) {
               parts.value[currentPartIndex.value].steps[stepIndex] =
                 parts.value[currentPartIndex.value].steps[stepIndex].filter(
-                  (i) => i != currentPartInstrument.value
+                  (i) => i.instrumentIndex != currentPartInstrument.value
                 );
             } else {
-              parts.value[currentPartIndex.value].steps[stepIndex].push(
-                currentPartInstrument.value
-              );
+              parts.value[currentPartIndex.value].steps[stepIndex].push({
+                instrumentIndex: currentPartInstrument.value,
+                pitch: 0,
+                volume: 0.5,
+              });
             }
           };
 
@@ -620,6 +625,7 @@
             selectInstrument,
             getCurrentInstrumentSample,
             getCurrentInstrumentSampleIndex,
+            isStepActive,
             toggleInstrumentStep,
             updateTempo,
             updateInstrumentSampleVolume,
