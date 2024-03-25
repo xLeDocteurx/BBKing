@@ -11,8 +11,31 @@ void sequencerTask(void *parameter)
         {
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size() * statePointer->parts[statePointer->currentPartIndex].staves; stepContentIndex++)
             {
-                const int stepInstrumentSampleIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
-                int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentSampleIndex);
+                const int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
+                int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+
+                // Interruption groups
+                switch (stepInstrumentIndex)
+                {
+                case 5:
+                    // Interruption group for sample 6 and 7
+                    if (statePointer->samples[statePointer->drumRackSampleFileRefIndex7].isPlaying)
+                    {
+                        statePointer->samples[statePointer->drumRackSampleFileRefIndex7].isPlaying = false;
+                        statePointer->samples[statePointer->drumRackSampleFileRefIndex7].bufferSamplesReadCounter = 0;
+                    }
+                    break;
+                case 6:
+                    // Interruption group for sample 6 and 7
+                    if (statePointer->samples[statePointer->drumRackSampleFileRefIndex6].isPlaying)
+                    {
+                        statePointer->samples[statePointer->drumRackSampleFileRefIndex6].isPlaying = false;
+                        statePointer->samples[statePointer->drumRackSampleFileRefIndex6].bufferSamplesReadCounter = 0;
+                    }
+                    break;
+                default:
+                    break;
+                }
 
                 // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleIndex, statePointer->samples[sampleIndex].filePath);
                 statePointer->samples[sampleIndex].isPlaying = true;
