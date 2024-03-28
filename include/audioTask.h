@@ -44,6 +44,10 @@ void audioTask(void *parameter)
 
                 // TODO : En function utils "pitchToSpeed"
                 float playbackSpeed = pow(2, static_cast<float>(sample->pitch + stepPitch) / 12.0);
+                if (sample->isMono)
+                {
+                    playbackSpeed *= 0.5;
+                }
 
                 int sizeToWriteInSamples = 0;
                 int sizeIWantToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
