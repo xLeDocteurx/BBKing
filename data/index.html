@@ -60,14 +60,39 @@
             <div class="card-header">
               <div class="input-group">
                 <input
+                  disabled
                   type="text"
                   class="form-control"
                   :value="songName"
                   @change="($event) => { updateSongName($event); }"
                 />
+                <button
+                  v-if="currentPartIndex > 0"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event) => { loadPreviousPart(); }"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
                 <span class="input-group-text"
                   >Part : {{ currentPartIndex + 1 }}</span
                 >
+                <button
+                  v-if="currentPartIndex < parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event) => { loadNextPart(); }"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  v-if="currentPartIndex >= parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event) => { createNextPart(); }"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
               </div>
             </div>
             <div class="card-body">
@@ -85,13 +110,13 @@
             <div class="card-footer">
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-record-vinyl"></i>
-                  </button> -->
+                  </button>
                   <button
                     type="button"
                     class="btn btn-outline-primary w-25"
@@ -110,52 +135,52 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-music"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-guitar"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-shoe-prints"></i>
-                  </button> -->
+                  </button>
                 </div>
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-vial"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-volume-up"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-volume-mute"></i>
-                  </button> -->
+                  </button>
                 </div>
               </div>
             </div>
@@ -242,8 +267,7 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              {{ currentPartIndex }} / Step sequencer and instruments selection
-
+              <!-- {{ currentPartInstrumentIndex }} / Step sequencer and instruments selection -->
               <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
@@ -266,7 +290,7 @@
                     @click="($event) => { selectInstrument(0); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 0 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 0 }"
                   >
                     D1
                   </button>
@@ -274,7 +298,7 @@
                     @click="($event) => { selectInstrument(1); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 1 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 1 }"
                   >
                     D2
                   </button>
@@ -285,7 +309,7 @@
                     @click="($event) => { selectInstrument(2); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 2 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 2 }"
                   >
                     D3
                   </button>
@@ -293,7 +317,7 @@
                     @click="($event) => { selectInstrument(3); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 3 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 3 }"
                   >
                     D4
                   </button>
@@ -301,7 +325,7 @@
                     @click="($event) => { selectInstrument(4); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 4 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 4 }"
                   >
                     D5
                   </button>
@@ -312,7 +336,7 @@
                     @click="($event) => { selectInstrument(5); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 5 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 5 }"
                   >
                     D6
                   </button>
@@ -320,7 +344,7 @@
                     @click="($event) => { selectInstrument(6); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 6 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 6 }"
                   >
                     D7
                   </button>
@@ -331,7 +355,7 @@
                     @click="($event) => { selectInstrument(8); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 8 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 8 }"
                     disabled
                   >
                     Si
@@ -340,7 +364,7 @@
                     @click="($event) => { selectInstrument(9); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 9 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 9 }"
                     disabled
                   >
                     Sa
@@ -349,7 +373,7 @@
                     @click="($event) => { selectInstrument(7); }"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 7 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 7 }"
                     disabled
                   >
                     Sy
@@ -456,8 +480,8 @@
           const songTempo = ref(allPromisesRet[0].songTempo);
 
           const currentPartIndex = ref(allPromisesRet[0].currentPartIndex);
-          const currentPartInstrument = ref(
-            allPromisesRet[0].currentPartInstrument
+          const currentPartInstrumentIndex = ref(
+            allPromisesRet[0].currentPartInstrumentIndex
           );
 
           const drumRackSampleFileRefIndex1 = ref(
@@ -533,16 +557,49 @@
           const stop = function () {
             httpAction("STOP", {});
           };
+          const loadPreviousPart = function () {
+            httpAction("SELECTPART", currentPartIndex.value - 1);
+            currentPartIndex.value -= 1;
+          };
+          const loadNextPart = function () {
+            httpAction("SELECTPART", currentPartIndex.value + 1);
+            currentPartIndex.value += 1;
+          };
+          const createNextPart = function () {
+            httpAction("CREATEPART", {});
+            parts.value.push({
+              staves: 1,
+              steps: [
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+              ],
+            });
+            currentPartIndex.value += 1;
+          };
           const selectInstrument = function (instrumentIndex) {
             httpAction("SELECTINSTRUMENT", instrumentIndex);
-            currentPartInstrument.value = instrumentIndex;
+            currentPartInstrumentIndex.value = instrumentIndex;
           };
           const getCurrentInstrumentSample = function () {
             return samples.value[getCurrentInstrumentSampleIndex()];
           };
           const getCurrentInstrumentSampleIndex = function () {
             let sampleIndex = 0;
-            switch (currentPartInstrument.value) {
+            switch (currentPartInstrumentIndex.value) {
               case 0:
                 sampleIndex = drumRackSampleFileRefIndex1.value;
                 break;
@@ -570,7 +627,7 @@
 
           const isStepActive = function (stepIndex) {
             return parts.value[currentPartIndex.value].steps[stepIndex].some(
-              (st) => st.instrumentIndex == currentPartInstrument.value
+              (st) => st.instrumentIndex == currentPartInstrumentIndex.value
             );
           };
 
@@ -579,11 +636,11 @@
             if (isStepActive(stepIndex)) {
               parts.value[currentPartIndex.value].steps[stepIndex] =
                 parts.value[currentPartIndex.value].steps[stepIndex].filter(
-                  (i) => i.instrumentIndex != currentPartInstrument.value
+                  (i) => i.instrumentIndex != currentPartInstrumentIndex.value
                 );
             } else {
               parts.value[currentPartIndex.value].steps[stepIndex].push({
-                instrumentIndex: currentPartInstrument.value,
+                instrumentIndex: currentPartInstrumentIndex.value,
                 pitch: 0,
                 volume: 0.5,
               });
@@ -613,7 +670,7 @@
             songName,
             songTempo,
             currentPartIndex,
-            currentPartInstrument,
+            currentPartInstrumentIndex,
             samples,
             parts,
             connectToWebsocket,
@@ -622,6 +679,9 @@
             updateTempo,
             play,
             stop,
+            loadPreviousPart,
+            loadNextPart,
+            createNextPart,
             selectInstrument,
             getCurrentInstrumentSample,
             getCurrentInstrumentSampleIndex,

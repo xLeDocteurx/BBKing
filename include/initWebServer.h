@@ -215,7 +215,39 @@ static esp_err_t state_handler(httpd_req_t *req)
     partsString += "]";
 
     std::string jsonString =
-        "{\"currentSongIndex\":" + std::to_string(statePointer->currentSongIndex) + ",\"songName\":\"" + statePointer->songName + "\",\"songTempo\":" + std::to_string(statePointer->songTempo) + ",\"drumRackSampleFileRefIndex1\":" + std::to_string(statePointer->drumRackSampleFileRefIndex1) + ",\"drumRackSampleFileRefIndex2\":" + std::to_string(statePointer->drumRackSampleFileRefIndex2) + ",\"drumRackSampleFileRefIndex3\":" + std::to_string(statePointer->drumRackSampleFileRefIndex3) + ",\"drumRackSampleFileRefIndex4\":" + std::to_string(statePointer->drumRackSampleFileRefIndex4) + ",\"drumRackSampleFileRefIndex5\":" + std::to_string(statePointer->drumRackSampleFileRefIndex5) + ",\"drumRackSampleFileRefIndex6\":" + std::to_string(statePointer->drumRackSampleFileRefIndex6) + ",\"drumRackSampleFileRefIndex7\":" + std::to_string(statePointer->drumRackSampleFileRefIndex7) + ",\"samples\":" + samplesString + ",\"currentPartIndex\":" + std::to_string(statePointer->currentPartIndex) + ",\"currentPartInstrument\":" + std::to_string(statePointer->currentPartInstrumentIndex) + ",\"parts\":" + partsString + "}";
+        "{\"currentSongIndex\":" +
+        std::to_string(statePointer->currentSongIndex) +
+        ",\"songName\":\"" +
+        statePointer->songName +
+        "\",\"songTempo\":" +
+        std::to_string(statePointer->songTempo) +
+        ",\"samples\":" +
+        samplesString +
+        ",\"drumRackSampleFileRefIndex1\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex1) +
+        ",\"drumRackSampleFileRefIndex2\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex2) +
+        ",\"drumRackSampleFileRefIndex3\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex3) +
+        ",\"drumRackSampleFileRefIndex4\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex4) +
+        ",\"drumRackSampleFileRefIndex5\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex5) +
+        ",\"drumRackSampleFileRefIndex6\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex6) +
+        ",\"drumRackSampleFileRefIndex7\":" +
+        std::to_string(statePointer->drumRackSampleFileRefIndex7) +
+        ",\"currentPartIndex\":" +
+        std::to_string(statePointer->currentPartIndex) +
+        ",\"currentPartInstrumentIndex\":" +
+        std::to_string(statePointer->currentPartInstrumentIndex) +
+        ",\"currentStaveIndex\":" +
+        std::to_string(statePointer->currentStaveIndex) +
+        ",\"currentOctaveIndex\":" +
+        std::to_string(statePointer->currentOctaveIndex) +
+        ",\"parts\":" +
+        partsString +
+        "}";
     httpd_resp_set_type(req, "text/json");
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -286,9 +318,61 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->isPlaying = false;
         statePointer->currentStepIndex = 0;
     }
+
+    else if (actionType == "SELECTPART")
+    {
+        int desiredIndex = stoi(actionParameters);
+        if (desiredIndex >= 0 && desiredIndex < statePointer->parts.size())
+        {
+            statePointer->currentPartIndex = desiredIndex;
+        }
+    }
+    else if (actionType == "CREATEPART")
+    {
+        // int desiredIndex = stoi(actionParameters);
+        // if (desiredIndex >= 0 && desiredIndex >= statePointer->parts.size())
+        // {
+        //     statePointer->currentPartIndex = desiredIndex;
+        std::vector<std::vector<Step>> newPartSteps = {};
+        const int newPartStaves = 1;
+        for (int i = 0; i < STATE_PART_STEPS_LENGTH * newPartStaves; i++)
+        {
+            switch (i)
+            {
+            default:
+                newPartSteps.push_back({});
+                break;
+            }
+        }
+        Part newPart = {newPartStaves, newPartSteps};
+        statePointer->parts.push_back(newPart);
+        statePointer->currentPartIndex += 1;
+        // }
+    }
+    else if (actionType == "SELECTSTAVE")
+    {
+        int desiredStaveIndex = stoi(actionParameters);
+        if (desiredStaveIndex >= 0 && desiredStaveIndex < statePointer->parts[statePointer->currentPartIndex].staves)
+        {
+            statePointer->currentStaveIndex = desiredStaveIndex;
+        }
+    }
+    else if (actionType == "SELECTOCTAVE")
+    {
+        int desiredOctaveIndex = stoi(actionParameters);
+        // if (desiredOctaveIndex >= 0 && desiredOctaveIndex <= 8)
+        // {
+        statePointer->currentOctaveIndex = desiredOctaveIndex;
+        // }
+    }
+
     else if (actionType == "SELECTINSTRUMENT")
     {
-        statePointer->currentPartInstrumentIndex = stoi(actionParameters);
+        int desiredIntrumentIndex = stoi(actionParameters);
+        // if (desiredIntrumentIndex >=0 && < 7)
+        // {
+        statePointer->currentPartInstrumentIndex = desiredIntrumentIndex;
+        // }
     }
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {

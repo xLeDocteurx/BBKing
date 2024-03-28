@@ -44,6 +44,8 @@ struct State
     int currentPartIndex;
     // Instrument currentPartInstrument;
     int currentPartInstrumentIndex;
+    int currentStaveIndex;
+    int currentOctaveIndex;
     // parts
     std::vector<Part> parts;
 

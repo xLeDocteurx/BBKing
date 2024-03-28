@@ -75,27 +75,27 @@ bool initState(State *statePointer)
     statePointer->samples = {};
 
     Sample sample1;
-    loadFile("/data/kick.wav", 0.5, 0, &sample1);
+    loadFile("/data/kick.wav", 0.75, 0, &sample1);
     statePointer->samples.push_back(sample1);
     Sample sample2;
-    loadFile("/data/snare.wav", 0.5, 0, &sample2);
+    loadFile("/data/snare.wav", 0.75, 0, &sample2);
     statePointer->samples.push_back(sample2);
     Sample sample3;
-    loadFile("/data/clap.wav", 0.5, 0, &sample3);
+    loadFile("/data/clap.wav", 0.75, 0, &sample3);
     statePointer->samples.push_back(sample3);
     Sample sample4;
-    loadFile("/data/rim.wav", 0.5, 0, &sample4);
+    loadFile("/data/rim.wav", 0.75, 0, &sample4);
     statePointer->samples.push_back(sample4);
     Sample sample5;
-    // loadFile("/data/bass-C.wav", 0.5, -12, &sample5);
-    // loadFile("/data/bass-C.wav", 0.5, 12, &sample5);
-    loadFile("/data/bass-C.wav", 0.5, 0, &sample5);
+    // loadFile("/data/bass-C.wav", 0.75, -12, &sample5);
+    // loadFile("/data/bass-C.wav", 0.75, 12, &sample5);
+    loadFile("/data/bass-C.wav", 0.75, 0, &sample5);
     statePointer->samples.push_back(sample5);
     Sample sample6;
-    loadFile("/data/hhc.wav", 0.5, 0, &sample6);
+    loadFile("/data/hhc.wav", 0.75, 0, &sample6);
     statePointer->samples.push_back(sample6);
     Sample sample7;
-    loadFile("/data/hho.wav", 0.5, 0, &sample7);
+    loadFile("/data/hho.wav", 0.75, 0, &sample7);
     statePointer->samples.push_back(sample7);
 
     // drumRack
@@ -111,8 +111,10 @@ bool initState(State *statePointer)
     // keyboard
     // statePointer->keyboardSampleFileRefIndex = 5;
 
+    statePointer->currentStaveIndex = 0;
+    statePointer->currentOctaveIndex = 0;
+
     statePointer->currentPartIndex = 0;
-    // statePointer->currentPartInstrument = INTRUMENT_DRUMRACK1;
     statePointer->currentPartInstrumentIndex = 0;
     // parts
     statePointer->parts = {};
@@ -126,25 +128,25 @@ bool initState(State *statePointer)
         switch (i)
         {
         case 0:
-            part1Steps.push_back({{0,0,1.0}});
+            part1Steps.push_back({{0, 0, 1.0}});
             break;
         case 2:
             part1Steps.push_back({});
             break;
         case 4:
-            part1Steps.push_back({{0,0,1.0}, {2,0,1.0}});
+            part1Steps.push_back({{0, 0, 1.0}, {2, 0, 1.0}});
             break;
         case 6:
             part1Steps.push_back({});
             break;
         case 8:
-            part1Steps.push_back({{0,0,1.0}});
+            part1Steps.push_back({{0, 0, 1.0}});
             break;
         case 10:
             part1Steps.push_back({});
             break;
         case 12:
-            part1Steps.push_back({{0,0,1.0}, {2,0,1.0}});
+            part1Steps.push_back({{0, 0, 1.0}, {2, 0, 1.0}});
             break;
         case 14:
             part1Steps.push_back({});
