@@ -36,9 +36,7 @@ extern "C" void app_main()
 {
     esp_rom_gpio_pad_select_gpio(LED_PIN);
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
-    // gpio_set_level(LED_PIN, 0);
 
-    // vTaskDelay(pdMS_TO_TICKS(1000));
     bool initRes = true;
     printf("----- INIT PSRAM -----\n");
     initRes = initPSRAM();
@@ -81,17 +79,15 @@ extern "C" void app_main()
     // }
     // printf("----- INIT KEYBOARD DONE -----\n");
     printf("----- INIT TASKS -----\n");
-    // vTaskDelay(pdMS_TO_TICKS(7500));
+    // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
     xTaskCreatePinnedToCore(sequencerTask, "sequencerTask", 4096, &state, 10, &sequencerTaskHandle, 0);
     xTaskCreatePinnedToCore(audioTask, "audioTask", 8192, &state, 10, &audioTaskHandle, 1);
-    // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
     printf("----- INIT TASKS DONE -----\n");
 
     printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
 
 
     printf("----- INIT WIFI -----\n");
-    // initRes = initWifi(&wifiConfigs, sta_netif);
     esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
     if (initWifiRes == NULL)
     {
@@ -102,10 +98,8 @@ extern "C" void app_main()
     {
         sta_netif = initWifiRes;
         printf("----- INIT WIFI DONE -----\n");
-        // vTaskDelay(pdMS_TO_TICKS(10000));
         printf("iwd sta_netif int : %p\n", (void *)sta_netif);
         printf("iwd sta_netif int : %p\n", sta_netif);
-        // vTaskDelay(pdMS_TO_TICKS(5000));
         printf("----- INIT WEB SERVER -----\n");
         initRes = initWebServer(&state, &httpServer, sta_netif);
         if (!initRes)

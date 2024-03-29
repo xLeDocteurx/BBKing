@@ -1,9 +1,8 @@
 <head>
-  <title>{{ appName }}</title>
+  <title>BBKing</title>
   <link rel="icon" href="data:," />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -33,20 +32,17 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
-
-  <style></style>
-
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
   <div id="app">
     <div class="topnav">
-      <button id="connect" @click="($event) => { connectToWebsocket(); }">
+      <button id="connect" @click="($event)=>{connectToWebsocket();}">
         Connecter
       </button>
       <button
         id="send-ping"
-        @click="($event) => { sendMessageViaWebsocket('ping'); }"
+        @click="($event)=>{sendMessageViaWebsocket('ping');}"
       >
         Envoyer un ping
       </button>
@@ -60,12 +56,39 @@
             <div class="card-header">
               <div class="input-group">
                 <input
+                  disabled
                   type="text"
                   class="form-control"
                   :value="songName"
-                  @change="($event) => { updateSongName($event); }"
+                  @change="($event)=>{updateSongName($event);}"
                 />
-                <span class="input-group-text">Part : {{ currentPartIndex + 1 }}</span>
+                <button
+                  v-if="currentPartIndex > 0"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadPreviousPart();}"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="input-group-text"
+                  >Part : {{ currentPartIndex + 1 }}</span
+                >
+                <button
+                  v-if="currentPartIndex < parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadNextPart();}"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  v-if="currentPartIndex >= parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{createNextPart();}"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
               </div>
             </div>
             <div class="card-body">
@@ -75,7 +98,7 @@
                   step="1"
                   class="form-control"
                   :value="songTempo"
-                  @change="($event) => { updateTempo($event); }"
+                  @change="($event)=>{updateTempo($event);}"
                 />
                 <span class="input-group-text">bpm</span>
               </div>
@@ -83,24 +106,24 @@
             <div class="card-footer">
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-record-vinyl"></i>
-                  </button> -->
+                  </button>
                   <button
                     type="button"
                     class="btn btn-outline-primary w-25"
-                    @click="($event) => { play(); }"
+                    @click="($event)=>{play();}"
                   >
                     <i class="fas fa-play"></i>
                   </button>
                   <button
                     type="button"
                     class="btn btn-outline-primary w-25"
-                    @click="($event) => { stop(); }"
+                    @click="($event)=>{stop();}"
                   >
                     <i class="fas fa-stop"></i>
                   </button>
@@ -108,52 +131,52 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-music"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-guitar"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-shoe-prints"></i>
-                  </button> -->
+                  </button>
                 </div>
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb" role="group">
-                  <!-- <button
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-vial"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-volume-up"></i>
-                  </button> -->
-                  <!-- <button
+                  </button>
+                  <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-volume-mute"></i>
-                  </button> -->
+                  </button>
                 </div>
               </div>
             </div>
@@ -169,15 +192,9 @@
               <div class="card-text">
                 <form>
                   <fieldset>
-                    <!-- <legend class="mt-4">Ranges</legend> -->
-                    <!-- <label for="startAttackRange" class="form-label">Start / Attack</label>
-                    <input type="range" class="form-range" id="startAttackRange" />
-                    <label for="durationDecayRange" class="form-label">Duration / Decay</label>
-                    <input type="range" class="form-range" id="durationDecayRange" /> -->
                     <label for="pitchSustainRange" class="form-label"
                       >Pitch / Sustain :</label
                     >
-                    <!-- <input type="range" class="form-range" min="0" max="5" step="0.5" id="pitchSustainRange" /> -->
                     <input
                       type="number"
                       class="form-control"
@@ -186,7 +203,7 @@
                       step="1"
                       id="pitchSustainRange"
                       :value="getCurrentInstrumentSample().pitch"
-                      @change="($event) => { updateInstrumentSamplePitch($event); }"
+                      @change="($event)=>{updateInstrumentSamplePitch($event);}"
                     />
                     <label for="volumeRange" class="form-label">Volume :</label>
                     <input
@@ -197,7 +214,7 @@
                       step="0.0025"
                       id="volumeRange"
                       :value="getCurrentInstrumentSample().volume"
-                      @change="($event) => { updateInstrumentSampleVolume($event); }"
+                      @change="($event)=>{updateInstrumentSampleVolume($event);}"
                     />
                   </fieldset>
                 </form>
@@ -240,14 +257,38 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              {{ currentPartIndex }} / Step sequencer and instruments selection
-
               <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
                 </button>
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-keyboard"></i>
+                </button>
+              </div>
+              <div class="btn-group" role="group">
+                <button
+                  v-if="parts[currentPartIndex].staves>1"
+                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves-1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button
+                  v-for="n in parts[currentPartIndex].staves"
+                  @click="($event) => {selectStave(n-1);}"
+                  type="button"
+                  class="btn"
+                  :class="{ 'btn-primary': currentStaveIndex == n-1, 'btn-outline-primary': !(currentStaveIndex == n-1)}"
+                >
+                  <b>{{n}}</b>
+                </button>
+                <button
+                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves+1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-plus"></i>
                 </button>
               </div>
             </div>
@@ -261,18 +302,18 @@
                     Light
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(0); }"
+                    @click="($event)=>{selectInstrument(0);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 0 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 0}"
                   >
                     D1
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(1); }"
+                    @click="($event)=>{selectInstrument(1);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 1 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 1}"
                   >
                     D2
                   </button>
@@ -280,26 +321,26 @@
                     Light
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(2); }"
+                    @click="($event)=>{selectInstrument(2);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 2 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 2}"
                   >
                     D3
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(3); }"
+                    @click="($event)=>{selectInstrument(3);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 3 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 3}"
                   >
                     D4
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(4); }"
+                    @click="($event)=>{selectInstrument(4);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 4 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 4}"
                   >
                     D5
                   </button>
@@ -307,18 +348,18 @@
                     Light
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(5); }"
+                    @click="($event)=>{selectInstrument(5);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 5 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 5}"
                   >
                     D6
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(6); }"
+                    @click="($event)=>{selectInstrument(6);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 6 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 6}"
                   >
                     D7
                   </button>
@@ -326,28 +367,28 @@
                     Light
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(8); }"
+                    @click="($event)=>{selectInstrument(8);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 8 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 8}"
                     disabled
                   >
                     Si
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(9); }"
+                    @click="($event)=>{selectInstrument(9);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 9 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 9}"
                     disabled
                   >
                     Sa
                   </button>
                   <button
-                    @click="($event) => { selectInstrument(7); }"
+                    @click="($event)=>{selectInstrument(7);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrument == 7 }"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 7}"
                     disabled
                   >
                     Sy
@@ -362,12 +403,13 @@
                   class="input-group-lg d-flex flex-row justify-content-around"
                   role="group"
                 >
+                <!-- TODO : handle stave for step index -->
                   <button
                     v-for="n in 16"
-                    @click="($event) => { toggleInstrumentStep(n-1); }"
+                    @click="($event)=>{toggleInstrumentStep(n-1);}"
                     type="button"
                     class="btn"
-                    :class="{ 'btn-primary': parts[currentPartIndex].steps[n-1].includes(currentPartInstrument), 'btn-outline-primary': !parts[currentPartIndex].steps[n-1].includes(currentPartInstrument) }"
+                    :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1)}"
                   >
                     <b>{{n}}</b>
                   </button>
@@ -382,14 +424,12 @@
 
   <script>
     async function httpGet(path) {
-      //   const response = await fetch(`${window.location.hostname}${path}`);
       const response = await fetch(`${path}`);
       const json = await response.json();
       console.log("httpGet res : ", json);
       return json;
     }
     async function httpAction(actionName, actionParameters) {
-      //   const response = await fetch(`${window.location.hostname}${path}`);
       const response = await fetch(`/action`, {
         method: "POST",
         body: `${actionName}@${JSON.stringify(actionParameters)}`,
@@ -405,42 +445,6 @@
     const sendPingBtn = document.getElementById("send-ping");
 
     let ws;
-    // let ws = new WebSocket(wsUri);
-
-    // connectBtn.addEventListener("click", () => {
-    //   ws = new WebSocket(wsUri);
-
-    //   ws.onopen = () => {
-    //     console.log("connected");
-    //     statusEl.textContent = "Connecté";
-    //     connectBtn.disabled = true;
-    //     sendPingBtn.disabled = false;
-    //   };
-
-    //   ws.onclose = () => {
-    //     console.log("disconnected");
-    //     statusEl.textContent = "Déconnecté";
-    //     connectBtn.disabled = false;
-    //     sendPingBtn.disabled = true;
-    //   };
-
-    //   ws.onmessage = (event) => {
-    //     const message = event.data;
-    //     if (message === "pong") {
-    //       console.log("Pong reçu !");
-    //     } else {
-    //       console.log("Message reçu :", message);
-    //     }
-    //   };
-    // });
-
-    // sendPingBtn.addEventListener("click", () => {
-    //   if (ws && ws.readyState === WebSocket.OPEN) {
-    //     ws.send("ping");
-    //   } else {
-    //     console.log("WebSocket non connecté !");
-    //   }
-    // });
 
     const allPromises = Promise.all([httpGet("/state")]);
 
@@ -449,16 +453,16 @@
     allPromises.then((allPromisesRet) => {
       createApp({
         setup() {
-          // let ws;
-
           const songIndex = ref(allPromisesRet[0].currentSongIndex);
           const songName = ref(allPromisesRet[0].songName);
           const songTempo = ref(allPromisesRet[0].songTempo);
 
           const currentPartIndex = ref(allPromisesRet[0].currentPartIndex);
-          const currentPartInstrument = ref(
-            allPromisesRet[0].currentPartInstrument
+          const currentPartInstrumentIndex = ref(
+            allPromisesRet[0].currentPartInstrumentIndex
           );
+          const currentStaveIndex = ref(allPromisesRet[0].currentStaveIndex);
+          console.log("currentStaveIndex : ", currentStaveIndex);
 
           const drumRackSampleFileRefIndex1 = ref(
             allPromisesRet[0].drumRackSampleFileRefIndex1
@@ -533,16 +537,67 @@
           const stop = function () {
             httpAction("STOP", {});
           };
+          const loadPreviousPart = function () {
+            httpAction("SELECTPART", currentPartIndex.value - 1);
+            currentPartIndex.value -= 1;
+            currentStaveIndex.value = 0;
+          };
+          const loadNextPart = function () {
+            httpAction("SELECTPART", currentPartIndex.value + 1);
+            currentPartIndex.value += 1;
+            currentStaveIndex.value = 0;
+          };
+          const createNextPart = function () {
+            httpAction("CREATEPART", {});
+            parts.value.push({
+              staves: 1,
+              steps: [
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+              ],
+            });
+            currentPartIndex.value += 1;
+          };
+          const updateStaveNumber = function (staveNumber) {
+            httpAction("UPDATESTAVENUMBER", staveNumber);
+            if (currentStaveIndex.value >= staveNumber) {
+              currentStaveIndex.value = staveNumber - 1;
+            }
+            parts.value[currentPartIndex.value].staves = staveNumber;
+            // TODO : Handle steps resize
+            // parts.value[currentPartIndex.value].steps;
+            // for (int i = 0; i < parts.value[currentPartIndex.value].steps[currentStepIndex.value].size() * parts.value[currentPartIndex.value].staves; i++)
+            // {
+            // }
+          };
+          const selectStave = function (staveIndex) {
+            httpAction("SELECTSTAVE", staveIndex);
+            currentStaveIndex.value = staveIndex;
+          };
           const selectInstrument = function (instrumentIndex) {
             httpAction("SELECTINSTRUMENT", instrumentIndex);
-            currentPartInstrument.value = instrumentIndex;
+            currentPartInstrumentIndex.value = instrumentIndex;
           };
           const getCurrentInstrumentSample = function () {
             return samples.value[getCurrentInstrumentSampleIndex()];
           };
           const getCurrentInstrumentSampleIndex = function () {
             let sampleIndex = 0;
-            switch (currentPartInstrument.value) {
+            switch (currentPartInstrumentIndex.value) {
               case 0:
                 sampleIndex = drumRackSampleFileRefIndex1.value;
                 break;
@@ -567,21 +622,24 @@
             }
             return sampleIndex;
           };
+          const isStepActive = function (stepIndex) {
+            return parts.value[currentPartIndex.value].steps[stepIndex].some(
+              (st) => st.instrumentIndex == currentPartInstrumentIndex.value
+            );
+          };
           const toggleInstrumentStep = function (stepIndex) {
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
-            if (
-              parts.value[currentPartIndex.value].steps[stepIndex].includes(
-                currentPartInstrument.value
-              )
-            ) {
+            if (isStepActive(stepIndex)) {
               parts.value[currentPartIndex.value].steps[stepIndex] =
                 parts.value[currentPartIndex.value].steps[stepIndex].filter(
-                  (i) => i != currentPartInstrument.value
+                  (i) => i.instrumentIndex != currentPartInstrumentIndex.value
                 );
             } else {
-              parts.value[currentPartIndex.value].steps[stepIndex].push(
-                currentPartInstrument.value
-              );
+              parts.value[currentPartIndex.value].steps[stepIndex].push({
+                instrumentIndex: currentPartInstrumentIndex.value,
+                pitch: 0,
+                volume: 0.5,
+              });
             }
           };
 
@@ -608,7 +666,8 @@
             songName,
             songTempo,
             currentPartIndex,
-            currentPartInstrument,
+            currentPartInstrumentIndex,
+            currentStaveIndex,
             samples,
             parts,
             connectToWebsocket,
@@ -617,9 +676,15 @@
             updateTempo,
             play,
             stop,
+            loadPreviousPart,
+            loadNextPart,
+            createNextPart,
+            updateStaveNumber,
+            selectStave,
             selectInstrument,
             getCurrentInstrumentSample,
             getCurrentInstrumentSampleIndex,
+            isStepActive,
             toggleInstrumentStep,
             updateTempo,
             updateInstrumentSampleVolume,

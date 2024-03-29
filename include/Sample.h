@@ -5,6 +5,7 @@
 struct Sample
 {
     char *filePath;
+    bool isMono;
     float volume;
     int pitch;
 
