@@ -302,66 +302,13 @@
                     Light
                   </button>
                   <button
-                    @click="($event)=>{selectInstrument(0);}"
+                    v-for="n in 7"
+                    @click="($event)=>{selectInstrument(n-1);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 0}"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == n-1}"
                   >
-                    D1
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(1);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 1}"
-                  >
-                    D2
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(2);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 2}"
-                  >
-                    D3
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(3);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 3}"
-                  >
-                    D4
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(4);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 4}"
-                  >
-                    D5
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(5);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 5}"
-                  >
-                    D6
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(6);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 6}"
-                  >
-                    D7
+                    D{{n}}
                   </button>
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
