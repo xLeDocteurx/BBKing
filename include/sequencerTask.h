@@ -9,7 +9,7 @@ void sequencerTask(void *parameter)
     {
         if (statePointer->isPlaying)
         {
-            for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size() * statePointer->parts[statePointer->currentPartIndex].staves; stepContentIndex++)
+            for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); stepContentIndex++)
             {
                 const int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
                 int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
@@ -43,7 +43,7 @@ void sequencerTask(void *parameter)
             }
 
             statePointer->currentStepIndex += 1;
-            if (statePointer->currentStepIndex >= STATE_PART_STEPS_LENGTH)
+            if (statePointer->currentStepIndex >= STATE_PART_STEPS_LENGTH * statePointer->parts[statePointer->currentPartIndex].staves)
             {
                 statePointer->currentStepIndex = 0;
             }

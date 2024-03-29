@@ -403,7 +403,6 @@
                   class="input-group-lg d-flex flex-row justify-content-around"
                   role="group"
                 >
-                <!-- TODO : handle stave for step index -->
                   <button
                     v-for="n in 16"
                     @click="($event)=>{toggleInstrumentStep(n-1);}"
@@ -437,6 +436,12 @@
       const json = await response.json();
       console.log("httpAction res : ", json);
       return json;
+    }
+    function resizeArray(arr, newSize, defaultValue) {
+      return [
+        ...arr,
+        ...Array(Math.max(newSize - arr.length, 0)).fill(defaultValue),
+      ];
     }
 
     const wsUri = `ws://${window.location.host}/ws`;
@@ -578,11 +583,12 @@
               currentStaveIndex.value = staveNumber - 1;
             }
             parts.value[currentPartIndex.value].staves = staveNumber;
-            // TODO : Handle steps resize
-            // parts.value[currentPartIndex.value].steps;
-            // for (int i = 0; i < parts.value[currentPartIndex.value].steps[currentStepIndex.value].size() * parts.value[currentPartIndex.value].staves; i++)
-            // {
-            // }
+
+            parts.value[currentPartIndex.value].steps = resizeArray(
+              parts.value[currentPartIndex.value].steps,
+              16 * parts.value[currentPartIndex.value].staves,
+              []
+            );
           };
           const selectStave = function (staveIndex) {
             httpAction("SELECTSTAVE", staveIndex);
@@ -623,11 +629,14 @@
             return sampleIndex;
           };
           const isStepActive = function (stepIndex) {
-            return parts.value[currentPartIndex.value].steps[stepIndex].some(
+            return parts.value[currentPartIndex.value].steps[
+              stepIndex + 16 * currentStaveIndex.value
+            ].some(
               (st) => st.instrumentIndex == currentPartInstrumentIndex.value
             );
           };
           const toggleInstrumentStep = function (stepIndex) {
+            stepIndex += 16 * currentStaveIndex.value;
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
             if (isStepActive(stepIndex)) {
               parts.value[currentPartIndex.value].steps[stepIndex] =
