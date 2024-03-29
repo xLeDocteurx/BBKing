@@ -325,6 +325,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         if (desiredIndex >= 0 && desiredIndex < statePointer->parts.size())
         {
             statePointer->currentPartIndex = desiredIndex;
+            statePointer->currentStaveIndex = 0;
         }
     }
     else if (actionType == "CREATEPART")
@@ -347,6 +348,26 @@ static esp_err_t action_handler(httpd_req_t *req)
         Part newPart = {newPartStaves, newPartSteps};
         statePointer->parts.push_back(newPart);
         statePointer->currentPartIndex += 1;
+        statePointer->currentStaveIndex = 0;
+        // }
+    }
+    else if (actionType == "UPDATESTAVENUMBER")
+    {
+        int desiredStaveNumber = stoi(actionParameters);
+        // if (desiredStaveNumber > 0)
+        // {
+        if (statePointer->currentStaveIndex >= desiredStaveNumber)
+        {
+            statePointer->currentStaveIndex = desiredStaveNumber - 1;
+        }
+        statePointer->parts[statePointer->currentPartIndex].staves = desiredStaveNumber;
+
+        // TODO : Handle steps resize
+        // statePointer->parts[statePointer->currentPartIndex].steps;
+        // for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size() * statePointer->parts[statePointer->currentPartIndex].staves; i++)
+        // {
+        // }
+
         // }
     }
     else if (actionType == "SELECTSTAVE")

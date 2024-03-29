@@ -276,6 +276,32 @@
                   <i class="fas fa-keyboard"></i>
                 </button>
               </div>
+              <div class="btn-group" role="group">
+                <button
+                  v-if="parts[currentPartIndex].staves>1"
+                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves-1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button
+                  v-for="n in parts[currentPartIndex].staves"
+                  @click="($event) => {selectStave(n-1);}"
+                  type="button"
+                  class="btn"
+                  :class="{ 'btn-primary': currentStaveIndex == n-1, 'btn-outline-primary': !(currentStaveIndex == n-1) }"
+                >
+                  <b>{{n}}</b>
+                </button>
+                <button
+                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves+1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
             </div>
             <div class="card-body">
               <div class="card-text py-2">
@@ -388,6 +414,7 @@
                   class="input-group-lg d-flex flex-row justify-content-around"
                   role="group"
                 >
+                <!-- TODO : handle stave for step index -->
                   <button
                     v-for="n in 16"
                     @click="($event) => { toggleInstrumentStep(n-1); }"
@@ -483,6 +510,8 @@
           const currentPartInstrumentIndex = ref(
             allPromisesRet[0].currentPartInstrumentIndex
           );
+          const currentStaveIndex = ref(allPromisesRet[0].currentStaveIndex);
+          console.log("currentStaveIndex : ", currentStaveIndex);
 
           const drumRackSampleFileRefIndex1 = ref(
             allPromisesRet[0].drumRackSampleFileRefIndex1
@@ -560,10 +589,12 @@
           const loadPreviousPart = function () {
             httpAction("SELECTPART", currentPartIndex.value - 1);
             currentPartIndex.value -= 1;
+            currentStaveIndex.value = 0;
           };
           const loadNextPart = function () {
             httpAction("SELECTPART", currentPartIndex.value + 1);
             currentPartIndex.value += 1;
+            currentStaveIndex.value = 0;
           };
           const createNextPart = function () {
             httpAction("CREATEPART", {});
@@ -589,6 +620,22 @@
               ],
             });
             currentPartIndex.value += 1;
+          };
+          const updateStaveNumber = function (staveNumber) {
+            httpAction("UPDATESTAVENUMBER", staveNumber);
+            if (currentStaveIndex.value >= staveNumber) {
+              currentStaveIndex.value = staveNumber - 1;
+            }
+            parts.value[currentPartIndex.value].staves = staveNumber;
+            // TODO : Handle steps resize
+            // parts.value[currentPartIndex.value].steps;
+            // for (int i = 0; i < parts.value[currentPartIndex.value].steps[currentStepIndex.value].size() * parts.value[currentPartIndex.value].staves; i++)
+            // {
+            // }
+          };
+          const selectStave = function (staveIndex) {
+            httpAction("SELECTSTAVE", staveIndex);
+            currentStaveIndex.value = staveIndex;
           };
           const selectInstrument = function (instrumentIndex) {
             httpAction("SELECTINSTRUMENT", instrumentIndex);
@@ -624,13 +671,11 @@
             }
             return sampleIndex;
           };
-
           const isStepActive = function (stepIndex) {
             return parts.value[currentPartIndex.value].steps[stepIndex].some(
               (st) => st.instrumentIndex == currentPartInstrumentIndex.value
             );
           };
-
           const toggleInstrumentStep = function (stepIndex) {
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
             if (isStepActive(stepIndex)) {
@@ -671,6 +716,7 @@
             songTempo,
             currentPartIndex,
             currentPartInstrumentIndex,
+            currentStaveIndex,
             samples,
             parts,
             connectToWebsocket,
@@ -682,6 +728,8 @@
             loadPreviousPart,
             loadNextPart,
             createNextPart,
+            updateStaveNumber,
+            selectStave,
             selectInstrument,
             getCurrentInstrumentSample,
             getCurrentInstrumentSampleIndex,
