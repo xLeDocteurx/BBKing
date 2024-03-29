@@ -363,6 +363,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->parts[statePointer->currentPartIndex].staves = desiredStaveNumber;
 
         statePointer->parts[statePointer->currentPartIndex].steps.resize(STATE_PART_STEPS_LENGTH * statePointer->parts[statePointer->currentPartIndex].staves, {});
+        // }
     }
     else if (actionType == "SELECTSTAVE")
     {
