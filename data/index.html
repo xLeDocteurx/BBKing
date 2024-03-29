@@ -302,66 +302,13 @@
                     Light
                   </button>
                   <button
-                    @click="($event)=>{selectInstrument(0);}"
+                    v-for="n in 7"
+                    @click="($event)=>{selectInstrument(n-1);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 0}"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == n-1}"
                   >
-                    D1
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(1);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 1}"
-                  >
-                    D2
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(2);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 2}"
-                  >
-                    D3
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(3);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 3}"
-                  >
-                    D4
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(4);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 4}"
-                  >
-                    D5
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(5);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 5}"
-                  >
-                    D6
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(6);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == 6}"
-                  >
-                    D7
+                    D{{n}}
                   </button>
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
@@ -403,7 +350,6 @@
                   class="input-group-lg d-flex flex-row justify-content-around"
                   role="group"
                 >
-                <!-- TODO : handle stave for step index -->
                   <button
                     v-for="n in 16"
                     @click="($event)=>{toggleInstrumentStep(n-1);}"
@@ -437,6 +383,12 @@
       const json = await response.json();
       console.log("httpAction res : ", json);
       return json;
+    }
+    function resizeArray(arr, newSize, defaultValue) {
+      return [
+        ...arr,
+        ...Array(Math.max(newSize - arr.length, 0)).fill(defaultValue),
+      ];
     }
 
     const wsUri = `ws://${window.location.host}/ws`;
@@ -578,11 +530,12 @@
               currentStaveIndex.value = staveNumber - 1;
             }
             parts.value[currentPartIndex.value].staves = staveNumber;
-            // TODO : Handle steps resize
-            // parts.value[currentPartIndex.value].steps;
-            // for (int i = 0; i < parts.value[currentPartIndex.value].steps[currentStepIndex.value].size() * parts.value[currentPartIndex.value].staves; i++)
-            // {
-            // }
+
+            parts.value[currentPartIndex.value].steps = resizeArray(
+              parts.value[currentPartIndex.value].steps,
+              16 * parts.value[currentPartIndex.value].staves,
+              []
+            );
           };
           const selectStave = function (staveIndex) {
             httpAction("SELECTSTAVE", staveIndex);
@@ -623,11 +576,14 @@
             return sampleIndex;
           };
           const isStepActive = function (stepIndex) {
-            return parts.value[currentPartIndex.value].steps[stepIndex].some(
+            return parts.value[currentPartIndex.value].steps[
+              stepIndex + 16 * currentStaveIndex.value
+            ].some(
               (st) => st.instrumentIndex == currentPartInstrumentIndex.value
             );
           };
           const toggleInstrumentStep = function (stepIndex) {
+            stepIndex += 16 * currentStaveIndex.value;
             httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
             if (isStepActive(stepIndex)) {
               parts.value[currentPartIndex.value].steps[stepIndex] =
