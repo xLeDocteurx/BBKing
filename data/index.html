@@ -276,8 +276,9 @@
                     aria-labelledby="btnGroupDrop1"
                     style=""
                   >
-                    <a class="dropdown-item" href="#">Dropdown link</a>
-                    <a class="dropdown-item" href="#">Dropdown link</a>
+                    <a v-for="s in samples" class="dropdown-item" href="#"
+                      >{{s.filePath}}</a
+                    >
                   </div>
                 </div>
               </div>
