@@ -254,16 +254,14 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <div class="btn-group">
-                <button class="btn btn-outline-primary">
-                  {{getCurrentInstrumentSample().filePath}}
-                </button>
-              </div>
               <div
                 class="btn-group"
                 role="group"
                 aria-label="Button group with nested dropdown"
               >
+                <button type="button" class="btn btn-outline-primary">
+                  {{getCurrentInstrumentSample().filePath}}
+                </button>
                 <div class="btn-group" role="group">
                   <button
                     id="btnGroupDrop1"
