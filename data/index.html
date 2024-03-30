@@ -46,7 +46,7 @@
       >
         Envoyer un ping
       </button>
-      <span id="status">xxx</span>
+      <span id="status">{{wsStatus}}</span>
       <h1 class="text-center">BBKing</h1>
     </div>
     <div class="container-fluid">
@@ -257,14 +257,14 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <div class="btn-group" role="group">
+              <!-- <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
                 </button>
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-keyboard"></i>
                 </button>
-              </div>
+              </div> -->
               <div class="btn-group" role="group">
                 <button
                   v-if="parts[currentPartIndex].staves>1"
@@ -302,13 +302,96 @@
                     Light
                   </button>
                   <button
-                    v-for="n in 7"
-                    @click="($event)=>{selectInstrument(n-1);}"
+                    @click="($event)=>{selectInstrument(0);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == n-1}"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 0}"
                   >
-                    D{{n}}
+                    D1
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(1);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 1}"
+                  >
+                    D2
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(2);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 2}"
+                  >
+                    D3
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(3);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 3}"
+                  >
+                    D4
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(4);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 4}"
+                  >
+                    D5
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(5);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 5}"
+                  >
+                    D6
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(6);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 6}"
+                  >
+                    D7
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(7);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 7}"
+                  >
+                    Si
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(8);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 8}"
+                  >
+                    Sa
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(9);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': currentPartInstrumentIndex == 9}"
+                  >
+                    Sy
                   </button>
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
@@ -362,11 +445,6 @@
     }
 
     const wsUri = `ws://${window.location.host}/ws`;
-    const statusEl = document.getElementById("status");
-    const connectBtn = document.getElementById("connect");
-    const sendPingBtn = document.getElementById("send-ping");
-
-    let ws;
 
     const allPromises = Promise.all([httpGet("/state")]);
 
@@ -410,38 +488,38 @@
           const samples = ref(allPromisesRet[0].samples);
           const parts = ref(allPromisesRet[0].parts);
 
+          const wsStatus = ref("Disconnected");
+
+          const ws = ref(null);
+
           const connectToWebsocket = function () {
-            ws = new WebSocket(wsUri);
+            ws.value = new WebSocket(wsUri);
 
-            ws.onopen = () => {
+            ws.value.onopen = () => {
               console.log("connected");
-              statusEl.textContent = "Connecté";
-              connectBtn.disabled = true;
-              sendPingBtn.disabled = false;
+              wsStatus.value = "Connected";
             };
 
-            ws.onclose = () => {
+            ws.value.onclose = () => {
               console.log("disconnected");
-              statusEl.textContent = "Déconnecté";
-              connectBtn.disabled = false;
-              sendPingBtn.disabled = true;
+              wsStatus.value = "Disconnected";
             };
 
-            ws.onmessage = (event) => {
+            ws.value.onmessage = (event) => {
               const message = event.data;
               if (message === "pong") {
-                console.log("Pong reçu !");
+                console.log("Pong received !");
               } else {
-                console.log("Message reçu :", message);
+                console.log("Message received :", message);
               }
             };
           };
 
           const sendMessageViaWebsocket = function (message) {
-            if (!!ws && ws.readyState === WebSocket.OPEN) {
-              ws.send(message);
+            if (!!ws && ws.value.readyState === WebSocket.OPEN) {
+              ws.value.send(message);
             } else {
-              console.log("WebSocket non connecté !");
+              console.log("WebSocket non connected !");
             }
           };
 
@@ -587,7 +665,11 @@
             getCurrentInstrumentSample().pitch = event.target.value;
           };
 
+          connectToWebsocket();
+
           return {
+            wsStatus,
+
             songIndex,
             songName,
             songTempo,

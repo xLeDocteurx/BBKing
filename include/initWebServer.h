@@ -119,15 +119,22 @@ static esp_err_t websocket_handler(httpd_req_t *req)
     printf("frame len is %d\n", ws_pkt.len);
     if (ws_pkt.len)
     {
+        printf("1\n");
         httpd_ws_frame_t ws_pkt;
+        printf("2\n");
         uint8_t *buf = NULL;
+        printf("3\n");
         memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+        printf("4\n");
         ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+        printf("5\n");
         /* Set max_len = 0 to get the frame len */
         esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
+        printf("6\n");
         if (ret != ESP_OK)
         {
-            printf("httpd_ws_recv_frame failed with %d\n", ret);
+            // printf("httpd_ws_recv_frame failed with %d\n", ret);
+            printf("httpd_ws_recv_frame failed with ret\n");
             free(buf);
             return ret;
         }
