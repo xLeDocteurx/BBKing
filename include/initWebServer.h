@@ -22,6 +22,70 @@
 
 State *statePointer;
 
+httpd_handle_t server = NULL;
+struct async_resp_arg
+{
+    httpd_handle_t hd;
+    int fd;
+};
+bool led_state = false;
+
+static void ws_async_send(void *arg)
+{
+    httpd_ws_frame_t ws_pkt;
+    struct async_resp_arg *resp_arg = (async_resp_arg *)arg;
+    httpd_handle_t hd = (httpd_handle_t)resp_arg->hd;
+    int fd = (int)resp_arg->fd;
+
+    led_state = !led_state;
+    gpio_set_level(LED_PIN, led_state);
+
+    char buff[4];
+    memset(buff, 0, sizeof(buff));
+    printf("buff %d\n", led_state);
+
+    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+    ws_pkt.payload = (uint8_t *)buff;
+    ws_pkt.len = strlen(buff);
+    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+
+    static size_t max_clients = CONFIG_LWIP_MAX_LISTENING_TCP;
+    size_t fds = max_clients;
+    int client_fds[max_clients];
+
+    esp_err_t ret = httpd_get_client_list(server, &fds, client_fds);
+
+    if (ret != ESP_OK)
+    {
+        printf("??\n");
+        return;
+    }
+
+    for (int i = 0; i < fds; i++)
+    {
+        int client_info = httpd_ws_get_fd_info(server, client_fds[i]);
+        if (client_info == HTTPD_WS_CLIENT_WEBSOCKET)
+        {
+            ret = httpd_ws_send_frame_async(hd, client_fds[i], &ws_pkt);
+            if (ret != ESP_OK)
+            {
+                printf("???\n");
+                // return;
+            }
+        }
+    }
+    free(resp_arg);
+}
+
+static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
+{
+    struct async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(struct async_resp_arg));
+    resp_arg->hd = req->handle;
+    resp_arg->fd = httpd_req_to_sockfd(req);
+    printf("?\n");
+    return httpd_queue_work(handle, ws_async_send, resp_arg);
+}
+
 static esp_err_t root_handler(httpd_req_t *req)
 {
     if (req->method == HTTP_GET)
@@ -47,13 +111,50 @@ httpd_uri_t root_uri = {
 
 static esp_err_t websocket_handler(httpd_req_t *req)
 {
-    // beginning of the ws URI handler
     if (req->method == HTTP_GET)
     {
         printf("Handshake done, the new connection was opened\n");
         return ESP_OK;
     }
 
+    httpd_ws_frame_t ws_pkt;
+    uint8_t *buf = NULL;
+    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+    esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
+    if (ret != ESP_OK)
+    {
+        printf("httpd_ws_recv_frame failed to get frame len with %d\n", ret);
+        return ret;
+    }
+
+    if (ws_pkt.len)
+    {
+        buf = (uint8_t *)calloc(1, ws_pkt.len + 1);
+        if (buf == NULL)
+        {
+            printf("Failed to calloc memory for buf\n");
+            return ESP_ERR_NO_MEM;
+        }
+        ws_pkt.payload = buf;
+        ret = httpd_ws_recv_frame(req, &ws_pkt, ws_pkt.len);
+        if (ret != ESP_OK)
+        {
+            printf("httpd_ws_recv_frame failed with %d\n", ret);
+            free(buf);
+            return ret;
+        }
+        printf("Got packet with message: %s\n", ws_pkt.payload);
+    }
+
+    printf("frame len is %d\n", ws_pkt.len);
+
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
+        strcmp((char *)ws_pkt.payload, "toggle") == 0)
+    {
+        free(buf);
+        return trigger_async_send(req->handle, req);
+    }
     return ESP_OK;
 }
 httpd_uri_t websocket_uri = {

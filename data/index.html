@@ -49,7 +49,7 @@
       <button
         :disabled="!wsStatus"
         id="send-ping"
-        @click="($event)=>{sendMessageViaWebsocket('ping');}"
+        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
       >
         Envoyer un ping
       </button>
