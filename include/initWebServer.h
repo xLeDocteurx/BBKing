@@ -42,7 +42,10 @@ static void ws_async_send(void *arg)
 
     char buff[4];
     memset(buff, 0, sizeof(buff));
-    // printf("buff %d\n", led_state);
+    std::string jsonString = ""; 
+    getMachineStateAsJsonString(statePointer, &jsonString);
+    sprintf(buff, "%d",led_state);
+    // sprintf(buff, jsonString.c_str());
 
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.payload = (uint8_t *)buff;
@@ -52,16 +55,6 @@ static void ws_async_send(void *arg)
     static size_t max_clients = CONFIG_LWIP_MAX_LISTENING_TCP;
     size_t fds = max_clients;
     int client_fds[max_clients];
-
-    // struct httpd_data *hd2 = (struct httpd_data *)serverPointer;
-    // printf("%i\n", client_fds == NULL);
-    // printf("%i\n", fds == 0);
-    // // printf("%i\n", &fds == NULL);
-    // printf("%i\n", hd2 == NULL);
-    // printf("%i\n", serverPointer == NULL);
-    // // printf("%i\n", &serverPointer == NULL);
-    printf("server == NULL : %i\n", serverPointer == NULL);
-    // printf("&server == NULL : %i\n", &serverPointer == NULL);
 
     esp_err_t ret = httpd_get_client_list(*serverPointer, &fds, client_fds);
     if (ret != ESP_OK)
