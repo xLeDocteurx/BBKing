@@ -42,8 +42,8 @@ static void ws_async_send(void *arg)
 
     char buff[4];
     memset(buff, 0, sizeof(buff));
-    std::string jsonString = ""; 
-    getMachineStateAsJsonString(statePointer, &jsonString);
+    // std::string jsonString = ""; 
+    // getMachineStateAsJsonString(statePointer, &jsonString);
     sprintf(buff, "%d",led_state);
     // sprintf(buff, jsonString.c_str());
 
