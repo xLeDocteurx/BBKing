@@ -22,7 +22,7 @@
 
 State *statePointer;
 
-httpd_handle_t server = NULL;
+httpd_handle_t *serverPointer;
 struct async_resp_arg
 {
     httpd_handle_t hd;
@@ -42,7 +42,7 @@ static void ws_async_send(void *arg)
 
     char buff[4];
     memset(buff, 0, sizeof(buff));
-    printf("buff %d\n", led_state);
+    // printf("buff %d\n", led_state);
 
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.payload = (uint8_t *)buff;
@@ -53,23 +53,32 @@ static void ws_async_send(void *arg)
     size_t fds = max_clients;
     int client_fds[max_clients];
 
-    esp_err_t ret = httpd_get_client_list(server, &fds, client_fds);
+    // struct httpd_data *hd2 = (struct httpd_data *)serverPointer;
+    // printf("%i\n", client_fds == NULL);
+    // printf("%i\n", fds == 0);
+    // // printf("%i\n", &fds == NULL);
+    // printf("%i\n", hd2 == NULL);
+    // printf("%i\n", serverPointer == NULL);
+    // // printf("%i\n", &serverPointer == NULL);
+    printf("server == NULL : %i\n", serverPointer == NULL);
+    // printf("&server == NULL : %i\n", &serverPointer == NULL);
 
+    esp_err_t ret = httpd_get_client_list(*serverPointer, &fds, client_fds);
     if (ret != ESP_OK)
     {
-        printf("??\n");
+        printf("? %d\n", ret);
         return;
     }
 
     for (int i = 0; i < fds; i++)
     {
-        int client_info = httpd_ws_get_fd_info(server, client_fds[i]);
+        int client_info = httpd_ws_get_fd_info(*serverPointer, client_fds[i]);
         if (client_info == HTTPD_WS_CLIENT_WEBSOCKET)
         {
             ret = httpd_ws_send_frame_async(hd, client_fds[i], &ws_pkt);
             if (ret != ESP_OK)
             {
-                printf("???\n");
+                printf("?? %d\n", ret);
                 // return;
             }
         }
@@ -82,7 +91,6 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
     struct async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(struct async_resp_arg));
     resp_arg->hd = req->handle;
     resp_arg->fd = httpd_req_to_sockfd(req);
-    printf("?\n");
     return httpd_queue_work(handle, ws_async_send, resp_arg);
 }
 
@@ -382,37 +390,42 @@ httpd_uri_t action_uri = {
     .handler = action_handler,
     .user_ctx = NULL};
 
-bool initWebServer(State *statePointer_p, httpd_handle_t *server, esp_netif_t *netif)
+bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_netif_t *netif)
 {
+    serverPointer = serverPointer_p;
     statePointer = statePointer_p;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
-    esp_err_t httpd_start_ret = httpd_start(server, &config);
+    printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
+    // printf("&server == NULL BEFORE : %i\n", &serverPointer_p == NULL);
+    esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)
     {
         printf("Failed to start HTTP server\n");
         return false;
     }
+    printf("server == NULL AFTER : %i\n", serverPointer_p == NULL);
+    // printf("&server == NULL AFTER : %i\n", &serverPointer_p == NULL);
 
-    esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &root_uri);
+    esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &root_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register root uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &websocket_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &websocket_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /ws uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &state_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &state_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /state uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &action_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &action_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /action uri handler\n");
