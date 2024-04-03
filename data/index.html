@@ -489,122 +489,42 @@
 
     const wsUri = `ws://${window.location.host}/ws`;
 
-    const allPromises = Promise.all([httpGet("/state")]);
+    // const allPromises = Promise.all([httpGet("/state")]);
 
     const { createApp, ref, reactive } = Vue;
 
-    allPromises.then((allPromisesRet) => {
-      createApp({
-        setup() {
-          const machineState = ref(allPromisesRet[0]);
+    // allPromises.then((allPromisesRet) => {
+    createApp({
+      setup() {
+        const wsStatus = ref(false);
 
-          const wsStatus = ref(false);
-
-          const ws = ref(null);
-
-          const connectToWebsocket = function () {
-            ws.value = new WebSocket(wsUri);
-
-            ws.value.onopen = () => {
-              console.log("connected");
-              wsStatus.value = true;
-            };
-
-            ws.value.onclose = () => {
-              console.log("disconnected");
-              wsStatus.value = false;
-            };
-
-            ws.value.onmessage = (event) => {
-              const message = event.data;
-              if (message === "pong") {
-                console.log("Pong received !");
-              } else {
-                console.log("Message received :", message);
-                console.log("Message received as json :", JSON.parse(message));
-                machineState.value = message;
-              }
-            };
-          };
-
-          const sendMessageViaWebsocket = function (message) {
-            if (!!ws && ws.value.readyState === WebSocket.OPEN) {
-              ws.value.send(message);
-            } else {
-              console.log("WebSocket non connected !");
-            }
-          };
-
-          const getCurrentInstrumentSample = function () {
-            return machineState.value.samples[
-              getCurrentInstrumentSampleIndex()
-            ];
-          };
-          const getCurrentInstrumentSampleIndex = function () {
-            let sampleIndex = 0;
-            switch (machineState.value.currentPartInstrumentIndex) {
-              case 0:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex1;
-                break;
-              case 1:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex2;
-                break;
-              case 2:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex3;
-                break;
-              case 3:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex4;
-                break;
-              case 4:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex5;
-                break;
-              case 5:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex6;
-                break;
-              case 6:
-                sampleIndex = machineState.value.drumRackSampleFileRefIndex7;
-                break;
-            }
-            return sampleIndex;
-          };
-          const isStepActive = function (stepIndex) {
-            return machineState.value.parts[
-              machineState.value.currentPartIndex
-            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
-              (st) =>
-                st.instrumentIndex ==
-                machineState.value.currentPartInstrumentIndex
-            );
-          };
-
-          const updateSongName = function (event) {
-            httpAction("UPDATESONGNAME", event.target.value);
-            songName.value = event.target.value;
-          };
-          const updateTempo = function (event) {
-            httpAction("UPDATETEMPO", Number(event.target.value));
-            machineState.value.songTempo = event.target.value;
-          };
-          const play = function () {
-            httpAction("PLAY", {});
-          };
-          const stop = function () {
-            httpAction("STOP", {});
-          };
-          const loadPreviousPart = function () {
-            httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
-            machineState.value.currentPartIndex -= 1;
-            machineState.value.currentStaveIndex = 0;
-          };
-          const loadNextPart = function () {
-            httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
-            machineState.value.currentPartIndex += 1;
-            machineState.value.currentStaveIndex = 0;
-          };
-          const createNextPart = function () {
-            httpAction("CREATEPART", {});
-            machineState.value.parts.push({
-              staves: 1,
+        const machineState = ref({
+          currentSongIndex: 0,
+          songName: "Demo song",
+          songTempo: 154,
+          samples: [
+            { filePath: "/data/kick.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/snare.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/clap.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/rim.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/bass-C.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/hhc.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/hho.wav", pitch: 0, volume: "0.750000" },
+          ],
+          drumRackSampleFileRefIndex1: 0,
+          drumRackSampleFileRefIndex2: 1,
+          drumRackSampleFileRefIndex3: 2,
+          drumRackSampleFileRefIndex4: 3,
+          drumRackSampleFileRefIndex5: 4,
+          drumRackSampleFileRefIndex6: 5,
+          drumRackSampleFileRefIndex7: 6,
+          currentPartIndex: 0,
+          currentPartInstrumentIndex: 0,
+          currentStaveIndex: 0,
+          currentOctaveIndex: 0,
+          parts: [
+            {
+              staves: 2,
               steps: [
                 [],
                 [],
@@ -622,108 +542,251 @@
                 [],
                 [],
                 [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
               ],
-            });
-            machineState.value.currentPartIndex += 1;
-          };
-          const updateStaveNumber = function (staveNumber) {
-            httpAction("UPDATESTAVENUMBER", staveNumber);
-            if (machineState.value.currentStaveIndex >= staveNumber) {
-              machineState.value.currentStaveIndex = staveNumber - 1;
-            }
-            machineState.value.parts[
-              machineState.value.currentPartIndex
-            ].staves = staveNumber;
+            }],
+        });
+        const ws = ref(null);
 
-            machineState.value.parts[
-              machineState.value.currentPartIndex
-            ].steps = resizeArray(
-              machineState.value.parts[machineState.value.currentPartIndex]
-                .steps,
-              16 *
-                machineState.value.parts[machineState.value.currentPartIndex]
-                  .staves,
-              []
-            );
+        const updateMachineStateRef = async function () {
+          const response = await fetch(`/state`);
+          const json = await response.json();
+          console.log("httpGet res : ", json);
+          machineState.value = json;
+        };
+        const connectToWebsocket = function () {
+          ws.value = new WebSocket(wsUri);
+
+          ws.value.onopen = () => {
+            console.log("connected");
+            wsStatus.value = true;
           };
-          const selectStave = function (staveIndex) {
-            httpAction("SELECTSTAVE", staveIndex);
-            machineState.value.currentStaveIndex = staveIndex;
+
+          ws.value.onclose = () => {
+            console.log("disconnected");
+            wsStatus.value = false;
           };
-          const selectInstrument = function (instrumentIndex) {
-            httpAction("SELECTINSTRUMENT", instrumentIndex);
-            machineState.value.currentPartInstrumentIndex = instrumentIndex;
-          };
-          const toggleInstrumentStep = function (stepIndex) {
-            stepIndex += 16 * machineState.value.currentStaveIndex;
-            httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
-            if (isStepActive(stepIndex)) {
-              machineState.value.parts[
-                machineState.value.currentPartIndex
-              ].steps[stepIndex] = machineState.value.parts[
-                machineState.value.currentPartIndex
-              ].steps[stepIndex].filter(
-                (i) =>
-                  i.instrumentIndex !=
-                  machineState.value.currentPartInstrumentIndex
-              );
+
+          ws.value.onmessage = (event) => {
+            const message = event.data;
+            if (message === "pong") {
+              console.log("Pong received !");
             } else {
-              machineState.value.parts[
-                machineState.value.currentPartIndex
-              ].steps[stepIndex].push({
-                instrumentIndex: machineState.value.currentPartInstrumentIndex,
-                pitch: 0,
-                volume: 0.5,
-              });
+              console.log("Message received :", message);
+              // console.log("Message received as json :", JSON.parse(message));
+              // machineState.value = message;
+              updateMachineStateRef();
             }
           };
+        };
 
-          const updateInstrumentSampleVolume = function (event) {
-            // console.log("eventtargetvalue", event.target.value)
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLEVOLUME",
-              Number(event.target.value)
-            );
-            getCurrentInstrumentSample().volume = event.target.value;
-          };
+        const sendMessageViaWebsocket = function (message) {
+          if (!!ws && ws.value.readyState === WebSocket.OPEN) {
+            ws.value.send(message);
+          } else {
+            console.log("WebSocket non connected !");
+          }
+        };
 
-          const updateInstrumentSamplePitch = function (event) {
-            // console.log("eventtargetvalue", event.target.value)
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLEPITCH",
-              Number(event.target.value)
-            );
-            getCurrentInstrumentSample().pitch = event.target.value;
-          };
+        const getCurrentInstrumentSample = function () {
+          return machineState.value.samples[getCurrentInstrumentSampleIndex()];
+        };
+        const getCurrentInstrumentSampleIndex = function () {
+          let sampleIndex = 0;
+          switch (machineState.value.currentPartInstrumentIndex) {
+            case 0:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex1;
+              break;
+            case 1:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex2;
+              break;
+            case 2:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex3;
+              break;
+            case 3:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex4;
+              break;
+            case 4:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex5;
+              break;
+            case 5:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex6;
+              break;
+            case 6:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex7;
+              break;
+          }
+          return sampleIndex;
+        };
+        const isStepActive = function (stepIndex) {
+          return machineState.value.parts[
+            machineState.value.currentPartIndex
+          ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+            (st) =>
+              st.instrumentIndex ==
+              machineState.value.currentPartInstrumentIndex
+          );
+        };
 
+        const updateSongName = function (event) {
+          httpAction("UPDATESONGNAME", event.target.value);
+          // songName.value = event.target.value;
+        };
+        const updateTempo = function (event) {
+          httpAction("UPDATETEMPO", Number(event.target.value));
+          // machineState.value.songTempo = event.target.value;
+        };
+        const play = function () {
+          httpAction("PLAY", {});
+        };
+        const stop = function () {
+          httpAction("STOP", {});
+        };
+        const loadPreviousPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
+          // machineState.value.currentPartIndex -= 1;
+          // machineState.value.currentStaveIndex = 0;
+        };
+        const loadNextPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
+          // machineState.value.currentPartIndex += 1;
+          // machineState.value.currentStaveIndex = 0;
+        };
+        const createNextPart = function () {
+          httpAction("CREATEPART", {});
+          // machineState.value.parts.push({
+          //   staves: 1,
+          //   steps: [
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //   ],
+          // });
+          // machineState.value.currentPartIndex += 1;
+        };
+        const updateStaveNumber = function (staveNumber) {
+          httpAction("UPDATESTAVENUMBER", staveNumber);
+          // if (machineState.value.currentStaveIndex >= staveNumber) {
+          //   machineState.value.currentStaveIndex = staveNumber - 1;
+          // }
+          // machineState.value.parts[machineState.value.currentPartIndex].staves =
+          //   staveNumber;
+
+          // machineState.value.parts[machineState.value.currentPartIndex].steps =
+          //   resizeArray(
+          //     machineState.value.parts[machineState.value.currentPartIndex]
+          //       .steps,
+          //     16 *
+          //       machineState.value.parts[machineState.value.currentPartIndex]
+          //         .staves,
+          //     []
+          //   );
+        };
+        const selectStave = function (staveIndex) {
+          httpAction("SELECTSTAVE", staveIndex);
+          // machineState.value.currentStaveIndex = staveIndex;
+        };
+        const selectInstrument = function (instrumentIndex) {
+          httpAction("SELECTINSTRUMENT", instrumentIndex);
+          // machineState.value.currentPartInstrumentIndex = instrumentIndex;
+        };
+        const toggleInstrumentStep = function (stepIndex) {
+          stepIndex += 16 * machineState.value.currentStaveIndex;
+          httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
+          // if (isStepActive(stepIndex)) {
+          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
+          //     stepIndex
+          //   ] = machineState.value.parts[
+          //     machineState.value.currentPartIndex
+          //   ].steps[stepIndex].filter(
+          //     (i) =>
+          //       i.instrumentIndex !=
+          //       machineState.value.currentPartInstrumentIndex
+          //   );
+          // } else {
+          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
+          //     stepIndex
+          //   ].push({
+          //     instrumentIndex: machineState.value.currentPartInstrumentIndex,
+          //     pitch: 0,
+          //     volume: 0.5,
+          //   });
+          // }
+        };
+
+        const updateInstrumentSampleVolume = function (event) {
+          // console.log("eventtargetvalue", event.target.value)
+          httpAction(
+            "UPDATEINSTRUMENTSAMPLEVOLUME",
+            Number(event.target.value)
+          );
+          // getCurrentInstrumentSample().volume = event.target.value;
+        };
+
+        const updateInstrumentSamplePitch = function (event) {
+          // console.log("eventtargetvalue", event.target.value)
+          httpAction("UPDATEINSTRUMENTSAMPLEPITCH", Number(event.target.value));
+          // getCurrentInstrumentSample().pitch = event.target.value;
+        };
+
+        updateMachineStateRef().then((_) => {
           connectToWebsocket();
+        });
 
-          return {
-            wsStatus,
-            machineState,
-            connectToWebsocket,
-            sendMessageViaWebsocket,
-            updateSongName,
-            updateTempo,
-            play,
-            stop,
-            loadPreviousPart,
-            loadNextPart,
-            createNextPart,
-            updateStaveNumber,
-            selectStave,
-            selectInstrument,
-            getCurrentInstrumentSample,
-            getCurrentInstrumentSampleIndex,
-            isStepActive,
-            toggleInstrumentStep,
-            updateTempo,
-            updateInstrumentSampleVolume,
-            updateInstrumentSamplePitch,
-          };
-        },
-      }).mount("#app");
-    });
+        return {
+          wsStatus,
+          machineState,
+          connectToWebsocket,
+          sendMessageViaWebsocket,
+          updateSongName,
+          updateTempo,
+          play,
+          stop,
+          loadPreviousPart,
+          loadNextPart,
+          createNextPart,
+          updateStaveNumber,
+          selectStave,
+          selectInstrument,
+          getCurrentInstrumentSample,
+          getCurrentInstrumentSampleIndex,
+          isStepActive,
+          toggleInstrumentStep,
+          updateTempo,
+          updateInstrumentSampleVolume,
+          updateInstrumentSamplePitch,
+        };
+      },
+    }).mount("#app");
+    // });
   </script>
 
   <!-- <script>
