@@ -154,16 +154,18 @@
                     <i class="fas fa-music"></i>
                   </button> -->
                   <button
-                    disabled
+                    @click="() => {updateCurrentMode(0);}"
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    class="btn w-25"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
                   >
                     <i class="fas fa-guitar"></i>
                   </button>
                   <button
-                    disabled
+                    @click="() => {updateCurrentMode(1);}"
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    class="btn w-25"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
                   >
                     <i class="fas fa-shoe-prints"></i>
                   </button>
@@ -199,7 +201,41 @@
         </div>
         <div class="col">
           <div class="card border-primary h-100">
-            <div class="card-header">Common / Instrument</div>
+            <div class="card-header">
+              Common / Instrument
+
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Button group with nested dropdown"
+              >
+                <button type="button" class="btn btn-outline-primary">
+                  {{getCurrentInstrumentSample().filePath}}
+                </button>
+                <div class="btn-group" role="group">
+                  <button
+                    id="btnGroupDrop1"
+                    type="button"
+                    class="btn btn-outline-primary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  ></button>
+                  <div
+                    class="dropdown-menu"
+                    aria-labelledby="btnGroupDrop1"
+                    style=""
+                  >
+                    <a
+                      v-for="s in machineState.samples"
+                      class="dropdown-item"
+                      href="#"
+                      >{{s.filePath}}</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="card-body">
               <div class="card-text">
                 <form>
@@ -269,37 +305,6 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <div
-                class="btn-group"
-                role="group"
-                aria-label="Button group with nested dropdown"
-              >
-                <button type="button" class="btn btn-outline-primary">
-                  {{getCurrentInstrumentSample().filePath}}
-                </button>
-                <div class="btn-group" role="group">
-                  <button
-                    id="btnGroupDrop1"
-                    type="button"
-                    class="btn btn-outline-primary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  ></button>
-                  <div
-                    class="dropdown-menu"
-                    aria-labelledby="btnGroupDrop1"
-                    style=""
-                  >
-                    <a
-                      v-for="s in machineState.samples"
-                      class="dropdown-item"
-                      href="#"
-                      >{{s.filePath}}</a
-                    >
-                  </div>
-                </div>
-              </div>
               <!-- <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
@@ -308,6 +313,11 @@
                   <i class="fas fa-keyboard"></i>
                 </button>
               </div> -->
+
+              <!-- <button disabled type="button" class="btn btn-outline-light">
+                Light
+              </button> -->
+
               <div class="btn-group" role="group">
                 <button
                   v-if="machineState.parts[machineState.currentPartIndex].staves>1"
@@ -490,6 +500,7 @@
         const wsStatus = ref(false);
 
         const machineState = ref({
+          currentModeIndex: 0,
           currentSongIndex: 0,
           songName: "Demo song",
           songTempo: 154,
@@ -630,6 +641,9 @@
           );
         };
 
+        const updateCurrentMode = function (modeIndex) {
+          httpAction("UPDATECURRENTMODE", modeIndex);
+        };
         const updateSongName = function (event) {
           httpAction("UPDATESONGNAME", event.target.value);
           // songName.value = event.target.value;
@@ -754,6 +768,7 @@
           machineState,
           connectToWebsocket,
           sendMessageViaWebsocket,
+          updateCurrentMode,
           updateSongName,
           updateTempo,
           play,

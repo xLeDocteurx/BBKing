@@ -23,6 +23,7 @@
 struct State
 {
     int currentSongIndex;
+    int currentModeIndex;
     char *songName;
     int songTempo;
 

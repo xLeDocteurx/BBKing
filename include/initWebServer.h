@@ -37,14 +37,14 @@ static void ws_async_send(void *arg)
     httpd_handle_t hd = (httpd_handle_t)resp_arg->hd;
     int fd = (int)resp_arg->fd;
 
-    led_state = !led_state;
-    gpio_set_level(LED_PIN, led_state);
+    // led_state = !led_state;
+    // gpio_set_level(LED_PIN, led_state);
 
     char buff[4];
     memset(buff, 0, sizeof(buff));
-    // std::string jsonString = ""; 
+    // std::string jsonString = "";
     // getMachineStateAsJsonString(statePointer, &jsonString);
-    sprintf(buff, "%d",led_state);
+    sprintf(buff, "%d", led_state);
     // sprintf(buff, jsonString.c_str());
 
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
@@ -59,7 +59,7 @@ static void ws_async_send(void *arg)
     esp_err_t ret = httpd_get_client_list(*serverPointer, &fds, client_fds);
     if (ret != ESP_OK)
     {
-        printf("? %d\n", ret);
+        // printf("? %d\n", ret);
         return;
     }
 
@@ -71,8 +71,8 @@ static void ws_async_send(void *arg)
             ret = httpd_ws_send_frame_async(hd, client_fds[i], &ws_pkt);
             if (ret != ESP_OK)
             {
-                printf("?? %d\n", ret);
-                // return;
+                // printf("?? %d\n", ret);
+                return;
             }
         }
     }
@@ -221,7 +221,15 @@ static esp_err_t action_handler(httpd_req_t *req)
     printf("actionParameters.c_str() : %s\n", actionParameters.c_str());
 
     // TODO : In a separate file to server for other purposes (keyboard, etc...)
-    if (actionType == "UPDATESONGNAME")
+    // if (actionType == "UPDATESONGINDEX")
+    // {
+    // }
+    // else 
+    if (actionType == "UPDATECURRENTMODE")
+    {
+        statePointer->currentModeIndex = stoi(actionParameters);
+    }
+    else if (actionType == "UPDATESONGNAME")
     {
         statePointer->songName = (char *)actionParameters.c_str();
     }
