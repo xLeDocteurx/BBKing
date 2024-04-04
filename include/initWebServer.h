@@ -229,6 +229,10 @@ static esp_err_t action_handler(httpd_req_t *req)
     {
         statePointer->currentModeIndex = stoi(actionParameters);
     }
+    else if (actionType == "UPDATECURRENTSELECTEDSTEP")
+    {
+        statePointer->currentSelectedStepIndex = stoi(actionParameters);
+    }
     else if (actionType == "UPDATESONGNAME")
     {
         statePointer->songName = (char *)actionParameters.c_str();

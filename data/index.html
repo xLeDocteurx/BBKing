@@ -501,6 +501,7 @@
 
         const machineState = ref({
           currentModeIndex: 0,
+          currentSelectedStepIndex: 0,
           currentSongIndex: 0,
           songName: "Demo song",
           songTempo: 154,
@@ -632,13 +633,17 @@
           return sampleIndex;
         };
         const isStepActive = function (stepIndex) {
-          return machineState.value.parts[
-            machineState.value.currentPartIndex
-          ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
-            (st) =>
-              st.instrumentIndex ==
-              machineState.value.currentPartInstrumentIndex
-          );
+          if (machineState.value.currentModeIndex == 0) {
+            return machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            return stepIndex == machineState.value.currentSelectedStepIndex;
+          }
         };
 
         const updateCurrentMode = function (modeIndex) {
@@ -722,7 +727,11 @@
         const toggleInstrumentStep = function (stepIndex) {
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
-          httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction("UPDATECURRENTSELECTEDSTEP", stepIndexToUpdate);
+          }
           // if (isStepActive(stepIndex)) {
           //   machineState.value.parts[machineState.value.currentPartIndex].steps[
           //     stepIndex

@@ -24,7 +24,7 @@ struct State
 {
     int currentSongIndex;
     int currentModeIndex;
-    int currentStepIndex;
+    int currentSelectedStepIndex;
     char *songName;
     int songTempo;
 
