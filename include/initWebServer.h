@@ -388,6 +388,7 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     serverPointer = serverPointer_p;
     statePointer = statePointer_p;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.stack_size = 20480; // TODO : test random values
 
     printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
     // printf("&server == NULL BEFORE : %i\n", &serverPointer_p == NULL);

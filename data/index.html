@@ -471,15 +471,6 @@
       console.log("httpGet res : ", json);
       return json;
     }
-    async function httpAction(actionName, actionParameters) {
-      const response = await fetch(`/action`, {
-        method: "POST",
-        body: `${actionName}@${JSON.stringify(actionParameters)}`,
-      });
-      const json = await response.json();
-      console.log("httpAction res : ", json);
-      return json;
-    }
     function resizeArray(arr, newSize, defaultValue) {
       return [
         ...arr,
@@ -524,7 +515,7 @@
           currentOctaveIndex: 0,
           parts: [
             {
-              staves: 2,
+              staves: 1,
               steps: [
                 [],
                 [],
@@ -542,27 +533,23 @@
                 [],
                 [],
                 [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
               ],
-            }],
+            },
+          ],
         });
         const ws = ref(null);
 
+        const httpAction = async function (actionName, actionParameters) {
+          const response = await fetch(`/action`, {
+            method: "POST",
+            body: `${actionName}@${JSON.stringify(actionParameters)}`,
+          });
+          const json = await response.json();
+          console.log("httpAction res : ", json);
+          // TODO : temporary solution for pongs
+          sendMessageViaWebsocket("toggle");
+          return json;
+        };
         const updateMachineStateRef = async function () {
           const response = await fetch(`/state`);
           const json = await response.json();
@@ -719,8 +706,9 @@
           // machineState.value.currentPartInstrumentIndex = instrumentIndex;
         };
         const toggleInstrumentStep = function (stepIndex) {
-          stepIndex += 16 * machineState.value.currentStaveIndex;
-          httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
+          const stepIndexToUpdate =
+            stepIndex + 16 * machineState.value.currentStaveIndex;
+          httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
           // if (isStepActive(stepIndex)) {
           //   machineState.value.parts[machineState.value.currentPartIndex].steps[
           //     stepIndex
