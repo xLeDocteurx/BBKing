@@ -16,60 +16,75 @@
 #include <WifiConfig.h>
 #include <readJsonFile.h>
 #include <getInstrumentSampleIndex.h>
+#include <getMachineStateAsJsonString.h>
 
 #include <GlobalVars.h>
 
 State *statePointer;
 
-/*
- * Structure holding server handle
- * and internal socket fd in order
- * to use out of request send
- */
+httpd_handle_t *serverPointer;
 struct async_resp_arg
 {
     httpd_handle_t hd;
     int fd;
 };
+bool led_state = false;
 
-/*
- * async send function, which we put into the httpd work queue
- */
 static void ws_async_send(void *arg)
 {
-    static const char *data = "Async data";
-    // struct async_resp_arg *resp_arg = arg;
-    // httpd_handle_t hd = resp_arg->hd;
-    // int fd = resp_arg->fd;
-    httpd_handle_t hd = ((async_resp_arg *)arg)->hd;
-    int fd = ((async_resp_arg *)arg)->fd;
     httpd_ws_frame_t ws_pkt;
+    struct async_resp_arg *resp_arg = (async_resp_arg *)arg;
+    httpd_handle_t hd = (httpd_handle_t)resp_arg->hd;
+    int fd = (int)resp_arg->fd;
+
+    led_state = !led_state;
+    gpio_set_level(LED_PIN, led_state);
+
+    char buff[4];
+    memset(buff, 0, sizeof(buff));
+    // std::string jsonString = ""; 
+    // getMachineStateAsJsonString(statePointer, &jsonString);
+    sprintf(buff, "%d",led_state);
+    // sprintf(buff, jsonString.c_str());
+
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-    ws_pkt.payload = (uint8_t *)data;
-    ws_pkt.len = strlen(data);
+    ws_pkt.payload = (uint8_t *)buff;
+    ws_pkt.len = strlen(buff);
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
 
-    httpd_ws_send_frame_async(hd, fd, &ws_pkt);
-    // free(resp_arg);
-    free(arg);
+    static size_t max_clients = CONFIG_LWIP_MAX_LISTENING_TCP;
+    size_t fds = max_clients;
+    int client_fds[max_clients];
+
+    esp_err_t ret = httpd_get_client_list(*serverPointer, &fds, client_fds);
+    if (ret != ESP_OK)
+    {
+        printf("? %d\n", ret);
+        return;
+    }
+
+    for (int i = 0; i < fds; i++)
+    {
+        int client_info = httpd_ws_get_fd_info(*serverPointer, client_fds[i]);
+        if (client_info == HTTPD_WS_CLIENT_WEBSOCKET)
+        {
+            ret = httpd_ws_send_frame_async(hd, client_fds[i], &ws_pkt);
+            if (ret != ESP_OK)
+            {
+                printf("?? %d\n", ret);
+                // return;
+            }
+        }
+    }
+    free(resp_arg);
 }
 
 static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 {
-    // struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
-    async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(async_resp_arg));
-    if (resp_arg == NULL)
-    {
-        return ESP_ERR_NO_MEM;
-    }
+    struct async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(struct async_resp_arg));
     resp_arg->hd = req->handle;
     resp_arg->fd = httpd_req_to_sockfd(req);
-    esp_err_t ret = httpd_queue_work(handle, ws_async_send, resp_arg);
-    if (ret != ESP_OK)
-    {
-        free(resp_arg);
-    }
-    return ret;
+    return httpd_queue_work(handle, ws_async_send, resp_arg);
 }
 
 static esp_err_t root_handler(httpd_req_t *req)
@@ -97,7 +112,6 @@ httpd_uri_t root_uri = {
 
 static esp_err_t websocket_handler(httpd_req_t *req)
 {
-    // beginning of the ws URI handler
     if (req->method == HTTP_GET)
     {
         printf("Handshake done, the new connection was opened\n");
@@ -108,7 +122,6 @@ static esp_err_t websocket_handler(httpd_req_t *req)
     uint8_t *buf = NULL;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
-
     esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
     if (ret != ESP_OK)
     {
@@ -116,15 +129,16 @@ static esp_err_t websocket_handler(httpd_req_t *req)
         return ret;
     }
 
-    printf("frame len is %d\n", ws_pkt.len);
     if (ws_pkt.len)
     {
-        httpd_ws_frame_t ws_pkt;
-        uint8_t *buf = NULL;
-        memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-        ws_pkt.type = HTTPD_WS_TYPE_TEXT;
-        /* Set max_len = 0 to get the frame len */
-        esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
+        buf = (uint8_t *)calloc(1, ws_pkt.len + 1);
+        if (buf == NULL)
+        {
+            printf("Failed to calloc memory for buf\n");
+            return ESP_ERR_NO_MEM;
+        }
+        ws_pkt.payload = buf;
+        ret = httpd_ws_recv_frame(req, &ws_pkt, ws_pkt.len);
         if (ret != ESP_OK)
         {
             printf("httpd_ws_recv_frame failed with %d\n", ret);
@@ -133,22 +147,16 @@ static esp_err_t websocket_handler(httpd_req_t *req)
         }
         printf("Got packet with message: %s\n", ws_pkt.payload);
     }
-    printf("Packet type: %d\n", ws_pkt.type);
+
+    printf("frame len is %d\n", ws_pkt.len);
+
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strcmp((char *)ws_pkt.payload, "Trigger async") == 0)
+        strcmp((char *)ws_pkt.payload, "toggle") == 0)
     {
         free(buf);
         return trigger_async_send(req->handle, req);
     }
-
-    ret = httpd_ws_send_frame(req, &ws_pkt);
-    if (ret != ESP_OK)
-    {
-        printf("httpd_ws_send_frame failed with %d\n", ret);
-    }
-    free(buf);
-    return ret;
-    // return ESP_OK;
+    return ESP_OK;
 }
 httpd_uri_t websocket_uri = {
     .uri = "/ws",
@@ -163,91 +171,8 @@ httpd_uri_t websocket_uri = {
 
 static esp_err_t state_handler(httpd_req_t *req)
 {
-    std::string samplesString = "[";
-    for (int i = 0; i < statePointer->samples.size(); i++)
-    {
-        std::string sampleString = "{\"filePath\": \"" + std::string(statePointer->samples[i].filePath) + "\", \"pitch\":" + std::to_string(statePointer->samples[i].pitch) + ", \"volume\":\"" + std::to_string(statePointer->samples[i].volume) + "\"}";
-        if (i != 0)
-        {
-            samplesString += ",";
-        }
-        samplesString += sampleString;
-    }
-    samplesString += "]";
-
-    std::string partsString = "[";
-    for (int i = 0; i < statePointer->parts.size(); i++)
-    {
-        std::string partString = "{\"staves\":" + std::to_string(statePointer->parts[i].staves) + ",\"steps\":";
-        std::string stepsString = "[";
-        for (int j = 0; j < statePointer->parts[i].steps.size(); j++)
-        {
-            std::string stepString = "[";
-            for (int k = 0; k < statePointer->parts[i].steps[j].size(); k++)
-            {
-                if (k != 0)
-                {
-                    stepString += ",";
-                }
-                // stepString += std::to_string(statePointer->parts[i].steps[j][k]);
-                statePointer->parts[i].steps[j][k].pitch;
-                statePointer->parts[i].steps[j][k].volume;
-                stepString += "{\"instrumentIndex\":" + std::to_string(statePointer->parts[i].steps[j][k].instrumentIndex) + ",\"pitch\":" + std::to_string(statePointer->parts[i].steps[j][k].pitch) + ",\"volume\":" + std::to_string(statePointer->parts[i].steps[j][k].volume) + "}";
-            }
-            stepString += "]";
-
-            if (j != 0)
-            {
-                stepsString += ",";
-            }
-            stepsString += stepString;
-        }
-        stepsString += "]";
-
-        partString += stepsString;
-
-        if (i != 0)
-        {
-            partsString += ",";
-        }
-        partsString += partString + "}";
-    }
-    partsString += "]";
-
-    std::string jsonString =
-        "{\"currentSongIndex\":" +
-        std::to_string(statePointer->currentSongIndex) +
-        ",\"songName\":\"" +
-        statePointer->songName +
-        "\",\"songTempo\":" +
-        std::to_string(statePointer->songTempo) +
-        ",\"samples\":" +
-        samplesString +
-        ",\"drumRackSampleFileRefIndex1\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex1) +
-        ",\"drumRackSampleFileRefIndex2\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex2) +
-        ",\"drumRackSampleFileRefIndex3\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex3) +
-        ",\"drumRackSampleFileRefIndex4\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex4) +
-        ",\"drumRackSampleFileRefIndex5\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex5) +
-        ",\"drumRackSampleFileRefIndex6\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex6) +
-        ",\"drumRackSampleFileRefIndex7\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex7) +
-        ",\"currentPartIndex\":" +
-        std::to_string(statePointer->currentPartIndex) +
-        ",\"currentPartInstrumentIndex\":" +
-        std::to_string(statePointer->currentPartInstrumentIndex) +
-        ",\"currentStaveIndex\":" +
-        std::to_string(statePointer->currentStaveIndex) +
-        ",\"currentOctaveIndex\":" +
-        std::to_string(statePointer->currentOctaveIndex) +
-        ",\"parts\":" +
-        partsString +
-        "}";
+    std::string jsonString = "";
+    getMachineStateAsJsonString(statePointer, &jsonString);
     httpd_resp_set_type(req, "text/json");
     httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -458,37 +383,43 @@ httpd_uri_t action_uri = {
     .handler = action_handler,
     .user_ctx = NULL};
 
-bool initWebServer(State *statePointer_p, httpd_handle_t *server, esp_netif_t *netif)
+bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_netif_t *netif)
 {
+    serverPointer = serverPointer_p;
     statePointer = statePointer_p;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.stack_size = 20480; // TODO : test random values
 
-    esp_err_t httpd_start_ret = httpd_start(server, &config);
+    printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
+    // printf("&server == NULL BEFORE : %i\n", &serverPointer_p == NULL);
+    esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)
     {
         printf("Failed to start HTTP server\n");
         return false;
     }
+    printf("server == NULL AFTER : %i\n", serverPointer_p == NULL);
+    // printf("&server == NULL AFTER : %i\n", &serverPointer_p == NULL);
 
-    esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &root_uri);
+    esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &root_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register root uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &websocket_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &websocket_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /ws uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &state_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &state_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /state uri handler\n");
         return false;
     }
-    httpd_register_uri_handler_ret = httpd_register_uri_handler(*server, &action_uri);
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &action_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /action uri handler\n");

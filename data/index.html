@@ -37,16 +37,31 @@
 <body>
   <div id="app">
     <div class="topnav">
-      <button id="connect" @click="($event)=>{connectToWebsocket();}">
+      <button
+        :disabled="wsStatus"
+        id="connect"
+        @click="($event)=>{connectToWebsocket();}"
+      >
         Connecter
       </button>
+      <!-- @click="($event)=>{sendMessageViaWebsocket('ping');}" -->
+      <!-- @click="($event)=>{sendMessageViaWebsocket('Trigger async');}" -->
       <button
+        :disabled="!wsStatus"
         id="send-ping"
-        @click="($event)=>{sendMessageViaWebsocket('ping');}"
+        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
       >
         Envoyer un ping
       </button>
-      <span id="status">xxx</span>
+      <span id="status">
+        <span
+          class="badge rounded-pill"
+          :class="{ 'bg-success': wsStatus, 'bg-danger': !wsStatus}"
+        >
+          {{wsStatus ? "Connected": "Disconnected"}}
+        </span>
+      </span>
+
       <h1 class="text-center">BBKing</h1>
     </div>
     <div class="container-fluid">
@@ -59,11 +74,11 @@
                   disabled
                   type="text"
                   class="form-control"
-                  :value="songName"
+                  :value="machineState.songName"
                   @change="($event)=>{updateSongName($event);}"
                 />
                 <button
-                  v-if="currentPartIndex > 0"
+                  v-if="machineState.currentPartIndex > 0"
                   type="button"
                   class="btn btn-outline-primary"
                   @click="($event)=>{loadPreviousPart();}"
@@ -71,10 +86,10 @@
                   <i class="fas fa-chevron-left"></i>
                 </button>
                 <span class="input-group-text"
-                  >Part : {{ currentPartIndex + 1 }}</span
+                  >Part : {{ machineState.currentPartIndex + 1 }}</span
                 >
                 <button
-                  v-if="currentPartIndex < parts.length -1"
+                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
                   type="button"
                   class="btn btn-outline-primary"
                   @click="($event)=>{loadNextPart();}"
@@ -82,7 +97,7 @@
                   <i class="fas fa-chevron-right"></i>
                 </button>
                 <button
-                  v-if="currentPartIndex >= parts.length -1"
+                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
                   type="button"
                   class="btn btn-outline-primary"
                   @click="($event)=>{createNextPart();}"
@@ -97,7 +112,7 @@
                   type="number"
                   step="1"
                   class="form-control"
-                  :value="songTempo"
+                  :value="machineState.songTempo"
                   @change="($event)=>{updateTempo($event);}"
                 />
                 <span class="input-group-text">bpm</span>
@@ -106,13 +121,13 @@
             <div class="card-footer">
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <button
+                  <!-- <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-record-vinyl"></i>
-                  </button>
+                  </button> -->
                   <button
                     type="button"
                     class="btn btn-outline-primary w-25"
@@ -131,13 +146,13 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <button
+                  <!-- <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-music"></i>
-                  </button>
+                  </button> -->
                   <button
                     disabled
                     type="button"
@@ -156,13 +171,13 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb" role="group">
-                  <button
+                  <!-- <button
                     disabled
                     type="button"
                     class="btn btn-outline-primary w-25"
                   >
                     <i class="fas fa-vial"></i>
-                  </button>
+                  </button> -->
                   <button
                     disabled
                     type="button"
@@ -185,9 +200,6 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">Common / Instrument</div>
-            <div class="card-header">
-              {{getCurrentInstrumentSample().filePath}}
-            </div>
             <div class="card-body">
               <div class="card-text">
                 <form>
@@ -257,34 +269,65 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <div class="btn-group" role="group">
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Button group with nested dropdown"
+              >
+                <button type="button" class="btn btn-outline-primary">
+                  {{getCurrentInstrumentSample().filePath}}
+                </button>
+                <div class="btn-group" role="group">
+                  <button
+                    id="btnGroupDrop1"
+                    type="button"
+                    class="btn btn-outline-primary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  ></button>
+                  <div
+                    class="dropdown-menu"
+                    aria-labelledby="btnGroupDrop1"
+                    style=""
+                  >
+                    <a
+                      v-for="s in machineState.samples"
+                      class="dropdown-item"
+                      href="#"
+                      >{{s.filePath}}</a
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
                 </button>
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-keyboard"></i>
                 </button>
-              </div>
+              </div> -->
               <div class="btn-group" role="group">
                 <button
-                  v-if="parts[currentPartIndex].staves>1"
-                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves-1)}"
+                  v-if="machineState.parts[machineState.currentPartIndex].staves>1"
+                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
                   type="button"
                   class="btn btn-outline-primary"
                 >
                   <i class="fas fa-minus"></i>
                 </button>
                 <button
-                  v-for="n in parts[currentPartIndex].staves"
+                  v-for="n in machineState.parts[machineState.currentPartIndex].staves"
                   @click="($event) => {selectStave(n-1);}"
                   type="button"
                   class="btn"
-                  :class="{ 'btn-primary': currentStaveIndex == n-1, 'btn-outline-primary': !(currentStaveIndex == n-1)}"
+                  :class="{ 'btn-primary': machineState.currentStaveIndex == n-1, 'btn-outline-primary': !(machineState.currentStaveIndex == n-1)}"
                 >
                   <b>{{n}}</b>
                 </button>
                 <button
-                  @click="($event) => {updateStaveNumber(parts[currentPartIndex].staves+1)}"
+                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
                   type="button"
                   class="btn btn-outline-primary"
                 >
@@ -302,13 +345,96 @@
                     Light
                   </button>
                   <button
-                    v-for="n in 7"
-                    @click="($event)=>{selectInstrument(n-1);}"
+                    @click="($event)=>{selectInstrument(0);}"
                     type="button"
                     class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': currentPartInstrumentIndex == n-1}"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 0}"
                   >
-                    D{{n}}
+                    D1
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(1);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 1}"
+                  >
+                    D2
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(2);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 2}"
+                  >
+                    D3
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(3);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 3}"
+                  >
+                    D4
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(4);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 4}"
+                  >
+                    D5
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(5);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 5}"
+                  >
+                    D6
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(6);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 6}"
+                  >
+                    D7
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(7);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 7}"
+                  >
+                    Si
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(8);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 8}"
+                  >
+                    Sa
+                  </button>
+                  <button
+                    disabled
+                    @click="($event)=>{selectInstrument(9);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 9}"
+                  >
+                    Sy
                   </button>
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
@@ -345,15 +471,6 @@
       console.log("httpGet res : ", json);
       return json;
     }
-    async function httpAction(actionName, actionParameters) {
-      const response = await fetch(`/action`, {
-        method: "POST",
-        body: `${actionName}@${JSON.stringify(actionParameters)}`,
-      });
-      const json = await response.json();
-      console.log("httpAction res : ", json);
-      return json;
-    }
     function resizeArray(arr, newSize, defaultValue) {
       return [
         ...arr,
@@ -362,116 +479,42 @@
     }
 
     const wsUri = `ws://${window.location.host}/ws`;
-    const statusEl = document.getElementById("status");
-    const connectBtn = document.getElementById("connect");
-    const sendPingBtn = document.getElementById("send-ping");
 
-    let ws;
-
-    const allPromises = Promise.all([httpGet("/state")]);
+    // const allPromises = Promise.all([httpGet("/state")]);
 
     const { createApp, ref, reactive } = Vue;
 
-    allPromises.then((allPromisesRet) => {
-      createApp({
-        setup() {
-          const songIndex = ref(allPromisesRet[0].currentSongIndex);
-          const songName = ref(allPromisesRet[0].songName);
-          const songTempo = ref(allPromisesRet[0].songTempo);
+    // allPromises.then((allPromisesRet) => {
+    createApp({
+      setup() {
+        const wsStatus = ref(false);
 
-          const currentPartIndex = ref(allPromisesRet[0].currentPartIndex);
-          const currentPartInstrumentIndex = ref(
-            allPromisesRet[0].currentPartInstrumentIndex
-          );
-          const currentStaveIndex = ref(allPromisesRet[0].currentStaveIndex);
-          console.log("currentStaveIndex : ", currentStaveIndex);
-
-          const drumRackSampleFileRefIndex1 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex1
-          );
-          const drumRackSampleFileRefIndex2 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex2
-          );
-          const drumRackSampleFileRefIndex3 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex3
-          );
-          const drumRackSampleFileRefIndex4 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex4
-          );
-          const drumRackSampleFileRefIndex5 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex5
-          );
-          const drumRackSampleFileRefIndex6 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex6
-          );
-          const drumRackSampleFileRefIndex7 = ref(
-            allPromisesRet[0].drumRackSampleFileRefIndex7
-          );
-          const samples = ref(allPromisesRet[0].samples);
-          const parts = ref(allPromisesRet[0].parts);
-
-          const connectToWebsocket = function () {
-            ws = new WebSocket(wsUri);
-
-            ws.onopen = () => {
-              console.log("connected");
-              statusEl.textContent = "Connecté";
-              connectBtn.disabled = true;
-              sendPingBtn.disabled = false;
-            };
-
-            ws.onclose = () => {
-              console.log("disconnected");
-              statusEl.textContent = "Déconnecté";
-              connectBtn.disabled = false;
-              sendPingBtn.disabled = true;
-            };
-
-            ws.onmessage = (event) => {
-              const message = event.data;
-              if (message === "pong") {
-                console.log("Pong reçu !");
-              } else {
-                console.log("Message reçu :", message);
-              }
-            };
-          };
-
-          const sendMessageViaWebsocket = function (message) {
-            if (!!ws && ws.readyState === WebSocket.OPEN) {
-              ws.send(message);
-            } else {
-              console.log("WebSocket non connecté !");
-            }
-          };
-
-          const updateSongName = function (event) {
-            httpAction("UPDATESONGNAME", event.target.value);
-            songName.value = event.target.value;
-          };
-          const updateTempo = function (event) {
-            httpAction("UPDATETEMPO", Number(event.target.value));
-            songTempo.value = event.target.value;
-          };
-          const play = function () {
-            httpAction("PLAY", {});
-          };
-          const stop = function () {
-            httpAction("STOP", {});
-          };
-          const loadPreviousPart = function () {
-            httpAction("SELECTPART", currentPartIndex.value - 1);
-            currentPartIndex.value -= 1;
-            currentStaveIndex.value = 0;
-          };
-          const loadNextPart = function () {
-            httpAction("SELECTPART", currentPartIndex.value + 1);
-            currentPartIndex.value += 1;
-            currentStaveIndex.value = 0;
-          };
-          const createNextPart = function () {
-            httpAction("CREATEPART", {});
-            parts.value.push({
+        const machineState = ref({
+          currentSongIndex: 0,
+          songName: "Demo song",
+          songTempo: 154,
+          samples: [
+            { filePath: "/data/kick.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/snare.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/clap.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/rim.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/bass-C.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/hhc.wav", pitch: 0, volume: "0.750000" },
+            { filePath: "/data/hho.wav", pitch: 0, volume: "0.750000" },
+          ],
+          drumRackSampleFileRefIndex1: 0,
+          drumRackSampleFileRefIndex2: 1,
+          drumRackSampleFileRefIndex3: 2,
+          drumRackSampleFileRefIndex4: 3,
+          drumRackSampleFileRefIndex5: 4,
+          drumRackSampleFileRefIndex6: 5,
+          drumRackSampleFileRefIndex7: 6,
+          currentPartIndex: 0,
+          currentPartInstrumentIndex: 0,
+          currentStaveIndex: 0,
+          currentOctaveIndex: 0,
+          parts: [
+            {
               staves: 1,
               steps: [
                 [],
@@ -491,134 +534,247 @@
                 [],
                 [],
               ],
-            });
-            currentPartIndex.value += 1;
-          };
-          const updateStaveNumber = function (staveNumber) {
-            httpAction("UPDATESTAVENUMBER", staveNumber);
-            if (currentStaveIndex.value >= staveNumber) {
-              currentStaveIndex.value = staveNumber - 1;
-            }
-            parts.value[currentPartIndex.value].staves = staveNumber;
+            },
+          ],
+        });
+        const ws = ref(null);
 
-            parts.value[currentPartIndex.value].steps = resizeArray(
-              parts.value[currentPartIndex.value].steps,
-              16 * parts.value[currentPartIndex.value].staves,
-              []
-            );
+        const httpAction = async function (actionName, actionParameters) {
+          const response = await fetch(`/action`, {
+            method: "POST",
+            body: `${actionName}@${JSON.stringify(actionParameters)}`,
+          });
+          const json = await response.json();
+          console.log("httpAction res : ", json);
+          // TODO : temporary solution for pongs
+          sendMessageViaWebsocket("toggle");
+          return json;
+        };
+        const updateMachineStateRef = async function () {
+          const response = await fetch(`/state`);
+          const json = await response.json();
+          console.log("httpGet res : ", json);
+          machineState.value = json;
+        };
+        const connectToWebsocket = function () {
+          ws.value = new WebSocket(wsUri);
+
+          ws.value.onopen = () => {
+            console.log("connected");
+            wsStatus.value = true;
           };
-          const selectStave = function (staveIndex) {
-            httpAction("SELECTSTAVE", staveIndex);
-            currentStaveIndex.value = staveIndex;
+
+          ws.value.onclose = () => {
+            console.log("disconnected");
+            wsStatus.value = false;
           };
-          const selectInstrument = function (instrumentIndex) {
-            httpAction("SELECTINSTRUMENT", instrumentIndex);
-            currentPartInstrumentIndex.value = instrumentIndex;
-          };
-          const getCurrentInstrumentSample = function () {
-            return samples.value[getCurrentInstrumentSampleIndex()];
-          };
-          const getCurrentInstrumentSampleIndex = function () {
-            let sampleIndex = 0;
-            switch (currentPartInstrumentIndex.value) {
-              case 0:
-                sampleIndex = drumRackSampleFileRefIndex1.value;
-                break;
-              case 1:
-                sampleIndex = drumRackSampleFileRefIndex2.value;
-                break;
-              case 2:
-                sampleIndex = drumRackSampleFileRefIndex3.value;
-                break;
-              case 3:
-                sampleIndex = drumRackSampleFileRefIndex4.value;
-                break;
-              case 4:
-                sampleIndex = drumRackSampleFileRefIndex5.value;
-                break;
-              case 5:
-                sampleIndex = drumRackSampleFileRefIndex6.value;
-                break;
-              case 6:
-                sampleIndex = drumRackSampleFileRefIndex7.value;
-                break;
-            }
-            return sampleIndex;
-          };
-          const isStepActive = function (stepIndex) {
-            return parts.value[currentPartIndex.value].steps[
-              stepIndex + 16 * currentStaveIndex.value
-            ].some(
-              (st) => st.instrumentIndex == currentPartInstrumentIndex.value
-            );
-          };
-          const toggleInstrumentStep = function (stepIndex) {
-            stepIndex += 16 * currentStaveIndex.value;
-            httpAction("TOGGLEINSTRUMENTSTEP", stepIndex);
-            if (isStepActive(stepIndex)) {
-              parts.value[currentPartIndex.value].steps[stepIndex] =
-                parts.value[currentPartIndex.value].steps[stepIndex].filter(
-                  (i) => i.instrumentIndex != currentPartInstrumentIndex.value
-                );
+
+          ws.value.onmessage = (event) => {
+            const message = event.data;
+            if (message === "pong") {
+              console.log("Pong received !");
             } else {
-              parts.value[currentPartIndex.value].steps[stepIndex].push({
-                instrumentIndex: currentPartInstrumentIndex.value,
-                pitch: 0,
-                volume: 0.5,
-              });
+              console.log("Message received :", message);
+              // console.log("Message received as json :", JSON.parse(message));
+              // machineState.value = message;
+              updateMachineStateRef();
             }
           };
+        };
 
-          const updateInstrumentSampleVolume = function (event) {
-            // console.log("eventtargetvalue", event.target.value)
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLEVOLUME",
-              Number(event.target.value)
-            );
-            getCurrentInstrumentSample().volume = event.target.value;
-          };
+        const sendMessageViaWebsocket = function (message) {
+          if (!!ws && ws.value.readyState === WebSocket.OPEN) {
+            ws.value.send(message);
+          } else {
+            console.log("WebSocket non connected !");
+          }
+        };
 
-          const updateInstrumentSamplePitch = function (event) {
-            // console.log("eventtargetvalue", event.target.value)
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLEPITCH",
-              Number(event.target.value)
-            );
-            getCurrentInstrumentSample().pitch = event.target.value;
-          };
+        const getCurrentInstrumentSample = function () {
+          return machineState.value.samples[getCurrentInstrumentSampleIndex()];
+        };
+        const getCurrentInstrumentSampleIndex = function () {
+          let sampleIndex = 0;
+          switch (machineState.value.currentPartInstrumentIndex) {
+            case 0:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex1;
+              break;
+            case 1:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex2;
+              break;
+            case 2:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex3;
+              break;
+            case 3:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex4;
+              break;
+            case 4:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex5;
+              break;
+            case 5:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex6;
+              break;
+            case 6:
+              sampleIndex = machineState.value.drumRackSampleFileRefIndex7;
+              break;
+          }
+          return sampleIndex;
+        };
+        const isStepActive = function (stepIndex) {
+          return machineState.value.parts[
+            machineState.value.currentPartIndex
+          ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+            (st) =>
+              st.instrumentIndex ==
+              machineState.value.currentPartInstrumentIndex
+          );
+        };
 
-          return {
-            songIndex,
-            songName,
-            songTempo,
-            currentPartIndex,
-            currentPartInstrumentIndex,
-            currentStaveIndex,
-            samples,
-            parts,
-            connectToWebsocket,
-            sendMessageViaWebsocket,
-            updateSongName,
-            updateTempo,
-            play,
-            stop,
-            loadPreviousPart,
-            loadNextPart,
-            createNextPart,
-            updateStaveNumber,
-            selectStave,
-            selectInstrument,
-            getCurrentInstrumentSample,
-            getCurrentInstrumentSampleIndex,
-            isStepActive,
-            toggleInstrumentStep,
-            updateTempo,
-            updateInstrumentSampleVolume,
-            updateInstrumentSamplePitch,
-          };
-        },
-      }).mount("#app");
-    });
+        const updateSongName = function (event) {
+          httpAction("UPDATESONGNAME", event.target.value);
+          // songName.value = event.target.value;
+        };
+        const updateTempo = function (event) {
+          httpAction("UPDATETEMPO", Number(event.target.value));
+          // machineState.value.songTempo = event.target.value;
+        };
+        const play = function () {
+          httpAction("PLAY", {});
+        };
+        const stop = function () {
+          httpAction("STOP", {});
+        };
+        const loadPreviousPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
+          // machineState.value.currentPartIndex -= 1;
+          // machineState.value.currentStaveIndex = 0;
+        };
+        const loadNextPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
+          // machineState.value.currentPartIndex += 1;
+          // machineState.value.currentStaveIndex = 0;
+        };
+        const createNextPart = function () {
+          httpAction("CREATEPART", {});
+          // machineState.value.parts.push({
+          //   staves: 1,
+          //   steps: [
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //     [],
+          //   ],
+          // });
+          // machineState.value.currentPartIndex += 1;
+        };
+        const updateStaveNumber = function (staveNumber) {
+          httpAction("UPDATESTAVENUMBER", staveNumber);
+          // if (machineState.value.currentStaveIndex >= staveNumber) {
+          //   machineState.value.currentStaveIndex = staveNumber - 1;
+          // }
+          // machineState.value.parts[machineState.value.currentPartIndex].staves =
+          //   staveNumber;
+
+          // machineState.value.parts[machineState.value.currentPartIndex].steps =
+          //   resizeArray(
+          //     machineState.value.parts[machineState.value.currentPartIndex]
+          //       .steps,
+          //     16 *
+          //       machineState.value.parts[machineState.value.currentPartIndex]
+          //         .staves,
+          //     []
+          //   );
+        };
+        const selectStave = function (staveIndex) {
+          httpAction("SELECTSTAVE", staveIndex);
+          // machineState.value.currentStaveIndex = staveIndex;
+        };
+        const selectInstrument = function (instrumentIndex) {
+          httpAction("SELECTINSTRUMENT", instrumentIndex);
+          // machineState.value.currentPartInstrumentIndex = instrumentIndex;
+        };
+        const toggleInstrumentStep = function (stepIndex) {
+          const stepIndexToUpdate =
+            stepIndex + 16 * machineState.value.currentStaveIndex;
+          httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          // if (isStepActive(stepIndex)) {
+          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
+          //     stepIndex
+          //   ] = machineState.value.parts[
+          //     machineState.value.currentPartIndex
+          //   ].steps[stepIndex].filter(
+          //     (i) =>
+          //       i.instrumentIndex !=
+          //       machineState.value.currentPartInstrumentIndex
+          //   );
+          // } else {
+          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
+          //     stepIndex
+          //   ].push({
+          //     instrumentIndex: machineState.value.currentPartInstrumentIndex,
+          //     pitch: 0,
+          //     volume: 0.5,
+          //   });
+          // }
+        };
+
+        const updateInstrumentSampleVolume = function (event) {
+          // console.log("eventtargetvalue", event.target.value)
+          httpAction(
+            "UPDATEINSTRUMENTSAMPLEVOLUME",
+            Number(event.target.value)
+          );
+          // getCurrentInstrumentSample().volume = event.target.value;
+        };
+
+        const updateInstrumentSamplePitch = function (event) {
+          // console.log("eventtargetvalue", event.target.value)
+          httpAction("UPDATEINSTRUMENTSAMPLEPITCH", Number(event.target.value));
+          // getCurrentInstrumentSample().pitch = event.target.value;
+        };
+
+        updateMachineStateRef().then((_) => {
+          connectToWebsocket();
+        });
+
+        return {
+          wsStatus,
+          machineState,
+          connectToWebsocket,
+          sendMessageViaWebsocket,
+          updateSongName,
+          updateTempo,
+          play,
+          stop,
+          loadPreviousPart,
+          loadNextPart,
+          createNextPart,
+          updateStaveNumber,
+          selectStave,
+          selectInstrument,
+          getCurrentInstrumentSample,
+          getCurrentInstrumentSampleIndex,
+          isStepActive,
+          toggleInstrumentStep,
+          updateTempo,
+          updateInstrumentSampleVolume,
+          updateInstrumentSamplePitch,
+        };
+      },
+    }).mount("#app");
+    // });
   </script>
 
   <!-- <script>
