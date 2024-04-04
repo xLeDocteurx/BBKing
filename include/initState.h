@@ -71,6 +71,7 @@ bool initState(State *statePointer)
 
     // Init state
     statePointer->currentModeIndex = 0;
+    statePointer->currentStepIndex = 0;
     statePointer->currentSongIndex = 0;
     statePointer->songName = "Demo song";
     statePointer->songTempo = 154;
