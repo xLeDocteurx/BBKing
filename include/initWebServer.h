@@ -224,7 +224,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     // if (actionType == "UPDATESONGINDEX")
     // {
     // }
-    // else 
+    // else
     if (actionType == "UPDATECURRENTMODE")
     {
         statePointer->currentModeIndex = stoi(actionParameters);
@@ -327,15 +327,49 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->currentPartInstrumentIndex = desiredIntrumentIndex;
         // }
     }
+    // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
         int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
         statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
     }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPVOLUME")
+    {
+        printf("UPDATEINSTRUMENTSAMPLESTEPVOLUME\n");
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+            if (sampleIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].volume = std::stof(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
         int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
         statePointer->samples[sampleIndex].pitch = stoi(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPPITCH")
+    {
+        printf("UPDATEINSTRUMENTSAMPLESTEPPITCH\n");
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+            if (sampleIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = std::stof(actionParameters);
     }
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
     {
@@ -386,6 +420,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     /* Send a simple response */
     std::string resp = "{\"actionType\":\"" + actionType + "\",\"actionParameters\":\"" + actionParameters + "\"}";
     httpd_resp_send(req, resp.c_str(), HTTPD_RESP_USE_STRLEN);
+    // httpd_resp_send(req, "ESP_OK", HTTPD_RESP_USE_STRLEN);
     // httpd_resp_send(req, content, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
