@@ -60,7 +60,11 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
     partsString += "]";
 
     std::string jsonString =
-        "{\"currentSongIndex\":" +
+        "{\"currentModeIndex\":" +
+        std::to_string(statePointer->currentModeIndex) +
+        ",\"currentSelectedStepIndex\":" +
+        std::to_string(statePointer->currentSelectedStepIndex) +
+        ",\"currentSongIndex\":" +
         std::to_string(statePointer->currentSongIndex) +
         ",\"songName\":\"" +
         statePointer->songName +

@@ -70,6 +70,8 @@ bool initState(State *statePointer)
     // }
 
     // Init state
+    statePointer->currentModeIndex = 0;
+    statePointer->currentSelectedStepIndex = 0;
     statePointer->currentSongIndex = 0;
     statePointer->songName = "Demo song";
     statePointer->songTempo = 154;
@@ -105,6 +107,35 @@ bool initState(State *statePointer)
     loadFile("/data/hho.wav", true, 0.75, 0, &sample7);
     // loadFile("/data/flo2.wav", true, 0.75, 0, &sample7);
     statePointer->samples.push_back(sample7);
+    
+    Sample sample8;
+    loadFile("/data/guitar-AM.wav", true, 0.75, 0, &sample8);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample8);
+    statePointer->samples.push_back(sample8);
+    Sample sample9;
+    loadFile("/data/flute-X.wav", true, 0.75, 0, &sample9);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample9);
+    statePointer->samples.push_back(sample9);
+    Sample sample10;
+    loadFile("/data/trumpet-C.wav", true, 0.75, 0, &sample10);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample10);
+    statePointer->samples.push_back(sample10);
+    Sample sample11;
+    loadFile("/data/saw-C.wav", true, 0.75, 0, &sample11);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample11);
+    statePointer->samples.push_back(sample11);
+    Sample sample12;
+    loadFile("/data/flo1.wav", true, 0.75, 0, &sample12);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample12);
+    statePointer->samples.push_back(sample12);
+    Sample sample13;
+    loadFile("/data/flo2.wav", true, 0.75, 0, &sample13);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample13);
+    statePointer->samples.push_back(sample13);
+    Sample sample14;
+    loadFile("/data/of.wav", true, 0.75, 0, &sample14);
+    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample14);
+    statePointer->samples.push_back(sample14);
 
     // drumRack
     statePointer->drumRackSampleFileRefIndex1 = 0;

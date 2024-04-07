@@ -154,16 +154,18 @@
                     <i class="fas fa-music"></i>
                   </button> -->
                   <button
-                    disabled
+                    @click="() => {updateCurrentMode(0);}"
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    class="btn w-25"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
                   >
                     <i class="fas fa-guitar"></i>
                   </button>
                   <button
-                    disabled
+                    @click="() => {updateCurrentMode(1);}"
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    class="btn w-25"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
                   >
                     <i class="fas fa-shoe-prints"></i>
                   </button>
@@ -199,7 +201,41 @@
         </div>
         <div class="col">
           <div class="card border-primary h-100">
-            <div class="card-header">Common / Instrument</div>
+            <div class="card-header">
+              Common / Instrument
+
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Button group with nested dropdown"
+              >
+                <button type="button" class="btn btn-outline-primary">
+                  {{getCurrentInstrumentSample().filePath}}
+                </button>
+                <div class="btn-group" role="group">
+                  <button
+                    id="btnGroupDrop1"
+                    type="button"
+                    class="btn btn-outline-primary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  ></button>
+                  <div
+                    class="dropdown-menu"
+                    aria-labelledby="btnGroupDrop1"
+                    style=""
+                  >
+                    <a
+                      v-for="s in machineState.samples"
+                      class="dropdown-item"
+                      href="#"
+                      >{{s.filePath}}</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="card-body">
               <div class="card-text">
                 <form>
@@ -214,8 +250,8 @@
                       max="48"
                       step="1"
                       id="pitchSustainRange"
-                      :value="getCurrentInstrumentSample().pitch"
-                      @change="($event)=>{updateInstrumentSamplePitch($event);}"
+                      :value="getCommonsControlValues().pitch"
+                      @change="($event)=>{updatePitch($event);}"
                     />
                     <label for="volumeRange" class="form-label">Volume :</label>
                     <input
@@ -225,8 +261,8 @@
                       max="1"
                       step="0.0025"
                       id="volumeRange"
-                      :value="getCurrentInstrumentSample().volume"
-                      @change="($event)=>{updateInstrumentSampleVolume($event);}"
+                      :value="getCommonsControlValues().volume"
+                      @change="($event)=>{updateVolume($event);}"
                     />
                   </fieldset>
                 </form>
@@ -269,37 +305,6 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <div
-                class="btn-group"
-                role="group"
-                aria-label="Button group with nested dropdown"
-              >
-                <button type="button" class="btn btn-outline-primary">
-                  {{getCurrentInstrumentSample().filePath}}
-                </button>
-                <div class="btn-group" role="group">
-                  <button
-                    id="btnGroupDrop1"
-                    type="button"
-                    class="btn btn-outline-primary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  ></button>
-                  <div
-                    class="dropdown-menu"
-                    aria-labelledby="btnGroupDrop1"
-                    style=""
-                  >
-                    <a
-                      v-for="s in machineState.samples"
-                      class="dropdown-item"
-                      href="#"
-                      >{{s.filePath}}</a
-                    >
-                  </div>
-                </div>
-              </div>
               <!-- <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
@@ -308,6 +313,11 @@
                   <i class="fas fa-keyboard"></i>
                 </button>
               </div> -->
+
+              <!-- <button disabled type="button" class="btn btn-outline-light">
+                Light
+              </button> -->
+
               <div class="btn-group" role="group">
                 <button
                   v-if="machineState.parts[machineState.currentPartIndex].staves>1"
@@ -452,6 +462,7 @@
                     type="button"
                     class="btn"
                     :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1)}"
+                    :disabled="!isStepClickable(n-1)"
                   >
                     <b>{{n}}</b>
                   </button>
@@ -490,6 +501,8 @@
         const wsStatus = ref(false);
 
         const machineState = ref({
+          currentModeIndex: 0,
+          currentSelectedStepIndex: 0,
           currentSongIndex: 0,
           songName: "Demo song",
           songTempo: 154,
@@ -544,11 +557,13 @@
             method: "POST",
             body: `${actionName}@${JSON.stringify(actionParameters)}`,
           });
-          const json = await response.json();
-          console.log("httpAction res : ", json);
+          // const json = await response.json();
+          const text = await response.text();
+          // console.log("httpAction res : ", json);
+          console.log("httpAction res : ", text);
           // TODO : temporary solution for pongs
           sendMessageViaWebsocket("toggle");
-          return json;
+          // return json;
         };
         const updateMachineStateRef = async function () {
           const response = await fetch(`/state`);
@@ -593,6 +608,25 @@
         const getCurrentInstrumentSample = function () {
           return machineState.value.samples[getCurrentInstrumentSampleIndex()];
         };
+        const getCommonsControlValues = function () {
+          if (machineState.value.currentModeIndex == 0) {
+            const obj =
+              machineState.value.samples[getCurrentInstrumentSampleIndex()];
+            return { volume: obj.volume, pitch: obj.pitch };
+          } else if (machineState.value.currentModeIndex == 1) {
+            const obj = machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[
+              machineState.value.currentSelectedStepIndex +
+                16 * machineState.value.currentStaveIndex
+            ].find(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+            return { volume: obj.volume, pitch: obj.pitch };
+          }
+        };
         const getCurrentInstrumentSampleIndex = function () {
           let sampleIndex = 0;
           switch (machineState.value.currentPartInstrumentIndex) {
@@ -620,16 +654,36 @@
           }
           return sampleIndex;
         };
+        const isStepClickable = function (stepIndex) {
+          if (machineState.value.currentModeIndex == 0) {
+            return true;
+          } else if (machineState.value.currentModeIndex == 1) {
+            return machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+          }
+        };
         const isStepActive = function (stepIndex) {
-          return machineState.value.parts[
-            machineState.value.currentPartIndex
-          ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
-            (st) =>
-              st.instrumentIndex ==
-              machineState.value.currentPartInstrumentIndex
-          );
+          if (machineState.value.currentModeIndex == 0) {
+            return machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            return stepIndex == machineState.value.currentSelectedStepIndex;
+          }
         };
 
+        const updateCurrentMode = function (modeIndex) {
+          httpAction("UPDATECURRENTMODE", modeIndex);
+        };
         const updateSongName = function (event) {
           httpAction("UPDATESONGNAME", event.target.value);
           // songName.value = event.target.value;
@@ -708,7 +762,11 @@
         const toggleInstrumentStep = function (stepIndex) {
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
-          httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction("UPDATECURRENTSELECTEDSTEP", stepIndexToUpdate);
+          }
           // if (isStepActive(stepIndex)) {
           //   machineState.value.parts[machineState.value.currentPartIndex].steps[
           //     stepIndex
@@ -730,18 +788,35 @@
           // }
         };
 
-        const updateInstrumentSampleVolume = function (event) {
+        const updateVolume = function (event) {
           // console.log("eventtargetvalue", event.target.value)
-          httpAction(
-            "UPDATEINSTRUMENTSAMPLEVOLUME",
-            Number(event.target.value)
-          );
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEVOLUME",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPVOLUME",
+              Number(event.target.value)
+            );
+          }
           // getCurrentInstrumentSample().volume = event.target.value;
         };
 
-        const updateInstrumentSamplePitch = function (event) {
+        const updatePitch = function (event) {
           // console.log("eventtargetvalue", event.target.value)
-          httpAction("UPDATEINSTRUMENTSAMPLEPITCH", Number(event.target.value));
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEPITCH",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPPITCH",
+              Number(event.target.value)
+            );
+          }
           // getCurrentInstrumentSample().pitch = event.target.value;
         };
 
@@ -754,6 +829,7 @@
           machineState,
           connectToWebsocket,
           sendMessageViaWebsocket,
+          updateCurrentMode,
           updateSongName,
           updateTempo,
           play,
@@ -765,12 +841,14 @@
           selectStave,
           selectInstrument,
           getCurrentInstrumentSample,
+          getCommonsControlValues,
           getCurrentInstrumentSampleIndex,
+          isStepClickable,
           isStepActive,
           toggleInstrumentStep,
           updateTempo,
-          updateInstrumentSampleVolume,
-          updateInstrumentSamplePitch,
+          updateVolume,
+          updatePitch,
         };
       },
     }).mount("#app");
