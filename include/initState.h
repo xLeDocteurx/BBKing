@@ -39,7 +39,7 @@ bool loadFile(char *filePath, bool isMono, float volume, int pitch, Sample *samp
 
     // TODO : read header for mono detection
 
-    *samplePointer = {filePath, isMono, volume, pitch, fileSize, fileBufferPointer, false, 0};
+    *samplePointer = {filePath, isMono, volume, pitch, fileSize, fileBufferPointer, false, 0, 0, 0};
     return true;
 }
 
@@ -79,72 +79,101 @@ bool initState(State *statePointer)
     statePointer->samples = {};
 
     Sample sample1;
-    loadFile("/data/kick.wav", true, 0.75, 0, &sample1);
+    loadFile("/data/kick.wav", true, 0.5, 0, &sample1);
     statePointer->samples.push_back(sample1);
     Sample sample2;
-    loadFile("/data/snare.wav", true, 0.75, 0, &sample2);
-    // loadFile("/data/clap.wav", true, 0.75, 0, &sample2);
+    loadFile("/data/snare.wav", true, 0.5, 0, &sample2);
+    // loadFile("/data/clap.wav", true, 0.5, 0, &sample2);
     statePointer->samples.push_back(sample2);
     Sample sample3;
-    loadFile("/data/clap.wav", true, 0.75, 0, &sample3);
-    // loadFile("/data/rim.wav", true, 0.75, 0, &sample3);
+    loadFile("/data/clap.wav", true, 0.5, 0, &sample3);
+    // loadFile("/data/rim.wav", true, 0.5, 0, &sample3);
     statePointer->samples.push_back(sample3);
     Sample sample4;
-    loadFile("/data/rim.wav", true, 0.75, 0, &sample4);
-    // loadFile("/data/hhc.wav", true, 0.75, 0, &sample4);
+    loadFile("/data/rim.wav", true, 0.5, 0, &sample4);
+    // loadFile("/data/hhc.wav", true, 0.5, 0, &sample4);
     statePointer->samples.push_back(sample4);
     Sample sample5;
-    // loadFile("/data/bass-C.wav", true, 0.75, -12, &sample5);
-    // loadFile("/data/bass-C.wav", true, 0.75, 12, &sample5);
-    loadFile("/data/bass-C.wav", true, 0.75, 0, &sample5);
-    // loadFile("/data/hho.wav", true, 0.75, 0, &sample5);
+    // loadFile("/data/bass-C.wav", true, 0.5, -12, &sample5);
+    // loadFile("/data/bass-C.wav", true, 0.5, 12, &sample5);
+    loadFile("/data/bass-C.wav", true, 0.33, 0, &sample5);
+    // loadFile("/data/hho.wav", true, 0.5, 0, &sample5);
     statePointer->samples.push_back(sample5);
     Sample sample6;
-    loadFile("/data/hhc.wav", true, 0.75, 0, &sample6);
-    // loadFile("/data/flo1.wav", true, 0.75, 0, &sample6);
+    loadFile("/data/hhc.wav", true, 0.5, 0, &sample6);
+    // loadFile("/data/flo1.wav", true, 0.5, 0, &sample6);
     statePointer->samples.push_back(sample6);
     Sample sample7;
-    loadFile("/data/hho.wav", true, 0.75, 0, &sample7);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample7);
+    loadFile("/data/hho.wav", true, 0.5, 0, &sample7);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample7);
     statePointer->samples.push_back(sample7);
     
     Sample sample8;
-    loadFile("/data/guitar-AM.wav", true, 0.75, 0, &sample8);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample8);
+    loadFile("/data/guitar-AM.wav", true, 0.5, 0, &sample8);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample8);
     statePointer->samples.push_back(sample8);
     Sample sample9;
-    loadFile("/data/flute-X.wav", true, 0.75, 0, &sample9);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample9);
+    loadFile("/data/flute-X.wav", true, 0.5, 0, &sample9);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample9);
     statePointer->samples.push_back(sample9);
     Sample sample10;
-    loadFile("/data/trumpet-C.wav", true, 0.75, 0, &sample10);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample10);
+    loadFile("/data/trumpet-C.wav", true, 0.5, 0, &sample10);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample10);
     statePointer->samples.push_back(sample10);
     Sample sample11;
-    loadFile("/data/saw-C.wav", true, 0.75, 0, &sample11);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample11);
+    loadFile("/data/saw-C.wav", true, 0.5, 0, &sample11);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample11);
     statePointer->samples.push_back(sample11);
     Sample sample12;
-    loadFile("/data/flo1.wav", true, 0.75, 0, &sample12);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample12);
+    loadFile("/data/flo1.wav", true, 0.5, 0, &sample12);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample12);
     statePointer->samples.push_back(sample12);
     Sample sample13;
-    loadFile("/data/flo2.wav", true, 0.75, 0, &sample13);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample13);
+    loadFile("/data/flo2.wav", true, 0.5, 0, &sample13);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample13);
     statePointer->samples.push_back(sample13);
     Sample sample14;
-    loadFile("/data/of.wav", true, 0.75, 0, &sample14);
-    // loadFile("/data/flo2.wav", true, 0.75, 0, &sample14);
+    loadFile("/data/of.wav", true, 0.5, 0, &sample14);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample14);
     statePointer->samples.push_back(sample14);
 
+    Sample sample15;
+    loadFile("/data/cowbell.wav", true, 0.5, 0, &sample15);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample15);
+    statePointer->samples.push_back(sample15);
+    Sample sample16;
+    loadFile("/data/crash.wav", true, 0.5, 0, &sample16);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample16);
+    statePointer->samples.push_back(sample16);
+    Sample sample17;
+    loadFile("/data/kickrumble.wav", true, 0.5, 0, &sample17);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample17);
+    statePointer->samples.push_back(sample17);
+    Sample sample18;
+    loadFile("/data/ride.wav", true, 0.5, 0, &sample18);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample18);
+    statePointer->samples.push_back(sample18);
+    Sample sample19;
+    loadFile("/data/tomh.wav", true, 0.5, 0, &sample19);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample19);
+    statePointer->samples.push_back(sample19);
+    Sample sample20;
+    loadFile("/data/toml.wav", true, 0.5, 0, &sample20);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample20);
+    statePointer->samples.push_back(sample20);
+    Sample sample21;
+    loadFile("/data/toml2.wav", true, 0.5, 0, &sample21);
+    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample21);
+    statePointer->samples.push_back(sample21);
+
     // drumRack
-    statePointer->drumRackSampleFileRefIndex1 = 0;
-    statePointer->drumRackSampleFileRefIndex2 = 1;
-    statePointer->drumRackSampleFileRefIndex3 = 2;
-    statePointer->drumRackSampleFileRefIndex4 = 3;
-    statePointer->drumRackSampleFileRefIndex5 = 4;
-    statePointer->drumRackSampleFileRefIndex6 = 5;
-    statePointer->drumRackSampleFileRefIndex7 = 6;
+    statePointer->drumRack0SampleFileRefIndex = 0;
+    statePointer->drumRack1SampleFileRefIndex = 1;
+    statePointer->drumRack2SampleFileRefIndex = 2;
+    statePointer->drumRack3SampleFileRefIndex = 3;
+    statePointer->drumRack4SampleFileRefIndex = 4;
+    statePointer->drumRack5SampleFileRefIndex = 5;
+    statePointer->drumRack6SampleFileRefIndex = 6;
     // slicer
     // statePointer->slicerSampleFileRefIndex;
     // keyboard
@@ -168,50 +197,50 @@ bool initState(State *statePointer)
         switch (i)
         {
         case 0:
-            part1Steps.push_back({{0, 0, 0.9}});
+            part1Steps.push_back({{0, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 2:
             part1Steps.push_back({});
             break;
         case 4:
-            part1Steps.push_back({{1, 0, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}, {4, 2, 0.9}});
             break;
         case 6:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 8:
-            part1Steps.push_back({});
+            part1Steps.push_back({{4, 3, 0.9}});
             break;
         case 10:
             part1Steps.push_back({{1, 0, 0.9}});
             break;
         case 12:
-            part1Steps.push_back({{1, 0, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}, {4, 5, 0.9}});
             break;
         case 14:
             part1Steps.push_back({});
             break;
         
         case 16:
-            part1Steps.push_back({{0, 0, 0.9}});
+            part1Steps.push_back({{0, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 18:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 20:
-            part1Steps.push_back({{1, 0, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}, {4, 2, 0.9}});
             break;
         case 22:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 24:
-            part1Steps.push_back({});
+            part1Steps.push_back({{4, 3, 0.9}});
             break;
         case 26:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 28:
-            part1Steps.push_back({{1, 0, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}, {4, 5, 0.9}});
             break;
         case 29:
             part1Steps.push_back({{0, 0, 0.9}});
@@ -235,56 +264,56 @@ bool initState(State *statePointer)
         switch (i)
         {
         case 0:
-            part2Steps.push_back({{0, 0, 0.9}, {6, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {6, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 2:
-            part2Steps.push_back({{3, 0, 0.9}});
+            part2Steps.push_back({{3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 4:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 2, 0.9}});
             break;
         case 6:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 8:
-            part2Steps.push_back({{5, 0, 0.9}});
+            part2Steps.push_back({{5, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 10:
-            part2Steps.push_back({{1, 0, 0.9}, {3, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 12:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 5, 0.9}});
             break;
         case 14:
-            part2Steps.push_back({{3, 0, 0.9}});
+            part2Steps.push_back({{3, 0, 0.9}, {4, 7, 0.9}});
             break;
         
         case 16:
-            part2Steps.push_back({{0, 0, 0.9}, {5, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {5, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 18:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 20:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 2, 0.9}});
             break;
         case 22:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 24:
-            part2Steps.push_back({{5, 0, 0.9}});
+            part2Steps.push_back({{5, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 26:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
             break;
         case 28:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 5, 0.9}});
             break;
         case 29:
             part2Steps.push_back({{0, 0, 0.9}});
             break;
         case 30:
-            part2Steps.push_back({{3, 0, 0.9}});
+            part2Steps.push_back({{3, 0, 0.9}, {4, 7, 0.9}});
             break;
         default:
             part2Steps.push_back({});

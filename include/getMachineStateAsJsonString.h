@@ -73,19 +73,19 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
         ",\"samples\":" +
         samplesString +
         ",\"drumRackSampleFileRefIndex1\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex1) +
+        std::to_string(statePointer->drumRack0SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex2\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex2) +
+        std::to_string(statePointer->drumRack1SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex3\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex3) +
+        std::to_string(statePointer->drumRack2SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex4\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex4) +
+        std::to_string(statePointer->drumRack3SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex5\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex5) +
+        std::to_string(statePointer->drumRack4SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex6\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex6) +
+        std::to_string(statePointer->drumRack5SampleFileRefIndex) +
         ",\"drumRackSampleFileRefIndex7\":" +
-        std::to_string(statePointer->drumRackSampleFileRefIndex7) +
+        std::to_string(statePointer->drumRack6SampleFileRefIndex) +
         ",\"currentPartIndex\":" +
         std::to_string(statePointer->currentPartIndex) +
         ",\"currentPartInstrumentIndex\":" +
