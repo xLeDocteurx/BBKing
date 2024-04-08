@@ -13,5 +13,7 @@ struct Sample
     int16_t *buffer;    
     bool isPlaying;
     int bufferSamplesReadCounter;
+    int startingStepVolume;
+    int startingStepPitch;
 };
 #endif // SAMPLESTRUCT_H

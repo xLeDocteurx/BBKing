@@ -9,25 +9,25 @@ int getInstrumentSampleIndex(State *statePointer, int instrumentIndex)
     switch (instrumentIndex)
     {
     case 0:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex1;
+        instrumentSampleIndex = statePointer->drumRack0SampleFileRefIndex;
         break;
     case 1:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex2;
+        instrumentSampleIndex = statePointer->drumRack1SampleFileRefIndex;
         break;
     case 2:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex3;
+        instrumentSampleIndex = statePointer->drumRack2SampleFileRefIndex;
         break;
     case 3:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex4;
+        instrumentSampleIndex = statePointer->drumRack3SampleFileRefIndex;
         break;
     case 4:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex5;
+        instrumentSampleIndex = statePointer->drumRack4SampleFileRefIndex;
         break;
     case 5:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex6;
+        instrumentSampleIndex = statePointer->drumRack5SampleFileRefIndex;
         break;
     case 6:
-        instrumentSampleIndex = statePointer->drumRackSampleFileRefIndex7;
+        instrumentSampleIndex = statePointer->drumRack6SampleFileRefIndex;
         break;
     }
 

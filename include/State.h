@@ -30,13 +30,13 @@ struct State
 
     std::vector<Sample> samples;
     // drumRack
-    int drumRackSampleFileRefIndex1;
-    int drumRackSampleFileRefIndex2;
-    int drumRackSampleFileRefIndex3;
-    int drumRackSampleFileRefIndex4;
-    int drumRackSampleFileRefIndex5;
-    int drumRackSampleFileRefIndex6;
-    int drumRackSampleFileRefIndex7;
+    int drumRack0SampleFileRefIndex;
+    int drumRack1SampleFileRefIndex;
+    int drumRack2SampleFileRefIndex;
+    int drumRack3SampleFileRefIndex;
+    int drumRack4SampleFileRefIndex;
+    int drumRack5SampleFileRefIndex;
+    int drumRack6SampleFileRefIndex;
     // slicer
     // int slicerSampleFileRefIndex;
     // sampler
