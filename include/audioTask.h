@@ -24,8 +24,8 @@ void audioTask(void *parameter)
 
                 // Step playbackSpeed and pitch
                 
-                int stepPitch = sample->startingStepPitch;
-                float stepVolume = sample->startingStepVolume;
+                // int stepPitch = sample->startingStepPitch;
+                // float stepVolume = sample->startingStepVolume;
                 // int stepPitch = 0;
                 // float stepVolume = 0;
 
@@ -58,7 +58,7 @@ void audioTask(void *parameter)
                 // }
 
                 // TODO : En function utils "pitchToSpeed"
-                float playbackSpeed = pow(2, static_cast<float>(sample->pitch + stepPitch) / 12.0);
+                float playbackSpeed = pow(2, static_cast<float>(sample->pitch + sample->startingStepPitch) / 12.0);
                 // if (sampleFileIndex == 4)
                 // {
                 //     printf("playbackSpeed %f\n", playbackSpeed);
@@ -93,8 +93,15 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
-                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * stepVolume;
+                    // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * sample->startingStepVolume;
+                    // printf("sample->startingStepVolume : %i\n", sample->startingStepVolume);
+                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
                 }
+                // // TODO : If sizeToWriteInSamples is smaller than _masterBuffer size. Fill the rest with 0s.
+                // for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE - sizeToWriteInSamples; i++)
+                // {
+                //     statePointer->_masterBuffer[i] += 0;
+                // }
 
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
             }
@@ -102,6 +109,7 @@ void audioTask(void *parameter)
 
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable
+
         i2s_write(I2S_NUM_0, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
         for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
         {

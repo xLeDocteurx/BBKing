@@ -44,7 +44,7 @@ void sequencerTask(void *parameter)
                 statePointer->samples[sampleIndex].startingStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
             }
 
-            printf("%i\n", statePointer->currentStepIndex);
+            // printf("%i\n", statePointer->currentStepIndex);
             statePointer->currentStepIndex += 1;
             if (statePointer->currentStepIndex >= STATE_PART_STEPS_LENGTH * statePointer->parts[statePointer->currentPartIndex].staves)
             {
