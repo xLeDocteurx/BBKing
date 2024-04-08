@@ -97,7 +97,7 @@ void audioTask(void *parameter)
                     // printf("sample->startingStepVolume : %i\n", sample->startingStepVolume);
                     statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
                 }
-                // // TODO : If sizeToWriteInSamples is smaller than _masterBuffer size. Fill the rest with 0s.
+                // TODO : If sizeToWriteInSamples is smaller than _masterBuffer size. Fill the rest with 0s.
                 // for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE - sizeToWriteInSamples; i++)
                 // {
                 //     statePointer->_masterBuffer[i] += 0;
