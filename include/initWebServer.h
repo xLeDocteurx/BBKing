@@ -327,6 +327,14 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->currentPartInstrumentIndex = desiredIntrumentIndex;
         // }
     }
+    else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
+    {
+        int desiredSampleIndex = stoi(actionParameters);
+        // if (desiredIntrumentIndex >=0 && < 7)
+        // {
+        updateInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex, desiredSampleIndex);
+        // }
+    }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {

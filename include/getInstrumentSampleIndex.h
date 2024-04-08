@@ -33,4 +33,33 @@ int getInstrumentSampleIndex(State *statePointer, int instrumentIndex)
 
     return instrumentSampleIndex;
 }
+
+// TODO : Put in a seperate file
+void updateInstrumentSampleIndex(State *statePointer, int instrumentIndex, int sampleIndex)
+{
+    switch (instrumentIndex)
+    {
+    case 0:
+        statePointer->drumRack0SampleFileRefIndex = sampleIndex;
+        break;
+    case 1:
+        statePointer->drumRack1SampleFileRefIndex = sampleIndex;
+        break;
+    case 2:
+        statePointer->drumRack2SampleFileRefIndex = sampleIndex;
+        break;
+    case 3:
+        statePointer->drumRack3SampleFileRefIndex = sampleIndex;
+        break;
+    case 4:
+        statePointer->drumRack4SampleFileRefIndex = sampleIndex;
+        break;
+    case 5:
+        statePointer->drumRack5SampleFileRefIndex = sampleIndex;
+        break;
+    case 6:
+        statePointer->drumRack6SampleFileRefIndex = sampleIndex;
+        break;
+    }
+}
 #endif // GETINSTRUMENTSAMPLEINDEX_H

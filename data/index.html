@@ -226,10 +226,12 @@
                     aria-labelledby="btnGroupDrop1"
                     style=""
                   >
+                    <!-- TODO : remove les $event presque partout -->
                     <a
-                      v-for="s in machineState.samples"
+                      v-for="(s, s_index) in machineState.samples"
                       class="dropdown-item"
                       href="#"
+                      @click="($event) => updateSelectedInstrumentSample(s_index)"
                       >{{s.filePath}}</a
                     >
                   </div>
@@ -759,6 +761,9 @@
           httpAction("SELECTINSTRUMENT", instrumentIndex);
           // machineState.value.currentPartInstrumentIndex = instrumentIndex;
         };
+        const updateSelectedInstrumentSample = function (sampleIndex) {
+          httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
+        };
         const toggleInstrumentStep = function (stepIndex) {
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
@@ -840,6 +845,7 @@
           updateStaveNumber,
           selectStave,
           selectInstrument,
+          updateSelectedInstrumentSample,
           getCurrentInstrumentSample,
           getCommonsControlValues,
           getCurrentInstrumentSampleIndex,
