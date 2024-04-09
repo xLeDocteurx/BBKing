@@ -2,7 +2,8 @@
 
 #include <Step.h>
 #include <Sample.h>
-#include <getInstrumentSampleIndex.h>
+
+// #include <masterEffectDistortion.h>
 
 TaskHandle_t audioTaskHandle;
 
@@ -106,6 +107,9 @@ void audioTask(void *parameter)
                 sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
             }
         }
+
+        // MasterEffectsStage
+        // masterEffectDistortion(statePointer)
 
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable

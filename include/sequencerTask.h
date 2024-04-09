@@ -12,25 +12,25 @@ void sequencerTask(void *parameter)
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); stepContentIndex++)
             {
                 const int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
-                int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+                int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
 
                 // Interruption groups
                 switch (stepInstrumentIndex)
                 {
                 case 5:
                     // Interruption group for sample 6 and 7
-                    if (statePointer->samples[statePointer->drumRack6SampleFileRefIndex].isPlaying)
+                    if (statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].isPlaying)
                     {
-                        statePointer->samples[statePointer->drumRack6SampleFileRefIndex].isPlaying = false;
-                        statePointer->samples[statePointer->drumRack6SampleFileRefIndex].bufferSamplesReadCounter = 0;
+                        statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].isPlaying = false;
+                        statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].bufferSamplesReadCounter = 0;
                     }
                     break;
                 case 6:
                     // Interruption group for sample 6 and 7
-                    if (statePointer->samples[statePointer->drumRack5SampleFileRefIndex].isPlaying)
+                    if (statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].isPlaying)
                     {
-                        statePointer->samples[statePointer->drumRack5SampleFileRefIndex].isPlaying = false;
-                        statePointer->samples[statePointer->drumRack5SampleFileRefIndex].bufferSamplesReadCounter = 0;
+                        statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].isPlaying = false;
+                        statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].bufferSamplesReadCounter = 0;
                     }
                     break;
                 default:

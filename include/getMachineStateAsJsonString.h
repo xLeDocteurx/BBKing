@@ -20,6 +20,18 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
     }
     samplesString += "]";
 
+    std::string instrumentsString = "[";
+    for (int i = 0; i < statePointer->instruments.size(); i++)
+    {
+        std::string instrumentString = "{\"sampleFileRefIndex\": " + std::to_string(statePointer->instruments[i].sampleFileRefIndex) + "}";
+        if (i != 0)
+        {
+            instrumentsString += ",";
+        }
+        instrumentsString += instrumentString;
+    }
+    instrumentsString += "]";
+
     std::string partsString = "[";
     for (int i = 0; i < statePointer->parts.size(); i++)
     {
@@ -72,20 +84,8 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
         std::to_string(statePointer->songTempo) +
         ",\"samples\":" +
         samplesString +
-        ",\"drumRackSampleFileRefIndex1\":" +
-        std::to_string(statePointer->drumRack0SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex2\":" +
-        std::to_string(statePointer->drumRack1SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex3\":" +
-        std::to_string(statePointer->drumRack2SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex4\":" +
-        std::to_string(statePointer->drumRack3SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex5\":" +
-        std::to_string(statePointer->drumRack4SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex6\":" +
-        std::to_string(statePointer->drumRack5SampleFileRefIndex) +
-        ",\"drumRackSampleFileRefIndex7\":" +
-        std::to_string(statePointer->drumRack6SampleFileRefIndex) +
+        ",\"instruments\":" +
+        instrumentsString +
         ",\"currentPartIndex\":" +
         std::to_string(statePointer->currentPartIndex) +
         ",\"currentPartInstrumentIndex\":" +

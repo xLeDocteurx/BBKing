@@ -1,5 +1,6 @@
 #include <string>
 
+#include <Instrument.h>
 #include <Sample.h>
 #include <Part.h>
 
@@ -30,13 +31,7 @@ struct State
 
     std::vector<Sample> samples;
     // drumRack
-    int drumRack0SampleFileRefIndex;
-    int drumRack1SampleFileRefIndex;
-    int drumRack2SampleFileRefIndex;
-    int drumRack3SampleFileRefIndex;
-    int drumRack4SampleFileRefIndex;
-    int drumRack5SampleFileRefIndex;
-    int drumRack6SampleFileRefIndex;
+    std::vector<Instrument> instruments;
     // slicer
     // int slicerSampleFileRefIndex;
     // sampler
@@ -52,6 +47,10 @@ struct State
     std::vector<Part> parts;
 
     int currentStepIndex;
+
+    // Effects
+    float effectMasterDistortionGain;
+    float effectMasterDistortionOutputGain;
 
     int16_t _masterBuffer[PLAY_WAV_WAV_BUFFER_SIZE];
     bool isPlaying;

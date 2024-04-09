@@ -15,7 +15,6 @@
 
 #include <WifiConfig.h>
 #include <readJsonFile.h>
-#include <getInstrumentSampleIndex.h>
 #include <getMachineStateAsJsonString.h>
 
 #include <GlobalVars.h>
@@ -332,13 +331,14 @@ static esp_err_t action_handler(httpd_req_t *req)
         int desiredSampleIndex = stoi(actionParameters);
         // if (desiredIntrumentIndex >=0 && < 7)
         // {
-        updateInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex, desiredSampleIndex);
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex = desiredSampleIndex;
         // }
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
-        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
+
+        int sampleIndex = statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex;
         statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
@@ -349,7 +349,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
             int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-            int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+            int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
             if (sampleIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
@@ -360,7 +360,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
-        int sampleIndex = getInstrumentSampleIndex(statePointer, statePointer->currentPartInstrumentIndex);
+        int sampleIndex = statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex;
         statePointer->samples[sampleIndex].pitch = stoi(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
@@ -371,7 +371,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
             int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-            int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+            int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
             if (sampleIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
@@ -393,7 +393,7 @@ static esp_err_t action_handler(httpd_req_t *req)
                 for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
                 {
                     int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    int sampleIndex = getInstrumentSampleIndex(statePointer, stepInstrumentIndex);
+                    int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
                     if (sampleIndex == statePointer->currentPartInstrumentIndex)
                     {
                         xxxIndex = i;

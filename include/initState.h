@@ -167,13 +167,16 @@ bool initState(State *statePointer)
     statePointer->samples.push_back(sample21);
 
     // drumRack
-    statePointer->drumRack0SampleFileRefIndex = 0;
-    statePointer->drumRack1SampleFileRefIndex = 1;
-    statePointer->drumRack2SampleFileRefIndex = 2;
-    statePointer->drumRack3SampleFileRefIndex = 3;
-    statePointer->drumRack4SampleFileRefIndex = 4;
-    statePointer->drumRack5SampleFileRefIndex = 5;
-    statePointer->drumRack6SampleFileRefIndex = 6;
+    statePointer->instruments.push_back({0});
+    statePointer->instruments.push_back({1});
+    statePointer->instruments.push_back({2});
+    statePointer->instruments.push_back({3});
+    statePointer->instruments.push_back({4});
+    statePointer->instruments.push_back({5});
+    statePointer->instruments.push_back({6});
+    statePointer->instruments.push_back({7});
+    statePointer->instruments.push_back({8});
+    statePointer->instruments.push_back({9});
     // slicer
     // statePointer->slicerSampleFileRefIndex;
     // keyboard
