@@ -1,3 +1,4 @@
+#include <Init.h>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -13,11 +14,8 @@
 #include <esp_netif.h>
 #include <esp_netif_defaults.h>
 
-#include <WifiConfig.h>
-#include <readJsonFile.h>
-#include <getMachineStateAsJsonString.h>
-
-#include <GlobalVars.h>
+#include <Defs.h>
+#include <MyUtils.h>
 
 State *statePointer;
 

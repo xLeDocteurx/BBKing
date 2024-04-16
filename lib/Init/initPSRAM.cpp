@@ -1,6 +1,7 @@
+#include <Init.h>
 #include <esp_psram.h>
 
-#include <GlobalVars.h>
+#include <Defs.h>
 
 bool initPSRAM()
 {

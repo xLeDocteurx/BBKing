@@ -1,9 +1,7 @@
+#include <MyUtils.h>
 #include <string>
 
-#include <State.h>
-
-#ifndef GETMACHINESTATEASJSONSTRING_H
-#define GETMACHINESTATEASJSONSTRING_H
+#include <Defs.h>
 
 void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPointer)
 {
@@ -100,5 +98,3 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
 
     jsonStringPointer->append(jsonString);
 }
-
-#endif // GETMACHINESTATEASJSONSTRING_H

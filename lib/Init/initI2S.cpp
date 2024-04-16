@@ -1,6 +1,7 @@
 #include <driver/i2s.h>
 
-#include <GlobalVars.h>
+#include <Defs.h>
+#include <Init.h>
 
 bool initI2S()
 {

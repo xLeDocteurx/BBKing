@@ -1,11 +1,13 @@
+#include <Tasks.h>
 #include <math.h>
 
-#include <Step.h>
-#include <Sample.h>
+#include <Defs.h>
 
-// #include <masterEffectDistortion.h>
+#include <driver/i2s.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
-TaskHandle_t audioTaskHandle;
+// TaskHandle_t audioTaskHandle;
 
 void audioTask(void *parameter)
 {
@@ -120,5 +122,6 @@ void audioTask(void *parameter)
             statePointer->_masterBuffer[i] = 0;
         }
     }
-    vTaskDelete(audioTaskHandle);
+    // TODO : WHAT THE FUCK
+    // vTaskDelete(audioTaskHandle);
 }

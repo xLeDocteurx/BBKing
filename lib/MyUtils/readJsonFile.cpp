@@ -1,13 +1,11 @@
+#include <MyUtils.h>
 #include <string>
 
 #include <esp_spiffs.h>
 #include <cJSON.h>
 #include <cJSON_Utils.h>
 
-#include <GlobalVars.h>
-
-#ifndef READJSONFILE_H
-#define READJSONFILE_H
+#include <Defs.h>
 
 // TODO : Remove sizeToRead and calculate file size to make this variable
 bool readJsonFile(char *filePath, std::string *stringPointer)
@@ -29,5 +27,3 @@ bool readJsonFile(char *filePath, std::string *stringPointer)
     fclose(file);
     return true;
 }
-
-#endif // READJSONFILE_H

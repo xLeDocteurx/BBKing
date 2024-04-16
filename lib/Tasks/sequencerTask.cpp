@@ -1,6 +1,11 @@
-#include <State.h>
+#include <Tasks.h>
 
-TaskHandle_t sequencerTaskHandle;
+#include <Defs.h>
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+// TaskHandle_t sequencerTaskHandle;
 
 void sequencerTask(void *parameter)
 {
@@ -54,5 +59,6 @@ void sequencerTask(void *parameter)
 
         vTaskDelay(pdMS_TO_TICKS(60000 / statePointer->songTempo / 4));
     }
-    vTaskDelete(sequencerTaskHandle);
+    // TODO : WHAT THE FUCKc
+    // vTaskDelete(sequencerTaskHandle);
 }

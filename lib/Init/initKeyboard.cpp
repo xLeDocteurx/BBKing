@@ -1,9 +1,10 @@
+#include <Init.h>
 #include <stdio.h>
 #include <driver/gpio.h>
 
-#include <GlobalVars.h>
+#include <Defs.h>
 
-#include <keyboardTask.h>
+// #include <keyboardTask.h>
 
 bool initKeyboard()
 {

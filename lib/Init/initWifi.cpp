@@ -1,6 +1,8 @@
+#include <Init.h>
 #include <vector>
 #include <stdio.h>
 
+#include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
@@ -10,8 +12,8 @@
 #include "esp_log.h"
 // #include "esp_http_server.h"
 
-#include <readJsonFile.h>
-#include <WifiConfig.h>
+#include <Defs.h>
+#include <MyUtils.h>
 
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;

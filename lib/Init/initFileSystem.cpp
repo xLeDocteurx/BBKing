@@ -1,3 +1,4 @@
+#include <Init.h>
 #include <esp_spiffs.h>
 
 bool initFileSystem()

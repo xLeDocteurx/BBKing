@@ -5,12 +5,9 @@
 #include <esp_system.h>
 #include <driver/spi_master.h>
 
-#include <GlobalVars.h>
-
-#include <readJsonFile.h>
-#include <State.h>
-#include <Step.h>
-#include <Sample.h>
+#include <Defs.h>
+#include <MyUtils.h>
+#include <Init.h>
 
 void freeFile(void *filePointer)
 {

@@ -1,12 +1,13 @@
+#include <Tasks.h>
 #include <stdio.h>
 #include <driver/gpio.h>
 
-#include <GlobalVars.h>
+#include <Defs.h>
 
-#include <State.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
-#ifndef KEYBOARDTASK_H
-#define KEYBOARDTASK_H
+// TaskHandle_t keyboardTaskHandle;
 
 // bool keyboardButtonPressed = false;
 bool keyboardButtonPressed;
@@ -38,15 +39,12 @@ void IRAM_ATTR keyboardIsr()
     }
 }
 
-TaskHandle_t keyboardTaskHandle;
-
 void keyboardTask(void *parameter)
 {
     State *statePointer = (State *)parameter;
     while (1)
     {
     }
-    vTaskDelete(keyboardTaskHandle);
+    // TODO : WHAT THE FUCK
+    // vTaskDelete(keyboardTaskHandle);
 }
-
-#endif // KEYBOARDTASK_H

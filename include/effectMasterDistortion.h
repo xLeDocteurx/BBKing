@@ -1,6 +1,4 @@
-#include <GlobalVars.h>
-
-#include <State.h>
+#include <Defs.h>
 
 #ifndef EFFECTMASTERDISTORTION_H
 #define EFFECTMASTERDISTORTION_H

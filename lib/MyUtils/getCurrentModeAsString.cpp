@@ -1,7 +1,5 @@
-#include <State.h>
-
-#ifndef GETCURRENTMODEASSTRING_H
-#define GETCURRENTMODEASSTRING_H
+#include <MyUtils.h>
+#include <Defs.h>
 
 std::string getCurrentModeAsString(State *statePointer)
 {
@@ -17,4 +15,3 @@ std::string getCurrentModeAsString(State *statePointer)
     }
     return ret;
 }
-#endif // GETCURRENTMODEASSTRING_H

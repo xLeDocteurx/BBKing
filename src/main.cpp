@@ -10,21 +10,16 @@
 // libs
 
 // Includes
-#include <GlobalVars.h>
-#include <WifiConfig.h>
-#include <Sample.h>
-#include <State.h>
+#include <Defs.h>
 // -----
-#include <initPSRAM.h>
-#include <initFileSystem.h>
-#include <initWifi.h>
-#include <initWebServer.h>
-#include <initState.h>
-#include <initI2S.h>
-#include <initKeyboard.h>
-#include <sequencerTask.h>
-#include <audioTask.h>
-#include <keyboardTask.h>
+#include <Init.h>
+#include <MyUtils.h>
+#include <Tasks.h>
+
+// TODO : WHAT THE FUCK
+TaskHandle_t audioTaskHandle;
+TaskHandle_t keyboardTaskHandle;
+TaskHandle_t sequencerTaskHandle;
 
 std::vector<wifi_config_t> wifiConfigs = {};
 esp_netif_t *sta_netif;
