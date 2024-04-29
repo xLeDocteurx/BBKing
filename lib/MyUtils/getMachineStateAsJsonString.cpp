@@ -6,22 +6,24 @@
 void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPointer)
 {
 
-    std::string samplesString = "[";
-    for (int i = 0; i < statePointer->samples.size(); i++)
-    {
-        std::string sampleString = "{\"filePath\": \"" + std::string(statePointer->samples[i].filePath) + "\", \"pitch\":" + std::to_string(statePointer->samples[i].pitch) + ", \"volume\":\"" + std::to_string(statePointer->samples[i].volume) + "\"}";
-        if (i != 0)
-        {
-            samplesString += ",";
-        }
-        samplesString += sampleString;
-    }
-    samplesString += "]";
-
     std::string instrumentsString = "[";
     for (int i = 0; i < statePointer->instruments.size(); i++)
     {
-        std::string instrumentString = "{\"sampleFileRefIndex\": " + std::to_string(statePointer->instruments[i].sampleFileRefIndex) + "}";
+        std::string instrumentString =
+            "{\"sample\": {\"filePath\":\"" +
+            std::string(statePointer->instruments[i].sample.filePath) +
+            "\",\"isMono\":" +
+            (statePointer->instruments[i].sample.isMono ? "true" : "false") +
+            ",\"fileSize\":" +
+            std::to_string(statePointer->instruments[i].sample.fileSize) +
+            // TODO : finish implementation of the instrument object properties
+            "}" +
+            ",\"isSolo\":" + (statePointer->instruments[i].isSolo ? "true" : "false") +
+            ",\"isMuted\":" + (statePointer->instruments[i].isMuted ? "true" : "false") +
+
+            ",\"volume\":" + std::to_string(statePointer->instruments[i].volume) +
+            ",\"pitch\":" + std::to_string(statePointer->instruments[i].pitch) +
+            "}";
         if (i != 0)
         {
             instrumentsString += ",";
@@ -80,8 +82,6 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
         statePointer->songName +
         "\",\"songTempo\":" +
         std::to_string(statePointer->songTempo) +
-        ",\"samples\":" +
-        samplesString +
         ",\"instruments\":" +
         instrumentsString +
         ",\"currentPartIndex\":" +

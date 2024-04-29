@@ -5,6 +5,10 @@
 #include <driver/gpio.h>
 #include <esp_spiffs.h>
 #include <driver/i2s.h>
+// #include <driver/i2s_common.h>
+// #include <driver/i2s_std.h>
+// #include <driver/i2s_pdm.h>
+// #include <driver/i2s_tdm.h>
 #include "esp_http_server.h"
 
 // libs
@@ -58,7 +62,7 @@ extern "C" void app_main()
     }
     printf("----- INIT STATE DONE -----\n");
     printf("----- INIT I2S -----\n");
-    initRes = initI2S();
+    initRes = initI2S(&state);
     if (!initRes)
     {
         printf("----- INIT I2S FAILED -----\n");
@@ -80,7 +84,6 @@ extern "C" void app_main()
     printf("----- INIT TASKS DONE -----\n");
 
     printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
-
 
     printf("----- INIT WIFI -----\n");
     esp_netif_t *initWifiRes = initWifi(&wifiConfigs);

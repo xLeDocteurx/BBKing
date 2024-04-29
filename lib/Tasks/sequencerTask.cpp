@@ -17,36 +17,36 @@ void sequencerTask(void *parameter)
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); stepContentIndex++)
             {
                 const int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
-                int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
+                // int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
 
                 // Interruption groups
                 switch (stepInstrumentIndex)
                 {
                 case 5:
                     // Interruption group for sample 6 and 7
-                    if (statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].isPlaying)
+                    if (statePointer->instruments[6].isPlaying)
                     {
-                        statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].isPlaying = false;
-                        statePointer->samples[statePointer->instruments[6].sampleFileRefIndex].bufferSamplesReadCounter = 0;
+                        statePointer->instruments[6].isPlaying = false;
+                        statePointer->instruments[6].bufferSamplesReadCounter = 0;
                     }
                     break;
                 case 6:
                     // Interruption group for sample 6 and 7
-                    if (statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].isPlaying)
+                    if (statePointer->instruments[5].isPlaying)
                     {
-                        statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].isPlaying = false;
-                        statePointer->samples[statePointer->instruments[5].sampleFileRefIndex].bufferSamplesReadCounter = 0;
+                        statePointer->instruments[5].isPlaying = false;
+                        statePointer->instruments[5].bufferSamplesReadCounter = 0;
                     }
                     break;
                 default:
                     break;
                 }
 
-                // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleIndex, statePointer->samples[sampleIndex].filePath);
-                statePointer->samples[sampleIndex].isPlaying = true;
-                statePointer->samples[sampleIndex].bufferSamplesReadCounter = 0;
-                statePointer->samples[sampleIndex].startingStepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].volume;
-                statePointer->samples[sampleIndex].startingStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
+                // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleIndex, statePointer->instruments[stepInstrumentIndex].filePath);
+                statePointer->instruments[stepInstrumentIndex].isPlaying = true;
+                statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = 0;
+                statePointer->instruments[stepInstrumentIndex].startingStepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].volume;
+                statePointer->instruments[stepInstrumentIndex].startingStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
             }
 
             // printf("%i\n", statePointer->currentStepIndex);

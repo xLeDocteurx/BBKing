@@ -1,9 +1,16 @@
+#include <stdio.h>
+#include <cstring>
+
 #include <Tasks.h>
 #include <math.h>
 
 #include <Defs.h>
 
 #include <driver/i2s.h>
+// #include <driver/i2s_common.h>
+// #include <driver/i2s_std.h>
+// #include <driver/i2s_pdm.h>
+// #include <driver/i2s_tdm.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
@@ -15,18 +22,18 @@ void audioTask(void *parameter)
     while (1)
     {
         // Write all playing samples buffers to _masterBuffer
-        for (int sampleFileIndex = 0; sampleFileIndex < statePointer->samples.size(); sampleFileIndex++)
+        for (int instrumentIndex = 0; instrumentIndex < statePointer->instruments.size(); instrumentIndex++)
         {
-            Sample *sample = &statePointer->samples[sampleFileIndex];
-            if (sample->isPlaying)
+            Instrument *instrument = &statePointer->instruments[instrumentIndex];
+            if (instrument->isPlaying)
             {
 
-                // printf("sampleFileIndex : %i\n", sampleFileIndex);
+                // printf("instrumentIndex : %i\n", instrumentIndex);
 
-                int fileSizeInSamples = sample->fileSize / sizeof(int16_t);
+                int fileSizeInSamples = instrument->sample.fileSize / sizeof(int16_t);
 
                 // Step playbackSpeed and pitch
-                
+
                 // int stepPitch = sample->startingStepPitch;
                 // float stepVolume = sample->startingStepVolume;
                 // int stepPitch = 0;
@@ -40,14 +47,14 @@ void audioTask(void *parameter)
                 //     int foundInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepElementIndex].instrumentIndex;
                 //     // printf("foundInstrumentIndex : %i\n", stepElementIndex);
                 //     int foundSampleIndex = getInstrumentSampleIndex(statePointer, foundInstrumentIndex);
-                //     // printf("sampleFileIndex : %i, foundSampleIndex : %i\n", sampleFileIndex, foundSampleIndex);
-                //     if (sampleFileIndex == foundSampleIndex)
+                //     // printf("instrumentIndex : %i, foundSampleIndex : %i\n", instrumentIndex, foundSampleIndex);
+                //     if (instrumentIndex == foundSampleIndex)
                 //     {
                 //         stepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepElementIndex].pitch;
                 //         stepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepElementIndex].volume;
-                //         if (sampleFileIndex == 4)
+                //         if (instrumentIndex == 4)
                 //         {
-                            // printf("step pitch %i\n", stepPitch);
+                // printf("step pitch %i\n", stepPitch);
                 //         }
                 //     }
 
@@ -61,19 +68,19 @@ void audioTask(void *parameter)
                 // }
 
                 // TODO : En function utils "pitchToSpeed"
-                float playbackSpeed = pow(2, static_cast<float>(sample->pitch + sample->startingStepPitch) / 12.0);
-                // if (sampleFileIndex == 4)
+                float playbackSpeed = pow(2, static_cast<float>(instrument->pitch + instrument->startingStepPitch) / 12.0);
+                // if (instrumentIndex == 4)
                 // {
                 //     printf("playbackSpeed %f\n", playbackSpeed);
                 // }
-                if (sample->isMono)
-                {
-                    playbackSpeed *= 0.5;
-                }
-                
+
+                // if (instrument->sample.isMono)
+                // {
+                //     playbackSpeed *= 0.5;
+                // }
 
                 int sizeToWriteInSamples = 0;
-                int sizeIWantToWriteInSamples = (fileSizeInSamples - sample->bufferSamplesReadCounter) / playbackSpeed;
+                int sizeIWantToWriteInSamples = (fileSizeInSamples - instrument->bufferSamplesReadCounter) / playbackSpeed;
                 if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
                     sizeToWriteInSamples = sizeIWantToWriteInSamples;
@@ -88,17 +95,22 @@ void audioTask(void *parameter)
                 if (sizeToWriteInSamples <= 0)
                 {
                     // printf("stop : %s\n", sample->filePath);
-                    sample->isPlaying = false;
-                    sample->bufferSamplesReadCounter = 0;
+                    instrument->isPlaying = false;
+                    instrument->bufferSamplesReadCounter = 0;
                     continue; // End of file or error
                 }
+                // else if (bytes_read < PLAY_WAV_WAV_BUFFER_SIZE)
+                // {
+                //     printf("next stop: /data/clap.wav : %i\n", PLAY_WAV_WAV_BUFFER_SIZE - bytes_read);
+                //     continue;
+                // }
 
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
                     // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * sample->startingStepVolume;
                     // printf("sample->startingStepVolume : %i\n", sample->startingStepVolume);
-                    statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume;
+                    statePointer->_masterBuffer[i] += instrument->buffer[(int)(instrument->bufferSamplesReadCounter + round(i * playbackSpeed))] * instrument->volume;
                 }
                 // TODO : If sizeToWriteInSamples is smaller than _masterBuffer size. Fill the rest with 0s.
                 // for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE - sizeToWriteInSamples; i++)
@@ -106,7 +118,7 @@ void audioTask(void *parameter)
                 //     statePointer->_masterBuffer[i] += 0;
                 // }
 
-                sample->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
+                instrument->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
             }
         }
 
@@ -116,11 +128,18 @@ void audioTask(void *parameter)
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable
 
-        i2s_write(I2S_NUM_0, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
-        for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
-        {
-            statePointer->_masterBuffer[i] = 0;
-        }
+        // TODO : Uncomment
+        // i2s_write(I2S_NUM_0, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
+        i2s_write(I2S_NUM_0, statePointer->_masterBuffer, sizeof(statePointer->_masterBuffer), &bytes_written, 1);
+        // i2s_channel_write(statePointer->tx_handle, buffer, bytes_read, &bytes_written, portMAX_DELAY);
+        // i2s_channel_write(statePointer->tx_handle, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
+        // i2s_channel_write(statePointer->tx_handle, statePointer->_masterBuffer, sizeof(statePointer->_masterBuffer), &bytes_written, 1);
+
+        // for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+        // {
+        //     statePointer->_masterBuffer[i] = 0;
+        // }
+        memset(statePointer->_masterBuffer, 0, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t));
     }
     // TODO : WHAT THE FUCK
     // vTaskDelete(audioTaskHandle);

@@ -253,6 +253,23 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->currentStepIndex = 0;
     }
 
+    else if (actionType == "SOLOPART")
+    {
+        int desiredIndex = stoi(actionParameters);
+        for (int i = 0; i < statePointer->instruments.size(); i++)
+        {
+            // if(statePointer->instruments[i] == i) {
+            //     // TODO
+            //     // statePointer->samples[statePointer->instruments[i].sampleFileRefIndex].
+            // } else {
+
+            // }
+        }
+    }
+    else if (actionType == "MUTEPART")
+    {
+        int desiredIndex = stoi(actionParameters);
+    }
     else if (actionType == "SELECTPART")
     {
         int desiredIndex = stoi(actionParameters);
@@ -324,20 +341,19 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->currentPartInstrumentIndex = desiredIntrumentIndex;
         // }
     }
-    else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
-    {
-        int desiredSampleIndex = stoi(actionParameters);
-        // if (desiredIntrumentIndex >=0 && < 7)
-        // {
-        statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex = desiredSampleIndex;
-        // }
-    }
+    // TODO : TODO
+    // else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
+    // {
+    //     int desiredSampleIndex = stoi(actionParameters);
+    //     // if (desiredIntrumentIndex >=0 && < 7)
+    //     // {
+    //     statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex = desiredSampleIndex;
+    //     // }
+    // }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
-
-        int sampleIndex = statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex;
-        statePointer->samples[sampleIndex].volume = std::stof(actionParameters);
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].volume = std::stof(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPVOLUME")
@@ -347,8 +363,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
             int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-            int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
-            if (sampleIndex == statePointer->currentPartInstrumentIndex)
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
             }
@@ -358,8 +373,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
-        int sampleIndex = statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex;
-        statePointer->samples[sampleIndex].pitch = stoi(actionParameters);
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = std::stof(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPPITCH")
@@ -369,8 +383,7 @@ static esp_err_t action_handler(httpd_req_t *req)
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
             int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-            int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
-            if (sampleIndex == statePointer->currentPartInstrumentIndex)
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
             }
@@ -391,8 +404,7 @@ static esp_err_t action_handler(httpd_req_t *req)
                 for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
                 {
                     int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
-                    if (sampleIndex == statePointer->currentPartInstrumentIndex)
+                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
                     {
                         xxxIndex = i;
                     }

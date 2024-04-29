@@ -9,14 +9,34 @@
 #include <MyUtils.h>
 #include <Init.h>
 
+// TODO : wtf ?
 void freeFile(void *filePointer)
 {
     free(filePointer);
 }
 
-bool loadFile(char *filePath, bool isMono, float volume, int pitch, Sample *samplePointer)
+// Define the WAV file header structure
+struct WavHeader
 {
-    printf("loadFile(%s);\n", filePath);
+    char chunkID[4];
+    uint32_t chunkSize;
+    char format[4];
+    char subchunk1ID[4];
+    uint32_t subchunk1Size;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t byteRate;
+    uint16_t blockAlign;
+    uint16_t bitsPerSample;
+    char subchunk2ID[4];
+    uint32_t subchunk2Size;
+};
+
+// TODO : Merge loadSample and loadInstrument
+bool loadSample(char *filePath, bool isMono, Sample *samplePointer)
+{
+    printf("loadSample(%s);\n", filePath);
 
     FILE *file = fopen(filePath, "rb");
     if (file == NULL)
@@ -24,19 +44,57 @@ bool loadFile(char *filePath, bool isMono, float volume, int pitch, Sample *samp
         printf("Failed to open file %s\n", filePath);
         return false;
     }
-    fseek(file, 0, SEEK_END);
-    size_t fileSize = ftell(file) - 44;
-    fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+    // fseek(file, 0, SEEK_END);
 
-    int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
+    // Read the WAV header
+    WavHeader header;
+    fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
 
-    size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
+    // Check if the file is a WAV file
+    if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
+    {
+        printf("Not a WAV file! %s\n", filePath);
+        return false;
+    }
+
+    // TODO : file size reading header data
+    // size_t fileSize = ftell(file) - 44;
+    size_t fileSize = header.subchunk2Size;
+    printf("fileSize : %i\n", fileSize);
+    // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+
+    //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
+    // , fileBufferPointer, false, 0, 0, 0
+
+    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
     fclose(file);
 
-    // TODO : read header for mono detection
+    // TODO : isMono from header
+    *samplePointer = {filePath, isMono, fileSize};
+    return true;
+}
 
-    *samplePointer = {filePath, isMono, volume, pitch, fileSize, fileBufferPointer, false, 0, 0, 0};
+bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instrument *instrumentPointer)
+{
+    Sample sample;
+    loadSample(filePath, isMono, &sample);
+
+    FILE *file = fopen(filePath, "rb");
+    if (file == NULL)
+    {
+        printf("Failed to open file %s\n", filePath);
+        return false;
+    }
+    fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+    int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
+
+    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+    fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+
+    fclose(file);
+
+    *instrumentPointer = {sample, false, false, volume, pitch, fileBufferPointer, false, 0, 0, 0};
     return true;
 }
 
@@ -73,111 +131,37 @@ bool initState(State *statePointer)
     statePointer->songName = "Demo song";
     statePointer->songTempo = 154;
 
-    statePointer->samples = {};
-
-    Sample sample1;
-    loadFile("/data/kick.wav", true, 0.5, 0, &sample1);
-    statePointer->samples.push_back(sample1);
-    Sample sample2;
-    loadFile("/data/snare.wav", true, 0.5, 0, &sample2);
-    // loadFile("/data/clap.wav", true, 0.5, 0, &sample2);
-    statePointer->samples.push_back(sample2);
-    Sample sample3;
-    loadFile("/data/clap.wav", true, 0.5, 0, &sample3);
-    // loadFile("/data/rim.wav", true, 0.5, 0, &sample3);
-    statePointer->samples.push_back(sample3);
-    Sample sample4;
-    loadFile("/data/rim.wav", true, 0.5, 0, &sample4);
-    // loadFile("/data/hhc.wav", true, 0.5, 0, &sample4);
-    statePointer->samples.push_back(sample4);
-    Sample sample5;
-    // loadFile("/data/bass-C.wav", true, 0.5, -12, &sample5);
-    // loadFile("/data/bass-C.wav", true, 0.5, 12, &sample5);
-    loadFile("/data/bass-C.wav", true, 0.33, 0, &sample5);
-    // loadFile("/data/hho.wav", true, 0.5, 0, &sample5);
-    statePointer->samples.push_back(sample5);
-    Sample sample6;
-    loadFile("/data/hhc.wav", true, 0.5, 0, &sample6);
-    // loadFile("/data/flo1.wav", true, 0.5, 0, &sample6);
-    statePointer->samples.push_back(sample6);
-    Sample sample7;
-    loadFile("/data/hho.wav", true, 0.5, 0, &sample7);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample7);
-    statePointer->samples.push_back(sample7);
-    
-    Sample sample8;
-    loadFile("/data/guitar-AM.wav", true, 0.5, 0, &sample8);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample8);
-    statePointer->samples.push_back(sample8);
-    Sample sample9;
-    loadFile("/data/flute-X.wav", true, 0.5, 0, &sample9);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample9);
-    statePointer->samples.push_back(sample9);
-    Sample sample10;
-    loadFile("/data/trumpet-C.wav", true, 0.5, 0, &sample10);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample10);
-    statePointer->samples.push_back(sample10);
-    Sample sample11;
-    loadFile("/data/saw-C.wav", true, 0.5, 0, &sample11);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample11);
-    statePointer->samples.push_back(sample11);
-    Sample sample12;
-    loadFile("/data/flo1.wav", true, 0.5, 0, &sample12);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample12);
-    statePointer->samples.push_back(sample12);
-    Sample sample13;
-    loadFile("/data/flo2.wav", true, 0.5, 0, &sample13);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample13);
-    statePointer->samples.push_back(sample13);
-    Sample sample14;
-    loadFile("/data/of.wav", true, 0.5, 0, &sample14);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample14);
-    statePointer->samples.push_back(sample14);
-
-    Sample sample15;
-    loadFile("/data/cowbell.wav", true, 0.5, 0, &sample15);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample15);
-    statePointer->samples.push_back(sample15);
-    Sample sample16;
-    loadFile("/data/crash.wav", true, 0.5, 0, &sample16);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample16);
-    statePointer->samples.push_back(sample16);
-    Sample sample17;
-    loadFile("/data/kickrumble.wav", true, 0.5, 0, &sample17);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample17);
-    statePointer->samples.push_back(sample17);
-    Sample sample18;
-    loadFile("/data/ride.wav", true, 0.5, 0, &sample18);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample18);
-    statePointer->samples.push_back(sample18);
-    Sample sample19;
-    loadFile("/data/tomh.wav", true, 0.5, 0, &sample19);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample19);
-    statePointer->samples.push_back(sample19);
-    Sample sample20;
-    loadFile("/data/toml.wav", true, 0.5, 0, &sample20);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample20);
-    statePointer->samples.push_back(sample20);
-    Sample sample21;
-    loadFile("/data/toml2.wav", true, 0.5, 0, &sample21);
-    // loadFile("/data/flo2.wav", true, 0.5, 0, &sample21);
-    statePointer->samples.push_back(sample21);
-
-    // drumRack
-    statePointer->instruments.push_back({0});
-    statePointer->instruments.push_back({1});
-    statePointer->instruments.push_back({2});
-    statePointer->instruments.push_back({3});
-    statePointer->instruments.push_back({4});
-    statePointer->instruments.push_back({5});
-    statePointer->instruments.push_back({6});
-    statePointer->instruments.push_back({7});
-    statePointer->instruments.push_back({8});
-    statePointer->instruments.push_back({9});
-    // slicer
-    // statePointer->slicerSampleFileRefIndex;
-    // keyboard
-    // statePointer->keyboardSampleFileRefIndex = 5;
+    // Instruments
+    Instrument instrument1;
+    loadInstrument("/data/kick.wav", true, 0.5, 0, &instrument1);
+    statePointer->instruments.push_back(instrument1);
+    Instrument instrument2;
+    loadInstrument("/data/snare.wav", true, 0.5, 0, &instrument2);
+    statePointer->instruments.push_back(instrument2);
+    Instrument instrument3;
+    loadInstrument("/data/clap.wav", true, 0.5, 0, &instrument3);
+    statePointer->instruments.push_back(instrument3);
+    Instrument instrument4;
+    loadInstrument("/data/rim.wav", true, 0.5, 0, &instrument4);
+    statePointer->instruments.push_back(instrument4);
+    Instrument instrument5;
+    loadInstrument("/data/bass-C.wav", true, 0.25, 0, &instrument5);
+    statePointer->instruments.push_back(instrument5);
+    Instrument instrument6;
+    loadInstrument("/data/hhc.wav", true, 0.5, 0, &instrument6);
+    statePointer->instruments.push_back(instrument6);
+    Instrument instrument7;
+    loadInstrument("/data/hho.wav", true, 0.5, 0, &instrument7);
+    statePointer->instruments.push_back(instrument7);
+    Instrument instrument8;
+    loadInstrument("/data/guitar-AM.wav", true, 0.5, 0, &instrument8);
+    statePointer->instruments.push_back(instrument8);
+    Instrument instrument9;
+    loadInstrument("/data/flute-X.wav", true, 0.5, 0, &instrument9);
+    statePointer->instruments.push_back(instrument9);
+    Instrument instrument10;
+    loadInstrument("/data/trumpet-C.wav", true, 0.5, 0, &instrument10);
+    statePointer->instruments.push_back(instrument10);
 
     statePointer->currentStaveIndex = 0;
     statePointer->currentOctaveIndex = 0;
@@ -188,7 +172,7 @@ bool initState(State *statePointer)
     statePointer->parts = {};
 
     statePointer->currentStepIndex = 0;
-    
+
     // part 1
     std::vector<std::vector<Step>> part1Steps = {};
     const int part1Staves = 2;
@@ -220,7 +204,7 @@ bool initState(State *statePointer)
         case 14:
             part1Steps.push_back({});
             break;
-        
+
         case 16:
             part1Steps.push_back({{0, 0, 0.9}, {4, 0, 0.9}});
             break;
@@ -287,7 +271,7 @@ bool initState(State *statePointer)
         case 14:
             part2Steps.push_back({{3, 0, 0.9}, {4, 7, 0.9}});
             break;
-        
+
         case 16:
             part2Steps.push_back({{0, 0, 0.9}, {5, 0, 0.9}, {4, 0, 0.9}});
             break;

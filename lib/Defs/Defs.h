@@ -4,6 +4,11 @@
 #include "driver/gpio.h"
 // #include <esp_http_server.h>
 // #include <esp_wifi.h>
+// #include <driver/i2s.h>
+#include <driver/i2s_common.h>
+#include <driver/i2s_std.h>
+#include <driver/i2s_pdm.h>
+#include <driver/i2s_tdm.h>
 
 // #include <State.h>
 
@@ -18,8 +23,8 @@
 #define DMA_WAV_SAMPLE_RATE 44100
 #define DMA_BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_16BIT
 // #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_LEFT
-// #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_RIGHT
-#define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_RIGHT_LEFT
+#define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_RIGHT
+// #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_RIGHT_LEFT
 #define DMA_WAV_BUFFER_COUNT 8
 // #define DMA_WAV_BUFFER_SIZE 128
 #define DMA_WAV_BUFFER_SIZE 64
@@ -34,15 +39,13 @@
 // #define I2S_DATA_OUT_NUM 22
 
 // For freenove_esp32_s3_wroom
-#define I2S_BCK_IO_NUM 46
-#define I2S_WS_IO_NUM 47
-#define I2S_DATA_OUT_NUM 45
+#define I2S_BCK_IO_NUM GPIO_NUM_46
+#define I2S_WS_IO_NUM GPIO_NUM_47
+#define I2S_DATA_OUT_NUM GPIO_NUM_45
 
 #define STATE_PART_STEPS_LENGTH 16
 
 // #endif // GLOBALVARS_H
-
-
 
 #ifndef DEFS_H
 #define DEFS_H
@@ -65,20 +68,25 @@ struct Sample
 {
     char *filePath;
     bool isMono;
-    float volume;
-    int pitch;
 
     size_t fileSize;
-    int16_t *buffer;    
-    bool isPlaying;
-    int bufferSamplesReadCounter;
-    int startingStepVolume;
-    int startingStepPitch;
 };
 
 struct Instrument
 {
-    int sampleFileRefIndex;
+    // int sampleFileRefIndex;
+    Sample sample;
+    bool isSolo;
+    bool isMuted;
+
+    float volume;
+    int pitch;
+
+    int16_t *buffer;
+    bool isPlaying;
+    int bufferSamplesReadCounter;
+    int startingStepVolume;
+    int startingStepPitch;
 };
 
 struct State
@@ -89,7 +97,7 @@ struct State
     char *songName;
     int songTempo;
 
-    std::vector<Sample> samples;
+    // std::vector<Sample> samples;
     // drumRack
     std::vector<Instrument> instruments;
     // slicer
@@ -112,6 +120,8 @@ struct State
     float effectMasterDistortionGain;
     float effectMasterDistortionOutputGain;
 
+    i2s_chan_handle_t tx_handle;
+    i2s_chan_handle_t rx_handle;
     int16_t _masterBuffer[PLAY_WAV_WAV_BUFFER_SIZE];
     bool isPlaying;
 };
