@@ -22,8 +22,8 @@
 
 #define DMA_WAV_SAMPLE_RATE 44100
 #define DMA_BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_16BIT
-// #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_LEFT
-#define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_RIGHT
+#define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_LEFT
+// #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_RIGHT
 // #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_RIGHT_LEFT
 #define DMA_WAV_BUFFER_COUNT 8
 // #define DMA_WAV_BUFFER_SIZE 128
@@ -62,6 +62,24 @@ struct Part
     int staves;
     // std::vector<std::vector<int>> steps;
     std::vector<std::vector<Step>> steps;
+};
+
+// Define the WAV file header structure
+struct WavHeader
+{
+    char chunkID[4];
+    uint32_t chunkSize;
+    char format[4];
+    char subchunk1ID[4];
+    uint32_t subchunk1Size;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t byteRate;
+    uint16_t blockAlign;
+    uint16_t bitsPerSample;
+    char subchunk2ID[4];
+    uint32_t subchunk2Size;
 };
 
 struct Sample

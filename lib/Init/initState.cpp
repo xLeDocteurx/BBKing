@@ -9,94 +9,107 @@
 #include <MyUtils.h>
 #include <Init.h>
 
-// TODO : wtf ?
-void freeFile(void *filePointer)
-{
-    free(filePointer);
-}
+// // TODO : Merge loadSample and loadInstrument
+// bool loadSample(char *filePath, bool isMono, Sample *samplePointer)
+// {
+//     printf("loadSample(%s);\n", filePath);
 
-// Define the WAV file header structure
-struct WavHeader
-{
-    char chunkID[4];
-    uint32_t chunkSize;
-    char format[4];
-    char subchunk1ID[4];
-    uint32_t subchunk1Size;
-    uint16_t audioFormat;
-    uint16_t numChannels;
-    uint32_t sampleRate;
-    uint32_t byteRate;
-    uint16_t blockAlign;
-    uint16_t bitsPerSample;
-    char subchunk2ID[4];
-    uint32_t subchunk2Size;
-};
+//     FILE *file = fopen(filePath, "rb");
+//     if (file == NULL)
+//     {
+//         printf("Failed to open file %s\n", filePath);
+//         return false;
+//     }
+//     // fseek(file, 0, SEEK_END);
 
-// TODO : Merge loadSample and loadInstrument
-bool loadSample(char *filePath, bool isMono, Sample *samplePointer)
-{
-    printf("loadSample(%s);\n", filePath);
+//     // Read the WAV header
+//     WavHeader header;
+//     fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
 
-    FILE *file = fopen(filePath, "rb");
-    if (file == NULL)
-    {
-        printf("Failed to open file %s\n", filePath);
-        return false;
-    }
-    // fseek(file, 0, SEEK_END);
+//     // Check if the file is a WAV file
+//     if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
+//     {
+//         printf("Not a WAV file! %s\n", filePath);
+//         return false;
+//     }
 
-    // Read the WAV header
-    WavHeader header;
-    fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
+//     // TODO : file size reading header data
+//     // size_t fileSize = ftell(file) - 44;
+//     size_t fileSize = header.subchunk2Size;
+//     printf("fileSize : %i\n", fileSize);
+//     // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-    // Check if the file is a WAV file
-    if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
-    {
-        printf("Not a WAV file! %s\n", filePath);
-        return false;
-    }
+//     //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
+//     // , fileBufferPointer, false, 0, 0, 0
 
-    // TODO : file size reading header data
-    // size_t fileSize = ftell(file) - 44;
-    size_t fileSize = header.subchunk2Size;
-    printf("fileSize : %i\n", fileSize);
-    // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+//     // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
-    //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
-    // , fileBufferPointer, false, 0, 0, 0
+//     fclose(file);
 
-    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
+//     // TODO : isMono from header
+//     *samplePointer = {filePath, isMono, fileSize};
+//     return true;
+// }
 
-    fclose(file);
+// bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instrument *instrumentPointer)
+// {
+//     // Sample sample;
+//     // loadSample(filePath, isMono, &sample);
 
-    // TODO : isMono from header
-    *samplePointer = {filePath, isMono, fileSize};
-    return true;
-}
+//     printf("loadSample(%s);\n", filePath);
 
-bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instrument *instrumentPointer)
-{
-    Sample sample;
-    loadSample(filePath, isMono, &sample);
+//     FILE *file = fopen(filePath, "rb");
+//     if (file == NULL)
+//     {
+//         printf("Failed to open file %s\n", filePath);
+//         return false;
+//     }
+//     // fseek(file, 0, SEEK_END);
 
-    FILE *file = fopen(filePath, "rb");
-    if (file == NULL)
-    {
-        printf("Failed to open file %s\n", filePath);
-        return false;
-    }
-    fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
-    int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
+//     // Read the WAV header
+//     WavHeader header;
+//     fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
 
-    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
-    fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+//     // Check if the file is a WAV file
+//     if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
+//     {
+//         printf("Not a WAV file! %s\n", filePath);
+//         return false;
+//     }
 
-    fclose(file);
+//     // TODO : file size reading header data
+//     // size_t fileSize = ftell(file) - 44;
+//     size_t fileSize = header.subchunk2Size;
+//     printf("fileSize : %i\n", fileSize);
+//     // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
 
-    *instrumentPointer = {sample, false, false, volume, pitch, fileBufferPointer, false, 0, 0, 0};
-    return true;
-}
+//     //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
+//     // , fileBufferPointer, false, 0, 0, 0
+
+//     // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
+
+//     fclose(file);
+
+//     // TODO : isMono from header
+//     Sample sample = {filePath, isMono, fileSize};
+
+//     FILE *file = fopen(filePath, "rb");
+//     if (file == NULL)
+//     {
+//         printf("Failed to open file %s\n", filePath);
+//         return false;
+//     }
+//     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+//     int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
+
+//     // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+//     fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+
+//     fclose(file);
+
+//     *instrumentPointer = {sample, false, false, volume, pitch, fileBufferPointer, false, 0, 0, 0};
+//     return true;
+// }
 
 // bool initState(&statePointer auto)
 bool initState(State *statePointer)
@@ -132,6 +145,7 @@ bool initState(State *statePointer)
     statePointer->songTempo = 154;
 
     // Instruments
+    // TODO : Error handling for loadInstrument and the rest
     Instrument instrument1;
     loadInstrument("/data/kick.wav", true, 0.5, 0, &instrument1);
     statePointer->instruments.push_back(instrument1);

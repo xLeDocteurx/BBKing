@@ -107,21 +107,4 @@ extern "C" void app_main()
         }
         printf("----- INIT WEB SERVER DONE -----\n");
     }
-    // TODO : Uncomment
-
-    // printf("----- SONG DEBUGING -----\n");
-    // printf("state.songIndex : %i\n", state.currentPartIndex);
-    // printf("state.songName : %s\n", state.songName);
-    // printf("state.songTempo : %i\n", state.songTempo);
-    // // printf("state.songStaves : %i\n", state.songStaves);
-    // // printf("state.songBeats : %i\n", state.songBeats);
-    // // printf("state.songMeasures : %i\n", state.songMeasures);
-    // printf("----- SONG DEBUGING DONE -----\n");
-
-    // vTaskDelay(pdMS_TO_TICKS(1000));
-
-    // state.isPlaying = true;
-
-    // // Turn off the LED
-    // gpio_set_level(LED_PIN, 1);
 }

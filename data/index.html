@@ -146,13 +146,16 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <!-- <i class="fas fa-music"></i> -->
+                  <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+                  <button
                     disabled
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    @click="() => {updateCurrentMode(0);}"
+                    class="btn btn-outline-primary"
                   >
-                    <i class="fas fa-music"></i>
-                  </button> -->
+                    FX
+                  </button>
                   <button
                     @click="() => {updateCurrentMode(0);}"
                     type="button"
@@ -168,14 +171,6 @@
                     :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
                   >
                     <i class="fas fa-shoe-prints"></i>
-                  </button>
-                  <button
-                    @click="() => {updateCurrentMode(0);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}"
-                  >
-                    FX
                   </button>
                 </div>
               </div>
@@ -1116,6 +1111,20 @@
               ];
             return { volume: obj.volume, pitch: obj.pitch };
           } else if (machineState.value.currentModeIndex == 1) {
+            console.log(
+              machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
+              " / ",
+              machineState.value.parts[
+                machineState.value.currentPartIndex
+              ].steps[
+                machineState.value.currentSelectedStepIndex +
+                  16 * machineState.value.currentStaveIndex
+              ].find(
+                (st) =>
+                  st.instrumentIndex ==
+                  machineState.value.currentPartInstrumentIndex
+              )
+            );
             const obj = machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[
@@ -1136,9 +1145,7 @@
         };
         const isStepClickable = function (stepIndex) {
           if (machineState.value.currentModeIndex == 0) {
-            // TODO : Uncomment ?
-            // return true;
-            return false;
+            return true;
           } else if (machineState.value.currentModeIndex == 1) {
             return machineState.value.parts[
               machineState.value.currentPartIndex

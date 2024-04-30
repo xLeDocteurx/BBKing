@@ -342,14 +342,16 @@ static esp_err_t action_handler(httpd_req_t *req)
         // }
     }
     // TODO : TODO
-    // else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
-    // {
-    //     int desiredSampleIndex = stoi(actionParameters);
-    //     // if (desiredIntrumentIndex >=0 && < 7)
-    //     // {
-    //     statePointer->instruments[statePointer->currentPartInstrumentIndex].sampleFileRefIndex = desiredSampleIndex;
-    //     // }
-    // }
+    else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
+    {
+        std::string desiredSamplePath = actionParameters;
+        // Clear memory from previous sample
+        freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
+
+        // TODO : Error handling
+        // loadInstrument(static_cast<char *>(desiredSamplePath.c_str()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        loadInstrument(const_cast<char *>(desiredSamplePath.data()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+    }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
     {
