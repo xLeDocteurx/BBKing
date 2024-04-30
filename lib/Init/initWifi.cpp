@@ -18,52 +18,7 @@
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;
 
-
-bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter) {
-
-    bool hasEstablishedConnection = false;
-    for (int i = 0; i < wifiConfigsPointerParameter->size(); i++)
-    {
-        if (!hasEstablishedConnection)
-        {
-            printf("Trying to connect to %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
-
-            esp_err_t esp_wifi_set_config_ret = esp_wifi_set_config(WIFI_IF_STA, &wifiConfigsPointerParameter->at(i));
-            if (esp_wifi_set_config_ret != ESP_OK)
-            {
-                printf("Failed to set wifi config\n");
-            }
-            else
-            {
-                esp_err_t esp_wifi_start_ret = esp_wifi_start();
-                if (esp_wifi_start_ret != ESP_OK)
-                {
-                    printf("Failed to start wifi\n");
-                }
-                else
-                {
-                    // This API only impact WIFI_MODE_STA or WIFI_MODE_APSTA mode
-                    // If station interface is connected to an AP, call esp_wifi_disconnect to disconnect.
-                    // The scanning triggered by esp_wifi_scan_start() will not be effective until connection between device and the AP is established. If device is scanning and connecting at the same time, it will abort scanning and return a warning message and error number ESP_ERR_WIFI_STATE.
-                    // This API attempts to connect to an Access Point (AP) only once. To enable reconnection in case of a connection failure, please use the 'failure_retry_cnt' feature in the 'wifi_sta_config_t'. Users are suggested to implement reconnection logic in their application for scenarios where the specified AP does not exist, or reconnection is desired after the device has received a disconnect event.
-
-                    // Connect to the Wi-Fi network (configure SSID and password before calling this function)
-                    esp_err_t esp_wifi_connect_ret = esp_wifi_connect();
-                    if (esp_wifi_connect_ret != ESP_OK)
-                    {
-                        printf("Failed to connect to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
-                    }
-                    else
-                    {
-                        printf("Connected to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
-                        hasEstablishedConnection = true;
-                    }
-                }
-            }
-        }
-    }
-    return hasEstablishedConnection;
-}
+bool hasEstablishedConnection = false;
 
 // TODO : Event handler
 void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -71,23 +26,22 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
     {
         printf("!!! Event !!! Wi-Fi connected\n");
-
-        // Turn off the LED
-        gpio_set_level(LED_PIN, 0);
+        hasEstablishedConnection = true;
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
         printf("!!! Event !!! Wi-Fi disconnected\n");
+        // TODO : handle reconnection ? ( differentiate failed first connection and a regular disconnection )
 
-        printf("!!! Event !!! Reconnecting...\n");
-        bool reconnectRes = reconnect(wifiConfigsPointer);
-        if(reconnectRes) {
-            printf("!!! Event !!! Reconnect SUCCEEDED\n");
-        }
-        else
-        {
-            printf("!!! Event !!! Reconnect FAILED\n");
-        }
+        // printf("!!! Event !!! Reconnecting...\n");
+        // bool reconnectRes = reconnect(wifiConfigsPointer);
+        // if(reconnectRes) {
+        //     printf("!!! Event !!! Reconnect SUCCEEDED\n");
+        // }
+        // else
+        // {
+        //     printf("!!! Event !!! Reconnect FAILED\n");
+        // }
     }
 }
 
@@ -198,52 +152,77 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
         printf("Failed to set wifi mode\n");
     }
 
-    bool hasEstablishedConnection = false;
     for (int i = 0; i < wifiConfigsPointerParameter->size(); i++)
     {
         if (!hasEstablishedConnection)
         {
-            printf("Trying to connect to %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+            int atemptsCounter = 0;
+            while (atemptsCounter < 3)
+            {
+                printf("ATEMPT : %i\n", atemptsCounter + 1);
+                printf("Trying to connect to %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
 
-            // ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
-            esp_err_t esp_wifi_set_config_ret = esp_wifi_set_config(WIFI_IF_STA, &wifiConfigsPointerParameter->at(i));
-            if (esp_wifi_set_config_ret != ESP_OK)
-            {
-                printf("Failed to set wifi config\n");
-            }
-            else
-            {
-                // printf("4\n");
-                // ESP_ERROR_CHECK(esp_wifi_start());
-                esp_err_t esp_wifi_start_ret = esp_wifi_start();
-                if (esp_wifi_start_ret != ESP_OK)
+                // ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+                esp_err_t esp_wifi_set_config_ret = esp_wifi_set_config(WIFI_IF_STA, &wifiConfigsPointerParameter->at(i));
+                if (esp_wifi_set_config_ret != ESP_OK)
                 {
-                    printf("Failed to start wifi\n");
+                    printf("Failed to set wifi config\n");
                 }
                 else
                 {
-
-                    // This API only impact WIFI_MODE_STA or WIFI_MODE_APSTA mode
-                    // If station interface is connected to an AP, call esp_wifi_disconnect to disconnect.
-                    // The scanning triggered by esp_wifi_scan_start() will not be effective until connection between device and the AP is established. If device is scanning and connecting at the same time, it will abort scanning and return a warning message and error number ESP_ERR_WIFI_STATE.
-                    // This API attempts to connect to an Access Point (AP) only once. To enable reconnection in case of a connection failure, please use the 'failure_retry_cnt' feature in the 'wifi_sta_config_t'. Users are suggested to implement reconnection logic in their application for scenarios where the specified AP does not exist, or reconnection is desired after the device has received a disconnect event.
-
-                    // Connect to the Wi-Fi network (configure SSID and password before calling this function)
-                    esp_err_t esp_wifi_connect_ret = esp_wifi_connect();
-                    if (esp_wifi_connect_ret != ESP_OK)
+                    // printf("4\n");
+                    // ESP_ERROR_CHECK(esp_wifi_start());
+                    esp_err_t esp_wifi_start_ret = esp_wifi_start();
+                    if (esp_wifi_start_ret != ESP_OK)
                     {
-                        printf("Failed to connect to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+                        printf("Failed to start wifi\n");
                     }
                     else
                     {
-                        printf("Connected to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
-                        hasEstablishedConnection = true;
+
+                        // This API only impact WIFI_MODE_STA or WIFI_MODE_APSTA mode
+                        // If station interface is connected to an AP, call esp_wifi_disconnect to disconnect.
+                        // The scanning triggered by esp_wifi_scan_start() will not be effective until connection between device and the AP is established. If device is scanning and connecting at the same time, it will abort scanning and return a warning message and error number ESP_ERR_WIFI_STATE.
+                        // This API attempts to connect to an Access Point (AP) only once. To enable reconnection in case of a connection failure, please use the 'failure_retry_cnt' feature in the 'wifi_sta_config_t'. Users are suggested to implement reconnection logic in their application for scenarios where the specified AP does not exist, or reconnection is desired after the device has received a disconnect event.
+
+                        // Connect to the Wi-Fi network (configure SSID and password before calling this function)
+                        esp_err_t esp_wifi_connect_ret = esp_wifi_connect();
+                        if (esp_wifi_connect_ret != ESP_OK)
+                        {
+                            printf("Failed to connect to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+                        }
+                        else
+                        {
+                            printf("Connecting to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+                            vTaskDelay(pdMS_TO_TICKS(3000));
+                            gpio_set_level(LED_PIN, 0);
+                            if (hasEstablishedConnection)
+                            {
+                                printf("Connected to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+                                break;
+                            }
+                            else
+                            {
+                                printf("Failed to connect to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
+                                vTaskDelay(pdMS_TO_TICKS(1000));
+                                gpio_set_level(LED_PIN, 1);
+                            }
+
+                            // hasEstablishedConnection = true;
+                            // gpio_set_level(LED_PIN, 0);
+                            // break;
+                        }
+                        // printf("esp_wifi_start_ret : %i\n", esp_wifi_start_ret);
+                        // printf("5\n");
+                        // esp_wifi_
                     }
-                    // printf("esp_wifi_start_ret : %i\n", esp_wifi_start_ret);
-                    // printf("5\n");
-                    // esp_wifi_
                 }
+                atemptsCounter += 1;
             }
+        }
+        else
+        {
+            break;
         }
     }
     // return hasEstablishedConnection;
