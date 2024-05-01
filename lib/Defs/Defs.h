@@ -39,6 +39,16 @@
 // #define I2S_DATA_OUT_NUM 22
 
 // For freenove_esp32_s3_wroom
+
+// #define PIN_NUM_MISO GPIO_NUM
+// #define PIN_NUM_MOSI GPIO_NUM
+// #define PIN_NUM_CLK GPIO_NUM
+// #define PIN_NUM_CS GPIO_NUM
+#define SD_MMC_CMD GPIO_NUM_38 //Please do not modify it.
+#define SD_MMC_CLK GPIO_NUM_39 //Please do not modify it. 
+#define SD_MMC_D0  GPIO_NUM_40 //Please do not modify it.
+
+
 #define I2S_BCK_IO_NUM GPIO_NUM_46
 #define I2S_WS_IO_NUM GPIO_NUM_47
 #define I2S_DATA_OUT_NUM GPIO_NUM_45

@@ -1111,20 +1111,20 @@
               ];
             return { volume: obj.volume, pitch: obj.pitch };
           } else if (machineState.value.currentModeIndex == 1) {
-            console.log(
-              machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
-              " / ",
-              machineState.value.parts[
-                machineState.value.currentPartIndex
-              ].steps[
-                machineState.value.currentSelectedStepIndex +
-                  16 * machineState.value.currentStaveIndex
-              ].find(
-                (st) =>
-                  st.instrumentIndex ==
-                  machineState.value.currentPartInstrumentIndex
-              )
-            );
+            // console.log(
+            //   machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
+            //   " / ",
+            //   machineState.value.parts[
+            //     machineState.value.currentPartIndex
+            //   ].steps[
+            //     machineState.value.currentSelectedStepIndex +
+            //       16 * machineState.value.currentStaveIndex
+            //   ].find(
+            //     (st) =>
+            //       st.instrumentIndex ==
+            //       machineState.value.currentPartInstrumentIndex
+            //   )
+            // );
             const obj = machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[

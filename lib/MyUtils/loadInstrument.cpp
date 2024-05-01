@@ -51,7 +51,7 @@ bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instru
 
     // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
 
-    fclose(file);
+    // fclose(file);
 
     // TODO : isMono from header
     Sample sample = {filePath, isMono, fileSize};

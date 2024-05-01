@@ -17,6 +17,7 @@
 #include <Defs.h>
 // -----
 #include <Init.h>
+#include <SDCard.h>
 #include <MyUtils.h>
 #include <Tasks.h>
 
@@ -36,6 +37,8 @@ extern "C" void app_main()
     esp_rom_gpio_pad_select_gpio(LED_PIN);
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
+    vTaskDelay(pdMS_TO_TICKS(1500));
+
     bool initRes = true;
     printf("----- INIT PSRAM -----\n");
     initRes = initPSRAM();
@@ -53,6 +56,7 @@ extern "C" void app_main()
         return;
     }
     printf("----- INIT FILE SYSTEM DONE -----\n");
+    listFiles();
     printf("----- INIT STATE -----\n");
     initRes = initState(&state);
     if (!initRes)
