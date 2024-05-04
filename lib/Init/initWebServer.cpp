@@ -91,7 +91,8 @@ static esp_err_t root_handler(httpd_req_t *req)
         // action before ws handshake
         std::string htmlString;
         // bool readJsonFile_ret = readJsonFile("/data/index.html", &htmlString);
-        readJsonFile("/data/index.html", &htmlString);
+        getIndexHtml(&htmlString);
+        printf("OKOKOKOK\n");
         // httpd_resp_set_status(req, "200");
         httpd_resp_set_type(req, "text/html");
         // httpd_resp_set_hdr();
@@ -178,6 +179,20 @@ httpd_uri_t state_uri = {
     .uri = "/state",
     .method = HTTP_GET,
     .handler = state_handler,
+    .user_ctx = NULL};
+
+static esp_err_t wavFiles_handler(httpd_req_t *req)
+{
+    std::string jsonString = "";
+    getWavFilesAsJsonString(statePointer, &jsonString);
+    httpd_resp_set_type(req, "text/json");
+    httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+}
+httpd_uri_t wavFiles_uri = {
+    .uri = "/wavFiles",
+    .method = HTTP_GET,
+    .handler = wavFiles_handler,
     .user_ctx = NULL};
 
 static esp_err_t action_handler(httpd_req_t *req)
@@ -344,13 +359,14 @@ static esp_err_t action_handler(httpd_req_t *req)
     // TODO : TODO
     else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
     {
-        std::string desiredSamplePath = actionParameters;
+        int desiredSampleFileIndex = stoi(actionParameters);
         // Clear memory from previous sample
         freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
 
         // TODO : Error handling
         // loadInstrument(static_cast<char *>(desiredSamplePath.c_str()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-        loadInstrument(const_cast<char *>(desiredSamplePath.data()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        // loadInstrument(const_cast<char *>(desiredSamplePath.data()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
@@ -457,16 +473,14 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.stack_size = 20480; // TODO : test random values
 
-    printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
-    // printf("&server == NULL BEFORE : %i\n", &serverPointer_p == NULL);
+    // printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
     esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)
     {
         printf("Failed to start HTTP server\n");
         return false;
     }
-    printf("server == NULL AFTER : %i\n", serverPointer_p == NULL);
-    // printf("&server == NULL AFTER : %i\n", &serverPointer_p == NULL);
+    // printf("server == NULL AFTER : %i\n", serverPointer_p == NULL);
 
     esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &root_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
@@ -484,6 +498,12 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     if (httpd_register_uri_handler_ret != ESP_OK)
     {
         printf("Failed to register /state uri handler\n");
+        return false;
+    }
+    httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &wavFiles_uri);
+    if (httpd_register_uri_handler_ret != ESP_OK)
+    {
+        printf("Failed to register /wavFiles uri handler\n");
         return false;
     }
     httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &action_uri);

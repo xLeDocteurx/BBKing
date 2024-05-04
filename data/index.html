@@ -223,16 +223,15 @@
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    disabled
                   ></button>
                   <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <!-- <a
-                      v-for="(s, s_index) in machineState.samples"
+                    <a
+                      v-for="(s, s_index) in wavFilesList"
                       class="dropdown-item"
                       href="#"
                       @click="($event) => updateSelectedInstrumentSample(s_index)"
-                      >{{s.filePath}}</a
-                    > -->
+                      >{{s}}</a
+                    >
                   </div>
                 </div>
               </div>
@@ -502,113 +501,14 @@
           currentModeIndex: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
-          songName: "Demo song",
-          songTempo: 154,
+          songName: "NULL song",
+          songTempo: 666,
           instruments: [
             {
               sample: {
                 filePath: "/data/kick.wav",
                 isMono: true,
                 fileSize: 9502,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/snare.wav",
-                isMono: true,
-                fileSize: 10616,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/clap.wav",
-                isMono: true,
-                fileSize: 11046,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/rim.wav",
-                isMono: true,
-                fileSize: 5984,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/bass-C.wav",
-                isMono: true,
-                fileSize: 11292,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.25,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/hhc.wav",
-                isMono: true,
-                fileSize: 8526,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/hho.wav",
-                isMono: true,
-                fileSize: 26988,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/guitar-AM.wav",
-                isMono: true,
-                fileSize: 82102,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/flute-X.wav",
-                isMono: true,
-                fileSize: 23818,
-              },
-              isSolo: false,
-              isMuted: false,
-              volume: 0.5,
-              pitch: 0,
-            },
-            {
-              sample: {
-                filePath: "/data/trumpet-C.wav",
-                isMono: true,
-                fileSize: 4682,
               },
               isSolo: false,
               isMuted: false,
@@ -622,7 +522,7 @@
           currentOctaveIndex: 0,
           parts: [
             {
-              staves: 2,
+              staves: 1,
               steps: [
                 [
                   {
@@ -630,424 +530,29 @@
                     pitch: 0,
                     volume: 0.9,
                   },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
                 ],
                 [],
                 [],
                 [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 2,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 4,
-                    pitch: 3,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 5,
-                    volume: 0.9,
-                  },
-                ],
                 [],
                 [],
                 [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 2,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 4,
-                    pitch: 3,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 5,
-                    volume: 0.9,
-                  },
-                ],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
                 [],
                 [],
-              ],
-            },
-            {
-              staves: 2,
-              steps: [
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 6,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 2,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 3,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
                 [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 5,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 7,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 2,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 3,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [],
-                [
-                  {
-                    instrumentIndex: 1,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 5,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 5,
-                    volume: 0.9,
-                  },
-                ],
-                [
-                  {
-                    instrumentIndex: 0,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                ],
-                [
-                  {
-                    instrumentIndex: 3,
-                    pitch: 0,
-                    volume: 0.9,
-                  },
-                  {
-                    instrumentIndex: 4,
-                    pitch: 7,
-                    volume: 0.9,
-                  },
-                ],
                 [],
               ],
             },
           ],
         });
+
+        const wavFilesList = ref([]);
+
         const ws = ref(null);
 
         const httpAction = async function (actionName, actionParameters) {
@@ -1066,8 +571,14 @@
         const updateMachineStateRef = async function () {
           const response = await fetch(`/state`);
           const json = await response.json();
-          console.log("httpGet res : ", json);
+          console.log("updateMachineStateRef httpGet res : ", json);
           machineState.value = json;
+        };
+        const updateWavFilesListRef = async function () {
+          const response = await fetch(`/wavFiles`);
+          const json = await response.json();
+          console.log("updateWavFilesListRef httpGet res : ", json);
+          wavFilesList.value = json;
         };
         const connectToWebsocket = function () {
           ws.value = new WebSocket(wsUri);
@@ -1091,6 +602,7 @@
               // console.log("Message received as json :", JSON.parse(message));
               // machineState.value = message;
               updateMachineStateRef();
+              // updateWavFilesListRef();
             }
           };
         };
@@ -1258,9 +770,12 @@
           connectToWebsocket();
         });
 
+        updateWavFilesListRef();
+
         return {
           wsStatus,
           machineState,
+          wavFilesList,
           connectToWebsocket,
           sendMessageViaWebsocket,
           updateCurrentMode,

@@ -9,7 +9,8 @@
 
 std::string getCurrentModeAsString(State *statePointer);
 void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPointer);
-bool readJsonFile(char *filePath, std::string *stringPointer);
+void getWavFilesAsJsonString(State *statePointer, std::string *jsonStringPointer);
+bool getIndexHtml(std::string *stringPointer);
 
 void freeFile(void *filePointer);
 bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instrument *instrumentPointer);

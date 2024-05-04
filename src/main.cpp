@@ -3,8 +3,8 @@
 #include <string>
 
 #include <driver/gpio.h>
-#include <esp_spiffs.h>
-#include <driver/i2s.h>
+// #include <esp_spiffs.h>
+// #include <driver/i2s.h>
 // #include <driver/i2s_common.h>
 // #include <driver/i2s_std.h>
 // #include <driver/i2s_pdm.h>
@@ -55,8 +55,8 @@ extern "C" void app_main()
         printf("----- INIT FILE SYSTEM FAILED -----\n");
         return;
     }
+    // listFiles();
     printf("----- INIT FILE SYSTEM DONE -----\n");
-    listFiles();
     printf("----- INIT STATE -----\n");
     initRes = initState(&state);
     if (!initRes)
@@ -81,13 +81,6 @@ extern "C" void app_main()
     //     return;
     // }
     // printf("----- INIT KEYBOARD DONE -----\n");
-    printf("----- INIT TASKS -----\n");
-    // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
-    xTaskCreatePinnedToCore(sequencerTask, "sequencerTask", 4096, &state, 10, &sequencerTaskHandle, 0);
-    xTaskCreatePinnedToCore(audioTask, "audioTask", 8192, &state, 10, &audioTaskHandle, 1);
-    printf("----- INIT TASKS DONE -----\n");
-
-    printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
 
     printf("----- INIT WIFI -----\n");
     esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
@@ -111,4 +104,12 @@ extern "C" void app_main()
         }
         printf("----- INIT WEB SERVER DONE -----\n");
     }
+
+    printf("----- INIT TASKS -----\n");
+    // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
+    xTaskCreatePinnedToCore(sequencerTask, "sequencerTask", 4096, &state, 10, &sequencerTaskHandle, 0);
+    xTaskCreatePinnedToCore(audioTask, "audioTask", 8192, &state, 10, &audioTaskHandle, 1);
+    printf("----- INIT TASKS DONE -----\n");
+
+    printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
 }

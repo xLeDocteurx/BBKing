@@ -11,23 +11,28 @@
 #include "esp_vfs_fat.h"
 #include "esp_vfs.h"
 
-bool listFiles() {
+bool listFiles()
+{
     printf("Listing files in /sdcard:\n");
-    
-    DIR* dir;
-    struct dirent* entry;
-    dir = opendir("/sdcard");
-    if (dir == NULL) {
+
+    DIR *dir;
+    struct dirent *entry;
+    if ((dir = opendir("/sdcard")) == NULL)
+    {
         printf("Failed to open directory for reading\n");
         return false;
     }
-    
-    while ((entry = readdir(dir)) != NULL) {
+
+    // telldir(dir);
+
+    while ((entry = readdir(dir)) != NULL)
+    {
         printf("%s\n", entry->d_name);
+        // printf("/sdcard/%s\n", entry->d_name);
+        // printf("%d/%i : %s\n", entry->d_ino, entry->d_type, "/sdcard" + "/" + entry->d_name);
     }
-    
+
     closedir(dir);
-    esp_vfs_fat_sdmmc_unmount();
-    
+
     return true;
 }

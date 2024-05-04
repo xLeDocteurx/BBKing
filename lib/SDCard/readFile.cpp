@@ -12,15 +12,17 @@ bool readFile(const char *path)
     FILE *file = fopen(path, "r");
     if (file == NULL)
     {
-        printf("Failed to open file for reading\n");
+        printf("Failed to open file \"%s\" for reading\n", path);
         return false;
     }
 
-    char line[128];
-    while (fgets(line, sizeof(line), file))
-    {
-        printf("%s", line);
-    }
+    // printf("OK \"%s\"\n", path);
+
+    // char line[128];
+    // while (fgets(line, sizeof(line), file))
+    // {
+    //     printf("%s\n", line);
+    // }
 
     fclose(file);
 

@@ -44,10 +44,9 @@
 // #define PIN_NUM_MOSI GPIO_NUM
 // #define PIN_NUM_CLK GPIO_NUM
 // #define PIN_NUM_CS GPIO_NUM
-#define SD_MMC_CMD GPIO_NUM_38 //Please do not modify it.
-#define SD_MMC_CLK GPIO_NUM_39 //Please do not modify it. 
-#define SD_MMC_D0  GPIO_NUM_40 //Please do not modify it.
-
+#define SD_MMC_CMD GPIO_NUM_38 // Please do not modify it.
+#define SD_MMC_CLK GPIO_NUM_39 // Please do not modify it.
+#define SD_MMC_D0 GPIO_NUM_40  // Please do not modify it.
 
 #define I2S_BCK_IO_NUM GPIO_NUM_46
 #define I2S_WS_IO_NUM GPIO_NUM_47
@@ -94,7 +93,8 @@ struct WavHeader
 
 struct Sample
 {
-    char *filePath;
+    // TODO : update as an index for wavFilePaths !?!
+    const char *filePath;
     bool isMono;
 
     size_t fileSize;
@@ -119,6 +119,9 @@ struct Instrument
 
 struct State
 {
+    // std::vector<std::string> wavFilePaths;
+    std::vector<char *> wavFilePaths;
+
     int currentSongIndex;
     int currentModeIndex;
     int currentSelectedStepIndex;

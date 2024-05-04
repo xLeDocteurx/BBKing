@@ -3,7 +3,7 @@
 
 #include <esp_psram.h>
 #include <esp_system.h>
-#include <driver/spi_master.h>
+// #include <driver/spi_master.h>
 
 #include <Defs.h>
 // #include <MyUtils.h>
@@ -21,10 +21,11 @@ bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, Instru
 
     printf("loadSample(%s);\n", filePath);
 
-    FILE *file = fopen(filePath, "rb");
+    // FILE *file = fopen(filePath, "rb");
+    FILE *file = fopen(filePath, "r");
     if (file == NULL)
     {
-        printf("Failed to open file %s\n", filePath);
+        printf("Failed to open file : %s\n", filePath);
         return false;
     }
     // fseek(file, 0, SEEK_END);

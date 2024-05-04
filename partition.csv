@@ -1,3 +1,5 @@
+# TODO : RESIZE PARTITION PRECIZELY
+
 # # Name,   Type, SubType, Offset,  Size, Flags
 # # Note: if you have increased the bootloader size, make sure to update the offsets to avoid overlap
 # nvs,      data, nvs,     ,        0x6000,
@@ -13,6 +15,10 @@
 # Note: if you have increased the bootloader size, make sure to update the offsets to avoid overlap
 nvs,      data, nvs,     ,        0x6000,
 phy_init, data, phy,     ,        0x1000,
-factory,  app,  factory, ,        1900K,
+# factory,  app,  factory, ,        1900K,
+factory,  app,  factory, ,        2M,
 # data,     data, spiffs,  ,        2M,
-data,     data, spiffs,  ,        3M,
+data,     data, spiffs,  ,        1M,
+
+# factory,  app,  factory, 0x10000, 1M,
+# data,     data, spiffs,  ,        0xF0000,

@@ -5,8 +5,6 @@
 
 void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPointer)
 {
-    
-
     std::string instrumentsString = "[";
     for (int i = 0; i < statePointer->instruments.size(); i++)
     {

@@ -22,7 +22,7 @@ bool initFileSystem()
     {
         if (ret == ESP_FAIL)
         {
-            printf("Failed to mount or format filesystem\n");
+            printf("Failed to mount filesystem\n");
             return false;
         }
         else if (ret == ESP_ERR_NOT_FOUND)
@@ -39,14 +39,12 @@ bool initFileSystem()
         return false;
     }
 
-    printf("1\n");
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        // .max_files = 10
-        .max_files = 5,
+        // .max_files = 5,
+        .max_files = 10,
         .allocation_unit_size = 16 * 1024};
     sdmmc_card_t *card;
-    printf("2\n");
     sdmmc_host_t host_config = SDMMC_HOST_DEFAULT();
 
 /**
@@ -67,7 +65,6 @@ bool initFileSystem()
     host.pwr_ctrl_handle = pwr_ctrl_handle;
 #endif
 
-    printf("3\n");
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 
 // Set bus width to use:
@@ -86,12 +83,7 @@ bool initFileSystem()
     // connected on the bus. This is for debug / example purpose only.
     slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
 
-    printf("4\n");
-
-    vTaskDelay(pdMS_TO_TICKS(1500));
-
     ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host_config, &slot_config, &mount_config, &card);
-    printf("5\n");
     if (ret != ESP_OK)
     {
         if (ret == ESP_FAIL)
@@ -101,7 +93,6 @@ bool initFileSystem()
         else
         {
             printf("Failed to initialize the card (%s).\n", esp_err_to_name(ret));
-            // check_sd_card_pins(&config, pin_count);
         }
         return false;
     }

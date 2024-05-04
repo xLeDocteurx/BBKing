@@ -8,12 +8,13 @@
 #include <Defs.h>
 
 // TODO : Remove sizeToRead and calculate file size to make this variable
-bool readJsonFile(char *filePath, std::string *stringPointer)
+// TODO : Rename as getIndexHtml
+bool getIndexHtml(std::string *stringPointer)
 {
-    FILE *file = fopen(filePath, "r");
+    FILE *file = fopen("/data/index.html", "r");
     if (file == NULL)
     {
-        printf("Failed to open file : %s\n", filePath);
+        printf("Failed to open file : %s\n", "/data/index.html");
         return false;
     }
 

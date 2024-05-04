@@ -9,6 +9,7 @@
 
 bool listFiles();
 bool readFile(const char* path);
+bool readJsonFile(const char* path, std::string *jsonStringPointer);
 bool writeFile(const char* path);
 
 #endif // SDCARD_H

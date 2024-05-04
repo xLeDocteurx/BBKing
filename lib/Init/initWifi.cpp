@@ -9,11 +9,13 @@
 // #include "tcpip_adapter.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
-#include "esp_log.h"
+// #include "esp_log.h"
 // #include "esp_http_server.h"
+#include <cJSON.h>
 
 #include <Defs.h>
 #include <MyUtils.h>
+#include <SDCard.h>
 
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;
@@ -51,55 +53,122 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
     wifiConfigsPointer = wifiConfigsPointerParameter;
 
     gpio_set_level(LED_PIN, 1);
+
     std::string jsonString;
-    bool readJsonFile_ret = readJsonFile("/data/wifiConfigs.json", &jsonString);
-    if (!readJsonFile_ret)
+    bool readJsonFileRet = readJsonFile("/sdcard/wifiConfigs.json", &jsonString);
+    if (!readJsonFileRet)
     {
-        printf("Failed to read wifiConfigs.json file\n");
+        printf("Failed to readJsonFile \"/sdcard/wifiConfigs.json\"\n");
         return NULL;
     }
-    else
+    printf("-\n");
+    printf("-\n");
+    printf("-\n");
+    printf("%s\n", jsonString.c_str());
+    printf("-\n");
+    printf("-\n");
+    printf("-\n");
+
+    // Parse JSON
+    cJSON *root = cJSON_Parse(jsonString.c_str());
+    if (root == NULL)
     {
-        printf("initWifi readJsonFile wifiConfigs.json : %s\n", jsonString.c_str());
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL)
+        {
+            printf("Error before: %s\n", error_ptr);
+        }
+        printf("Failed to parse JSON\n");
+        // free(jsonBuffer);
+        return NULL;
     }
 
-    wifi_config_t wifi_config_1 = {
-        .sta = {
-            .ssid = "SFR_25AF",
-            .password = "pk88u26tgpg1k48xrue2",
-            .pmf_cfg = {
-                .capable = true,
-                .required = false,
+    // Example: Access JSON data
+    // cJSON* name = cJSON_GetObjectItemCaseSensitive(root, "0");
+    int arraySize = cJSON_GetArraySize(root);
+    // std::vector<wifi_config_t> wifiConfigs;
+    for (int i = 0; i < arraySize; i++)
+    {
+        // TODO : pushback error handling;
+        cJSON *arrayItem = cJSON_GetArrayItem(root, i);
+        cJSON *ssidJson = cJSON_GetObjectItemCaseSensitive(arrayItem, "ssid");
+        // if (cJSON_IsString(ssid) && (ssid->valuestring != NULL))
+        // {
+        //     printf("ssid : %s\n", ssid->valuestring);
+        // }
+        cJSON *passwordJson = cJSON_GetObjectItemCaseSensitive(arrayItem, "password");
+        // if (cJSON_IsString(password) && (password->valuestring != NULL))
+        // {
+        //     printf("password : %s\n", password->valuestring);
+        // }
+        char *ssid = ssidJson->valuestring;
+        char *password = passwordJson->valuestring;
+        wifi_config_t wifi_config = {
+            .sta = {
+                // .ssid = ssid->valuestring,
+                // .password = password->valuestring,
+                .pmf_cfg = {
+                    .capable = true,
+                    .required = false,
+                },
+                // .failure_retry_cnt = 5,
+                .failure_retry_cnt = 10,
             },
-            // .failure_retry_cnt = 5,
-            .failure_retry_cnt = 10,
-        },
-    };
-    wifi_config_t wifi_config_2 = {
-        .sta = {
-            .ssid = "Tardigrad",
-            .password = "blblblbl",
-            .pmf_cfg = {
-                .capable = true,
-                .required = false,
-            },
-            .failure_retry_cnt = 10,
-        },
-    };
-    wifi_config_t wifi_config_3 = {
-        .sta = {
-            .ssid = "Backstage-WiFi",
-            .password = "44VWSvwMpXXqy3b0GXedTi5R1LtGVnYS",
-            .pmf_cfg = {
-                .capable = true,
-                .required = false,
-            },
-            .failure_retry_cnt = 10,
-        },
-    };
-    wifiConfigsPointerParameter->push_back(wifi_config_1);
-    wifiConfigsPointerParameter->push_back(wifi_config_2);
-    wifiConfigsPointerParameter->push_back(wifi_config_3);
+        };
+
+        // // destination first, source second, max size of buffer last
+        // strlcpy(wifi_config.sta.ssid, ssid, 32);
+        // strlcpy(wifi_config.sta.password, password, 32);
+
+        size_t ssid_length = strlen(ssid);
+        memcpy(wifi_config.sta.ssid, ssid, ssid_length);
+        size_t password_length = strlen(password);
+        memcpy(wifi_config.sta.password, password, password_length);
+
+        wifiConfigsPointerParameter->push_back(wifi_config);
+    }
+
+    // Clean up
+    cJSON_Delete(root);
+    // free(&jsonString);
+
+    // wifi_config_t wifi_config_1 = {
+    //     .sta = {
+    //         .ssid = "SFR_25AF",
+    //         .password = "pk88u26tgpg1k48xrue2",
+    //         .pmf_cfg = {
+    //             .capable = true,
+    //             .required = false,
+    //         },
+    //         // .failure_retry_cnt = 5,
+    //         .failure_retry_cnt = 10,
+    //     },
+    // };
+    // wifi_config_t wifi_config_2 = {
+    //     .sta = {
+    //         .ssid = "Tardigrad",
+    //         .password = "blblblbl",
+    //         .pmf_cfg = {
+    //             .capable = true,
+    //             .required = false,
+    //         },
+    //         .failure_retry_cnt = 10,
+    //     },
+    // };
+    // wifi_config_t wifi_config_3 = {
+    //     .sta = {
+    //         .ssid = "Backstage-WiFi",
+    //         .password = "44VWSvwMpXXqy3b0GXedTi5R1LtGVnYS",
+    //         .pmf_cfg = {
+    //             .capable = true,
+    //             .required = false,
+    //         },
+    //         .failure_retry_cnt = 10,
+    //     },
+    // };
+    // wifiConfigsPointerParameter->push_back(wifi_config_1);
+    // wifiConfigsPointerParameter->push_back(wifi_config_3);
+    // wifiConfigsPointerParameter->push_back(wifi_config_2);
 
     esp_err_t nvs_flash_init_ret = nvs_flash_init();
     if (nvs_flash_init_ret != ESP_OK)
