@@ -362,10 +362,11 @@ static esp_err_t action_handler(httpd_req_t *req)
         // Clear memory from previous sample
         freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
 
-        // TODO : Error handling
-        // loadInstrument(static_cast<char *>(desiredSamplePath.c_str()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-        // loadInstrument(const_cast<char *>(desiredSamplePath.data()), true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-        loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        bool loadInstrumentRes = loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        if (!loadInstrumentRes)
+        {
+            printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
+        }
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
@@ -416,34 +417,6 @@ static esp_err_t action_handler(httpd_req_t *req)
         {
             if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex == statePointer->currentPartInstrumentIndex)
             {
-                // int xxxIndex = 0;
-                // for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); i++)
-                // {
-                //     int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i].instrumentIndex;
-                //     if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                //     {
-                //         xxxIndex = i;
-                //     }
-                // }
-
-                // TODO : Check alternate solution via find
-                // Find the position of the number 3
-                // std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);
-                
-                // TODO : Alternative solution to test
-
-                // statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(
-                //     std::remove_if(
-                //         std::begin(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]),
-                //         std::end(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]),
-
-                //     ),
-                //     std::end(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]
-                //     )
-                // );
-
-                // // If the number 3 is found, remove it
-                // std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + xxxIndex;
                 std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + stepContentIndex;
                 if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
                 {
@@ -467,8 +440,6 @@ static esp_err_t action_handler(httpd_req_t *req)
     /* Send a simple response */
     std::string resp = "{\"actionType\":\"" + actionType + "\",\"actionParameters\":\"" + actionParameters + "\"}";
     httpd_resp_send(req, resp.c_str(), HTTPD_RESP_USE_STRLEN);
-    // httpd_resp_send(req, "ESP_OK", HTTPD_RESP_USE_STRLEN);
-    // httpd_resp_send(req, content, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
 httpd_uri_t action_uri = {
@@ -484,14 +455,12 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.stack_size = 20480; // TODO : test random values
 
-    // printf("server == NULL BEFORE : %i\n", serverPointer_p == NULL);
     esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)
     {
         printf("Failed to start HTTP server\n");
         return false;
     }
-    // printf("server == NULL AFTER : %i\n", serverPointer_p == NULL);
 
     esp_err_t httpd_register_uri_handler_ret = httpd_register_uri_handler(*serverPointer_p, &root_uri);
     if (httpd_register_uri_handler_ret != ESP_OK)
