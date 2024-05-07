@@ -92,7 +92,6 @@ static esp_err_t root_handler(httpd_req_t *req)
         std::string htmlString;
         // bool readJsonFile_ret = readJsonFile("/data/index.html", &htmlString);
         getIndexHtml(&htmlString);
-        printf("OKOKOKOK\n");
         // httpd_resp_set_status(req, "200");
         httpd_resp_set_type(req, "text/html");
         // httpd_resp_set_hdr();
@@ -411,29 +410,41 @@ static esp_err_t action_handler(httpd_req_t *req)
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
     {
         const int stepIndex = stoi(actionParameters);
-        statePointer->parts[statePointer->currentPartIndex].steps[stepIndex];
 
         bool isDrumRackSampleStepActive = false;
-        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); i++)
+        for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); stepContentIndex++)
         {
-            if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i].instrumentIndex == statePointer->currentPartInstrumentIndex)
+            if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex == statePointer->currentPartInstrumentIndex)
             {
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
+                // int xxxIndex = 0;
+                // for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); i++)
+                // {
+                //     int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][i].instrumentIndex;
+                //     if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+                //     {
+                //         xxxIndex = i;
+                //     }
+                // }
 
                 // TODO : Check alternate solution via find
                 // Find the position of the number 3
                 // std::vector<int>::const_iterator it = std::find(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin(), statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end(), statePointer->currentPartInstrument);
+                
+                // TODO : Alternative solution to test
 
-                // If the number 3 is found, remove it
-                std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + xxxIndex;
+                // statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(
+                //     std::remove_if(
+                //         std::begin(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]),
+                //         std::end(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]),
+
+                //     ),
+                //     std::end(statePointer->parts[statePointer->currentPartIndex].steps[stepIndex]
+                //     )
+                // );
+
+                // // If the number 3 is found, remove it
+                // std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + xxxIndex;
+                std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + stepContentIndex;
                 if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
                 {
                     isDrumRackSampleStepActive = true;

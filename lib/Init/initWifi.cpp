@@ -61,13 +61,13 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
         printf("Failed to readJsonFile \"/sdcard/wifiConfigs.json\"\n");
         return NULL;
     }
-    printf("-\n");
-    printf("-\n");
-    printf("-\n");
-    printf("%s\n", jsonString.c_str());
-    printf("-\n");
-    printf("-\n");
-    printf("-\n");
+    // printf("-\n");
+    // printf("-\n");
+    // printf("-\n");
+    // printf("%s\n", jsonString.c_str());
+    // printf("-\n");
+    // printf("-\n");
+    // printf("-\n");
 
     // Parse JSON
     cJSON *root = cJSON_Parse(jsonString.c_str());

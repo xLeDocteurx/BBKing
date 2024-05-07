@@ -325,12 +325,15 @@ bool initState(State *statePointer)
     statePointer->wavFilePaths.push_back("/sdcard/558_03d.wav");
     statePointer->wavFilePaths.push_back("/sdcard/559_search chord.wav");
 
+    statePointer->wavFilePaths.push_back("/sdcard/toxic-1.wav");
+    statePointer->wavFilePaths.push_back("/sdcard/toxic-2.wav");
+
     // Init state
     statePointer->currentModeIndex = 0;
     statePointer->currentSelectedStepIndex = 0;
     statePointer->currentSongIndex = 0;
     statePointer->songName = "Demo song";
-    statePointer->songTempo = 154;
+    statePointer->songTempo = 142;
 
     // Instruments
     // TODO : Error handling for loadInstrument and the rest
@@ -338,7 +341,7 @@ bool initState(State *statePointer)
     loadInstrument(statePointer->wavFilePaths[1], true, 0.5, 0, &instrument1);
     statePointer->instruments.push_back(instrument1);
     Instrument instrument2;
-    loadInstrument(statePointer->wavFilePaths[32], true, 0.5, 0, &instrument2);
+    loadInstrument(statePointer->wavFilePaths[51], true, 0.75, 0, &instrument2);
     statePointer->instruments.push_back(instrument2);
     Instrument instrument3;
     loadInstrument(statePointer->wavFilePaths[132], true, 0.5, 0, &instrument3);
@@ -347,7 +350,7 @@ bool initState(State *statePointer)
     loadInstrument(statePointer->wavFilePaths[62], true, 0.5, 0, &instrument4);
     statePointer->instruments.push_back(instrument4);
     Instrument instrument5;
-    loadInstrument(statePointer->wavFilePaths[190], true, 0.5, 0, &instrument5);
+    loadInstrument(statePointer->wavFilePaths[213], true, 0.4, 2, &instrument5);
     statePointer->instruments.push_back(instrument5);
     Instrument instrument6;
     loadInstrument(statePointer->wavFilePaths[78], true, 0.5, 0, &instrument6);
@@ -359,10 +362,10 @@ bool initState(State *statePointer)
     loadInstrument(statePointer->wavFilePaths[112], true, 0.5, 0, &instrument8);
     statePointer->instruments.push_back(instrument8);
     Instrument instrument9;
-    loadInstrument(statePointer->wavFilePaths[250], true, 0.5, 0, &instrument9);
+    loadInstrument(statePointer->wavFilePaths[310], true, 0.5, 1, &instrument9);
     statePointer->instruments.push_back(instrument9);
     Instrument instrument10;
-    loadInstrument(statePointer->wavFilePaths[255], true, 0.5, 0, &instrument10);
+    loadInstrument(statePointer->wavFilePaths[311], true, 0.5, 1, &instrument10);
     statePointer->instruments.push_back(instrument10);
 
     statePointer->currentStaveIndex = 0;
@@ -383,57 +386,55 @@ bool initState(State *statePointer)
         switch (i)
         {
         case 0:
-            part1Steps.push_back({{0, 0, 0.9}, {4, 0, 0.9}});
+            part1Steps.push_back({{0, 0, 0.9}, {8, 0, 0.9}});
             break;
         case 2:
             part1Steps.push_back({});
             break;
         case 4:
-            part1Steps.push_back({{1, 0, 0.9}, {4, 2, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}});
             break;
         case 6:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 8:
-            part1Steps.push_back({{4, 3, 0.9}});
+            part1Steps.push_back({});
             break;
         case 10:
-            part1Steps.push_back({{1, 0, 0.9}});
+            part1Steps.push_back({});
             break;
         case 12:
-            part1Steps.push_back({{1, 0, 0.9}, {4, 5, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}});
             break;
         case 14:
             part1Steps.push_back({});
             break;
 
         case 16:
-            part1Steps.push_back({{0, 0, 0.9}, {4, 0, 0.9}});
+            part1Steps.push_back({{0, 0, 0.9}, {9, 0, 0.9}});
             break;
         case 18:
-            part1Steps.push_back({{0, 0, 0.9}});
+            part1Steps.push_back({});
             break;
         case 20:
-            part1Steps.push_back({{1, 0, 0.9}, {4, 2, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}});
             break;
         case 22:
             part1Steps.push_back({{0, 0, 0.9}});
             break;
         case 24:
-            part1Steps.push_back({{4, 3, 0.9}});
+            part1Steps.push_back({});
             break;
         case 26:
-            part1Steps.push_back({{0, 0, 0.9}});
+            part1Steps.push_back({});
             break;
         case 28:
-            part1Steps.push_back({{1, 0, 0.9}, {4, 5, 0.9}});
+            part1Steps.push_back({{1, 0, 0.9}});
             break;
-        case 29:
-            part1Steps.push_back({{0, 0, 0.9}});
+        case 30:
+            part1Steps.push_back({});
             break;
-        // case 30:
-        //     part1Steps.push_back({{0, 0, 0.9}});
-        //     break;
+
         default:
             part1Steps.push_back({});
             break;
@@ -444,63 +445,214 @@ bool initState(State *statePointer)
 
     // part 2
     std::vector<std::vector<Step>> part2Steps = {};
-    const int part2Staves = 2;
+    const int part2Staves = 8;
     for (int i = 0; i < STATE_PART_STEPS_LENGTH * part2Staves; i++)
     {
         switch (i)
         {
         case 0:
-            part2Steps.push_back({{0, 0, 0.9}, {6, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 2:
-            part2Steps.push_back({{3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({});
             break;
         case 4:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 2, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}});
             break;
         case 6:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 8:
-            part2Steps.push_back({{5, 0, 0.9}, {4, 3, 0.9}});
+            part2Steps.push_back({});
             break;
         case 10:
-            part2Steps.push_back({{1, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({});
             break;
         case 12:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 5, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {4, 18, 0.9}});
             break;
         case 14:
-            part2Steps.push_back({{3, 0, 0.9}, {4, 7, 0.9}});
+            part2Steps.push_back({{4, 15, 0.9}});
             break;
 
         case 16:
-            part2Steps.push_back({{0, 0, 0.9}, {5, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 18:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({});
             break;
         case 20:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 2, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}});
             break;
         case 22:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
             break;
         case 24:
-            part2Steps.push_back({{5, 0, 0.9}, {4, 3, 0.9}});
+            part2Steps.push_back({});
             break;
         case 26:
-            part2Steps.push_back({{0, 0, 0.9}, {3, 0, 0.9}, {4, 0, 0.9}});
+            part2Steps.push_back({});
             break;
         case 28:
-            part2Steps.push_back({{1, 0, 0.9}, {5, 0, 0.9}, {4, 5, 0.9}});
-            break;
-        case 29:
-            part2Steps.push_back({{0, 0, 0.9}});
+            part2Steps.push_back({{1, 0, 0.9}, {4, 18, 0.9}});
             break;
         case 30:
-            part2Steps.push_back({{3, 0, 0.9}, {4, 7, 0.9}});
+            part2Steps.push_back({{4, 20, 0.9}});
             break;
+
+        case 32:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 34:
+            part2Steps.push_back({});
+            break;
+        case 36:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 38:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 40:
+            part2Steps.push_back({});
+            break;
+        case 42:
+            part2Steps.push_back({});
+            break;
+        case 44:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 46:
+            part2Steps.push_back({});
+            break;
+
+        case 48:
+            part2Steps.push_back({{0, 0, 0.9}});
+            break;
+        case 50:
+            part2Steps.push_back({{4, 3, 0.9}});
+            break;
+        case 52:
+            part2Steps.push_back({{1, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 54:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 5, 0.9}});
+            break;
+        case 56:
+            part2Steps.push_back({{4, 6, 0.9}});
+            break;
+        case 58:
+            part2Steps.push_back({{4, 5, 0.9}});
+            break;
+        case 60:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 62:
+            part2Steps.push_back({{4, 5, 0.9}});
+            break;
+
+        case 64:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 6, 0.9}});
+            break;
+        case 66:
+            part2Steps.push_back({});
+            break;
+        case 68:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 70:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 6, 0.9}});
+            break;
+        case 72:
+            part2Steps.push_back({});
+            break;
+        case 74:
+            part2Steps.push_back({{4, 6, 0.9}});
+            break;
+        case 76:
+            part2Steps.push_back({{1, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 78:
+            part2Steps.push_back({{4, 4, 0.9}});
+            break;
+
+        case 80:
+            part2Steps.push_back({{0, 0, 0.9}, {4, -2, 0.9}});
+            break;
+        case 82:
+            part2Steps.push_back({});
+            break;
+        case 84:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 86:
+            part2Steps.push_back({{0, 0, 0.9}});
+            break;
+        case 88:
+            part2Steps.push_back({{4, 10, 0.9}});
+            break;
+        case 90:
+            part2Steps.push_back({{4, 10, 0.9}});
+            break;
+        case 91:
+            part2Steps.push_back({{4, 10, 0.9}});
+            break;
+        case 92:
+            part2Steps.push_back({{1, 0, 0.9}, {4, 10, 0.9}});
+            break;
+        case 94:
+            part2Steps.push_back({{4, 10, 0.9}});
+            break;
+
+        case 96:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 98:
+            part2Steps.push_back({});
+            break;
+        case 100:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 102:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 104:
+            part2Steps.push_back({});
+            break;
+        case 106:
+            part2Steps.push_back({});
+            break;
+        case 108:
+            part2Steps.push_back({{1, 0, 0.9}, {4, 18, 0.9}});
+            break;
+        case 110:
+            part2Steps.push_back({{4, 15, 0.9}});
+            break;
+
+        case 112:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 114:
+            part2Steps.push_back({});
+            break;
+        case 116:
+            part2Steps.push_back({{1, 0, 0.9}});
+            break;
+        case 118:
+            part2Steps.push_back({{0, 0, 0.9}, {4, 3, 0.9}});
+            break;
+        case 120:
+            part2Steps.push_back({{4, 10, 0.9}});
+            break;
+        case 122:
+            part2Steps.push_back({});
+            break;
+        case 124:
+            part2Steps.push_back({{1, 0, 0.9}, {4, 10, 0.9}});
+            break;
+        case 126:
+            part2Steps.push_back({});
+            break;
+
         default:
             part2Steps.push_back({});
             break;
