@@ -362,11 +362,13 @@ static esp_err_t action_handler(httpd_req_t *req)
         // Clear memory from previous sample
         freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
 
-        bool loadInstrumentRes = loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, 0.5, 0, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-        if (!loadInstrumentRes)
-        {
-            printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
-        }
+        // TODO : Error handling
+        // bool loadInstrumentRes =
+        loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+        // if (!loadInstrumentRes)
+        // {
+        //     printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
+        // }
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
@@ -391,7 +393,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
-        statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = std::stof(actionParameters);
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = std::stoi(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPPITCH")
@@ -406,8 +408,49 @@ static esp_err_t action_handler(httpd_req_t *req)
                 xxxIndex = i;
             }
         }
-        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = std::stof(actionParameters);
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = std::stoi(actionParameters);
     }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTARTPOSITION")
+    {
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition = std::stof(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION")
+    {
+        printf("UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION\n");
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].startPosition = std::stof(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLEENDPOSITION")
+    {
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition = std::stof(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION")
+    {
+        printf("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION\n");
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].endPosition = std::stof(actionParameters);
+    }
+
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
     {
         const int stepIndex = stoi(actionParameters);

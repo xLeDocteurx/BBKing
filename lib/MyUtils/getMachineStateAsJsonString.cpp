@@ -22,6 +22,8 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
 
             ",\"volume\":" + std::to_string(statePointer->instruments[i].volume) +
             ",\"pitch\":" + std::to_string(statePointer->instruments[i].pitch) +
+            ",\"startPosition\":" + std::to_string(statePointer->instruments[i].startPosition) +
+            ",\"endPosition\":" + std::to_string(statePointer->instruments[i].endPosition) +
             "}";
         if (i != 0)
         {
@@ -46,9 +48,20 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
                     stepString += ",";
                 }
                 // stepString += std::to_string(statePointer->parts[i].steps[j][k]);
-                statePointer->parts[i].steps[j][k].pitch;
-                statePointer->parts[i].steps[j][k].volume;
-                stepString += "{\"instrumentIndex\":" + std::to_string(statePointer->parts[i].steps[j][k].instrumentIndex) + ",\"pitch\":" + std::to_string(statePointer->parts[i].steps[j][k].pitch) + ",\"volume\":" + std::to_string(statePointer->parts[i].steps[j][k].volume) + "}";
+                // statePointer->parts[i].steps[j][k].pitch;
+                // statePointer->parts[i].steps[j][k].volume;
+                stepString +=
+                    "{\"instrumentIndex\":" +
+                    std::to_string(statePointer->parts[i].steps[j][k].instrumentIndex) +
+                    ",\"pitch\":" +
+                    std::to_string(statePointer->parts[i].steps[j][k].pitch) +
+                    ",\"volume\":" +
+                    std::to_string(statePointer->parts[i].steps[j][k].volume) +
+                    ",\"startPosition\":" +
+                    std::to_string(statePointer->parts[i].steps[j][k].startPosition) +
+                    ",\"endPosition\":" + 
+                    std::to_string(statePointer->parts[i].steps[j][k].endPosition) +
+                    "}";
             }
             stepString += "]";
 

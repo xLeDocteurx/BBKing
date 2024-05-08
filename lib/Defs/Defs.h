@@ -77,18 +77,29 @@ struct Instrument
 
     float volume;
     int pitch;
+    // TODO : In number of samples ???
+    // For now heads are set up in relative units
+    float startPosition;
+    float endPosition;
+    bool isReverse;
 
     int16_t *buffer;
     bool isPlaying;
     int bufferSamplesReadCounter;
     int startingStepVolume;
     int startingStepPitch;
+    float startingStepStartPosition;
+    float startingStepEndPosition;
+    bool startingStepIsReverse;
 };
 struct Step
 {
     int instrumentIndex;
     int pitch;
     float volume;
+    float startPosition;
+    float endPosition;
+    bool isReverse;
 };
 
 struct Part

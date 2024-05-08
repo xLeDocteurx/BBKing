@@ -30,12 +30,17 @@ void audioTask(void *parameter)
             {
                 int fileSizeInSamples = instrument->sample.fileSize / sizeof(int16_t);
 
-                // TODO : En function utils "pitchToSpeed"
-                // float playbackSpeed = pow(2, static_cast<float>(instrument->pitch + instrument->startingStepPitch) / 12.0);
+                float playbackVolume = instrument->volume * instrument->startingStepVolume;
                 float playbackSpeed = pitchToPlaybackSpeed(instrument->pitch + instrument->startingStepPitch);
+                // int playbackStartPosition = (instrument->startingStepStartPosition == 0.0) ? instrument->startPosition : instrument->startingStepStartPosition;
+                // int playbackEndPosition = instrument->sample.fileSize / (DMA_BITS_PER_SAMPLE / 8) * ((instrument->startingStepEndPosition == 1.0) ? instrument->endPosition : instrument->startingStepEndPosition);
+                int playbackEndPosition = round(instrument->sample.fileSize / sizeof(int16_t) * ((instrument->startingStepEndPosition == 1.0) ? instrument->endPosition : instrument->startingStepEndPosition));
+                // TODO : isReverse
+                // bool playbackIsReverse = instrument->isReverse xor instrument->startingStepIsReverse;
 
                 int sizeToWriteInSamples = 0;
                 int sizeIWantToWriteInSamples = (fileSizeInSamples - instrument->bufferSamplesReadCounter) / playbackSpeed;
+                // int sizeIWantToWriteInSamples = (playbackEndPosition - instrument->bufferSamplesReadCounter) / playbackSpeed;
                 if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
                 {
                     sizeToWriteInSamples = sizeIWantToWriteInSamples;
@@ -47,6 +52,7 @@ void audioTask(void *parameter)
 
                 // When reaching sample end
                 if (sizeToWriteInSamples <= 0)
+                // if (sizeToWriteInSamples <= playbackEndPosition)
                 {
                     // printf("stop : %s\n", sample->filePath);
                     instrument->isPlaying = false;
@@ -57,9 +63,10 @@ void audioTask(void *parameter)
                 // Write sample buffer to _masterBuffer
                 for (int i = 0; i < sizeToWriteInSamples; i++)
                 {
+                    statePointer->_masterBuffer[i] += instrument->buffer[(int)(instrument->bufferSamplesReadCounter + round(i * playbackSpeed))] * instrument->volume;
                     // statePointer->_masterBuffer[i] += sample->buffer[(int)(sample->bufferSamplesReadCounter + round(i * playbackSpeed))] * sample->volume * sample->startingStepVolume;
                     // printf("sample->startingStepVolume : %i\n", sample->startingStepVolume);
-                    statePointer->_masterBuffer[i] += instrument->buffer[(int)(instrument->bufferSamplesReadCounter + round(i * playbackSpeed))] * instrument->volume;
+                    // statePointer->_masterBuffer[i] += instrument->buffer[(int)(instrument->bufferSamplesReadCounter + round(i * playbackSpeed))] * playbackVolume;
                 }
 
                 instrument->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
