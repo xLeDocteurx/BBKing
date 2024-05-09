@@ -24,6 +24,7 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
             ",\"pitch\":" + std::to_string(statePointer->instruments[i].pitch) +
             ",\"startPosition\":" + std::to_string(statePointer->instruments[i].startPosition) +
             ",\"endPosition\":" + std::to_string(statePointer->instruments[i].endPosition) +
+            ",\"isReverse\":" + (statePointer->instruments[i].isReverse ? "true" : "false") +
             "}";
         if (i != 0)
         {
@@ -59,8 +60,10 @@ void getMachineStateAsJsonString(State *statePointer, std::string *jsonStringPoi
                     std::to_string(statePointer->parts[i].steps[j][k].volume) +
                     ",\"startPosition\":" +
                     std::to_string(statePointer->parts[i].steps[j][k].startPosition) +
-                    ",\"endPosition\":" + 
+                    ",\"endPosition\":" +
                     std::to_string(statePointer->parts[i].steps[j][k].endPosition) +
+                    ",\"isReverse\":" +
+                    (statePointer->parts[i].steps[j][k].isReverse ? "true" : "false") +
                     "}";
             }
             stepString += "]";

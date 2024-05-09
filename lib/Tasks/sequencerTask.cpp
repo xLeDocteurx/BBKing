@@ -18,7 +18,6 @@ void sequencerTask(void *parameter)
             for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); stepContentIndex++)
             {
                 const int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].instrumentIndex;
-                // int sampleIndex = statePointer->instruments[stepInstrumentIndex].sampleFileRefIndex;
 
                 // Interruption groups
                 switch (stepInstrumentIndex)
@@ -64,15 +63,18 @@ void sequencerTask(void *parameter)
                 statePointer->instruments[stepInstrumentIndex].startingStepEndPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].endPosition;
                 statePointer->instruments[stepInstrumentIndex].startingStepIsReverse = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].isReverse;
 
-                int playbackStartPosition = statePointer->instruments[stepInstrumentIndex].sample.fileSize / 2 * ((statePointer->instruments[stepInstrumentIndex].startingStepStartPosition == 0.0) ? statePointer->instruments[stepInstrumentIndex].startPosition : statePointer->instruments[stepInstrumentIndex].startingStepStartPosition);
-                // int playbackEndPosition = (statePointer->instruments[stepInstrumentIndex].startingStepEndPosition == 1.0) ? statePointer->instruments[stepInstrumentIndex].endPosition : statePointer->instruments[stepInstrumentIndex].startingStepEndPosition;
-                // TODO : isReverse
-                // bool playbackIsReverse = statePointer->instruments[stepInstrumentIndex].isReverse xor statePointer->instruments[stepInstrumentIndex].startingStepIsReverse;
-                // printf("start %i/%i : %s\n", stepInstrumentSampleIndex, sampleIndex, statePointer->instruments[stepInstrumentIndex].filePath);
+                int playbackStartPositionInSample;
+                if (statePointer->instruments[stepInstrumentIndex].isReverse xor statePointer->instruments[stepInstrumentIndex].startingStepIsReverse)
+                {
+                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].startingStepEndPosition == 1.0) ? statePointer->instruments[stepInstrumentIndex].endPosition : statePointer->instruments[stepInstrumentIndex].startingStepEndPosition));
+                }
+                else
+                {
+                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].startingStepStartPosition == 0.0) ? statePointer->instruments[stepInstrumentIndex].startPosition : statePointer->instruments[stepInstrumentIndex].startingStepStartPosition));
+                }
+                printf("start %i/%i : %s\n", statePointer->currentStepIndex, stepInstrumentIndex, statePointer->instruments[stepInstrumentIndex].sample.filePath);
+
                 statePointer->instruments[stepInstrumentIndex].isPlaying = true;
-                statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = 0;
-                // statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / (DMA_BITS_PER_SAMPLE / 8) * playbackStartPosition);
-                // statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * playbackStartPosition);
             }
 
             statePointer->currentStepIndex += 1;

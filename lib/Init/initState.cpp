@@ -362,10 +362,10 @@ bool initState(State *statePointer)
     loadInstrument(statePointer->wavFilePaths[112], true, 0.5, 0, 0.0, 1.0, false, &instrument8);
     statePointer->instruments.push_back(instrument8);
     Instrument instrument9;
-    loadInstrument(statePointer->wavFilePaths[310], true, 0.5, 1, 0.0, 1.0, false, &instrument9);
+    loadInstrument(statePointer->wavFilePaths[310], true, 0.5, 1, 0.0, 0.5, false, &instrument9);
     statePointer->instruments.push_back(instrument9);
     Instrument instrument10;
-    loadInstrument(statePointer->wavFilePaths[311], true, 0.5, 1, 0.0, 1.0, false, &instrument10);
+    loadInstrument(statePointer->wavFilePaths[311], true, 0.5, 1, 0.0, 1.0, true, &instrument10);
     statePointer->instruments.push_back(instrument10);
 
     statePointer->currentStaveIndex = 0;

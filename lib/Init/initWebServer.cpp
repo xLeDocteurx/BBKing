@@ -450,6 +450,26 @@ static esp_err_t action_handler(httpd_req_t *req)
         }
         statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].endPosition = std::stof(actionParameters);
     }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLEISREVERSE")
+    {
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse = std::stof(actionParameters);
+    }
+    // TODO : FUSIONNER COMME DANS LE FRONT
+    else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPISREVERSE")
+    {
+        printf("UPDATEINSTRUMENTSAMPLESTEPISREVERSE\n");
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].isReverse = std::stoi(actionParameters);
+    }
 
     else if (actionType == "TOGGLEINSTRUMENTSTEP")
     {
