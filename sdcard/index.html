@@ -1,0 +1,860 @@
+<head>
+  <title>BBKing</title>
+  <link rel="icon" href="data:," />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
+    integrity="sha384-RxqHG2ilm4r6aFRpGmBbGTjsqwfqHOKy1ArsMhHusnRO47jcGqpIQqlQK/kmGy9R"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"
+  ></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="topnav">
+      <button
+        :disabled="wsStatus"
+        id="connect"
+        @click="($event)=>{connectToWebsocket();}"
+      >
+        Connecter
+      </button>
+      <!-- @click="($event)=>{sendMessageViaWebsocket('ping');}" -->
+      <!-- @click="($event)=>{sendMessageViaWebsocket('Trigger async');}" -->
+      <button
+        :disabled="!wsStatus"
+        id="send-ping"
+        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
+      >
+        Envoyer un ping
+      </button>
+      <span id="status">
+        <span
+          class="badge rounded-pill"
+          :class="{ 'bg-success': wsStatus, 'bg-danger': !wsStatus}"
+        >
+          {{wsStatus ? "Connected": "Disconnected"}}
+        </span>
+      </span>
+
+      <h1 class="text-center">BBKing</h1>
+    </div>
+    <div class="container-fluid">
+      <div class="row pb-4">
+        <div class="col">
+          <div class="card border-primary h-100">
+            <div class="card-header">
+              <div class="input-group">
+                <input
+                  disabled
+                  type="text"
+                  class="form-control"
+                  :value="machineState.songName"
+                  @change="($event)=>{updateSongName($event);}"
+                />
+                <button
+                  v-if="machineState.currentPartIndex > 0"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadPreviousPart();}"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="input-group-text"
+                  >Part : {{ machineState.currentPartIndex + 1 }}</span
+                >
+                <button
+                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadNextPart();}"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{createNextPart();}"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="input-group">
+                <input
+                  type="number"
+                  step="1"
+                  class="form-control"
+                  :value="machineState.songTempo"
+                  @change="($event)=>{updateTempo($event);}"
+                />
+                <span class="input-group-text">bpm</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="card-text">
+                <div class="btn-group w-100 mb-2" role="group">
+                  <!-- <button
+                      disabled
+                      type="button"
+                      class="btn btn-outline-primary w-25"
+                    >
+                      <i class="fas fa-record-vinyl"></i>
+                    </button> -->
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary w-25"
+                    @click="($event)=>{play();}"
+                  >
+                    <i class="fas fa-play"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary w-25"
+                    @click="($event)=>{stop();}"
+                  >
+                    <i class="fas fa-stop"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-text">
+                <div class="btn-group w-100 mb-2" role="group">
+                  <!-- <i class="fas fa-music"></i> -->
+                  <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+                  <button
+                    disabled
+                    type="button"
+                    @click="() => {updateCurrentMode(0);}"
+                    class="btn btn-outline-primary"
+                  >
+                    FX
+                  </button>
+                  <button
+                    @click="() => {updateCurrentMode(0);}"
+                    type="button"
+                    class="btn"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+                  >
+                    <i class="fas fa-guitar"></i>
+                  </button>
+                  <button
+                    @click="() => {updateCurrentMode(1);}"
+                    type="button"
+                    class="btn"
+                    :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+                  >
+                    <i class="fas fa-shoe-prints"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-text">
+                <div class="btn-group w-100 mb" role="group">
+                  <!-- <button
+                      disabled
+                      type="button"
+                      class="btn btn-outline-primary w-25"
+                    >
+                      <i class="fas fa-vial"></i>
+                    </button> -->
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-primary w-25"
+                  >
+                    <i class="fas fa-volume-up"></i>
+                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-primary w-25"
+                  >
+                    <i class="fas fa-volume-mute"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-primary h-100">
+            <div class="card-header">
+              Common / Instrument
+
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Button group with nested dropdown"
+              >
+                <button type="button" class="btn btn-outline-primary">
+                  {{machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath}}
+                </button>
+                <div class="btn-group" role="group">
+                  <button
+                    id="btnGroupDrop1"
+                    type="button"
+                    class="btn btn-outline-primary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  ></button>
+                  <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    <a
+                      v-for="(s, s_index) in wavFilesList"
+                      class="dropdown-item"
+                      href="#"
+                      @click="($event) => updateSelectedInstrumentSample(s_index)"
+                      >{{s}}</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-text">
+                <form>
+                  <fieldset>
+                    <label for="pitchSustainRange" class="form-label"
+                      >Pitch / Sustain :</label
+                    >
+                    <input
+                      type="number"
+                      class="form-control"
+                      min="-48"
+                      max="48"
+                      step="1"
+                      id="pitchSustainRange"
+                      :value="getCommonsControlValues().pitch"
+                      @change="($event)=>{updatePitch($event);}"
+                    />
+                    <label for="volumeRange" class="form-label">Volume :</label>
+                    <input
+                      type="range"
+                      class="form-range"
+                      min="0"
+                      max="1"
+                      step="0.0025"
+                      id="volumeRange"
+                      :value="getCommonsControlValues().volume"
+                      @change="($event)=>{updateVolume($event);}"
+                    />
+
+                    <label for="startPositionRange" class="form-label"
+                      >Start :</label
+                    >
+                    <input
+                      type="range"
+                      class="form-range"
+                      min="0"
+                      max="1"
+                      step="0.0025"
+                      id="startPositionRange"
+                      :value="getCommonsControlValues().startPosition"
+                      @change="($event)=>{updateStartPosition($event);}"
+                    />
+                    <label for="endPositionRange" class="form-label"
+                      >End :</label
+                    >
+                    <input
+                      type="range"
+                      class="form-range"
+                      min="0"
+                      max="1"
+                      step="0.0025"
+                      id="endPositionRange"
+                      :value="getCommonsControlValues().endPosition"
+                      @change="($event)=>{updateEndPosition($event);}"
+                    />
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="row pb-2 h-50">
+            <div class="col">
+              <div class="card border-primary h-100">
+                <div class="card-header">Modulation</div>
+                <div class="card-body">
+                  <div class="card-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row pt-2 h-50">
+            <div class="col">
+              <div class="card border-primary h-100">
+                <div class="card-header">Filter</div>
+                <div class="card-body">
+                  <div class="card-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-primary h-100">
+            <div class="card-header">Effects</div>
+            <div class="card-body">
+              <div class="card-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="card border-primary h-100">
+            <div class="card-header">
+              <div class="btn-group" role="group">
+                <button disabled type="button" class="btn btn-outline-primary">
+                  <i class="fas fa-hand-spock"></i>
+                </button>
+                <button disabled type="button" class="btn btn-outline-primary">
+                  <i class="fas fa-keyboard"></i>
+                </button>
+              </div>
+
+              <button disabled type="button" class="btn btn-outline-light">
+                Light
+              </button>
+
+              <div class="btn-group" role="group">
+                <button
+                  v-if="machineState.parts[machineState.currentPartIndex].staves>1"
+                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button
+                  v-for="n in machineState.parts[machineState.currentPartIndex].staves"
+                  @click="($event) => {selectStave(n-1);}"
+                  type="button"
+                  class="btn"
+                  :class="{ 'btn-primary': machineState.currentStaveIndex == n-1, 'btn-outline-primary': !(machineState.currentStaveIndex == n-1)}"
+                >
+                  <b>{{n}}</b>
+                </button>
+                <button
+                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
+                  type="button"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-text py-2">
+                <div
+                  class="input-group-lg d-flex flex-row justify-content-between"
+                  role="group"
+                >
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(0);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 0}"
+                  >
+                    D1
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(1);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 1}"
+                  >
+                    D2
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(2);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 2}"
+                  >
+                    D3
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(3);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 3}"
+                  >
+                    D4
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(4);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 4}"
+                  >
+                    D5
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(5);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 5}"
+                  >
+                    D6
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(6);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 6}"
+                  >
+                    D7
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(7);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 7}"
+                  >
+                    D8
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(8);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 8}"
+                  >
+                    D9
+                  </button>
+                  <button
+                    @click="($event)=>{selectInstrument(9);}"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 9}"
+                  >
+                    D10
+                  </button>
+                  <button disabled type="button" class="btn btn-outline-light">
+                    Light
+                  </button>
+                </div>
+              </div>
+              <div class="card-text py-2">
+                <div
+                  class="input-group-lg d-flex flex-row justify-content-around"
+                  role="group"
+                >
+                  <button
+                    v-for="n in 16"
+                    @click="($event)=>{toggleInstrumentStep(n-1);}"
+                    type="button"
+                    class="btn"
+                    :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1)}"
+                    :disabled="!isStepClickable(n-1)"
+                  >
+                    <b>{{n}}</b>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function httpGet(path) {
+      const response = await fetch(`${path}`);
+      const json = await response.json();
+      console.log("httpGet res : ", json);
+      return json;
+    }
+    function resizeArray(arr, newSize, defaultValue) {
+      return [
+        ...arr,
+        ...Array(Math.max(newSize - arr.length, 0)).fill(defaultValue),
+      ];
+    }
+
+    const wsUri = `ws://${window.location.host}/ws`;
+
+    // const allPromises = Promise.all([httpGet("/state")]);
+
+    const { createApp, ref, reactive } = Vue;
+
+    // allPromises.then((allPromisesRet) => {
+    createApp({
+      setup() {
+        const wsStatus = ref(false);
+
+        const machineState = ref({
+          currentModeIndex: 0,
+          currentSelectedStepIndex: 0,
+          currentSongIndex: 0,
+          songName: "NULL song",
+          songTempo: 666,
+          instruments: [
+            {
+              sample: {
+                filePath: "/data/kick.wav",
+                isMono: true,
+                fileSize: 9502,
+              },
+              isSolo: false,
+              isMuted: false,
+              volume: 0.5,
+              pitch: 0,
+            },
+          ],
+          currentPartIndex: 0,
+          currentPartInstrumentIndex: 0,
+          currentStaveIndex: 0,
+          currentOctaveIndex: 0,
+          parts: [
+            {
+              staves: 1,
+              steps: [
+                [
+                  {
+                    instrumentIndex: 0,
+                    pitch: 0,
+                    volume: 0.9,
+                  },
+                ],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+              ],
+            },
+          ],
+        });
+
+        const wavFilesList = ref([]);
+
+        const ws = ref(null);
+
+        const httpAction = async function (actionName, actionParameters) {
+          const response = await fetch(`/action`, {
+            method: "POST",
+            body: `${actionName}@${JSON.stringify(actionParameters)}`,
+          });
+          // const json = await response.json();
+          const text = await response.text();
+          // console.log("httpAction res : ", json);
+          console.log("httpAction res : ", text);
+          // TODO : temporary solution for pongs
+          sendMessageViaWebsocket("toggle");
+          // return json;
+        };
+        const updateMachineStateRef = async function () {
+          const response = await fetch(`/state`);
+          const json = await response.json();
+          console.log("updateMachineStateRef httpGet res : ", json);
+          machineState.value = json;
+        };
+        const updateWavFilesListRef = async function () {
+          const response = await fetch(`/wavFiles`);
+          const json = await response.json();
+          console.log("updateWavFilesListRef httpGet res : ", json);
+          wavFilesList.value = json;
+        };
+        const connectToWebsocket = function () {
+          ws.value = new WebSocket(wsUri);
+
+          ws.value.onopen = () => {
+            console.log("connected");
+            wsStatus.value = true;
+          };
+
+          ws.value.onclose = () => {
+            console.log("disconnected");
+            wsStatus.value = false;
+          };
+
+          ws.value.onmessage = (event) => {
+            const message = event.data;
+            if (message === "pong") {
+              console.log("Pong received !");
+            } else {
+              console.log("Message received :", message);
+              // console.log("Message received as json :", JSON.parse(message));
+              // machineState.value = message;
+              updateMachineStateRef();
+              // updateWavFilesListRef();
+            }
+          };
+        };
+
+        const sendMessageViaWebsocket = function (message) {
+          if (!!ws && ws.value.readyState === WebSocket.OPEN) {
+            ws.value.send(message);
+          } else {
+            console.log("WebSocket non connected !");
+          }
+        };
+
+        const getCommonsControlValues = function () {
+          if (machineState.value.currentModeIndex == 0) {
+            const obj =
+              machineState.value.instruments[
+                machineState.value.currentPartInstrumentIndex
+              ];
+            return { volume: obj.volume, pitch: obj.pitch, startPosition: obj.startPosition, endPosition: obj.endPosition };
+          } else if (machineState.value.currentModeIndex == 1) {
+            // console.log(
+            //   machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
+            //   " / ",
+            //   machineState.value.parts[
+            //     machineState.value.currentPartIndex
+            //   ].steps[
+            //     machineState.value.currentSelectedStepIndex +
+            //       16 * machineState.value.currentStaveIndex
+            //   ].find(
+            //     (st) =>
+            //       st.instrumentIndex ==
+            //       machineState.value.currentPartInstrumentIndex
+            //   )
+            // );
+            const obj = machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[
+              machineState.value.currentSelectedStepIndex +
+                16 * machineState.value.currentStaveIndex
+            ].find(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+            return { volume: obj.volume, pitch: obj.pitch, startPosition: obj.startPosition, endPosition: obj.endPosition };
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
+          }
+        };
+        const isStepClickable = function (stepIndex) {
+          if (machineState.value.currentModeIndex == 0) {
+            return true;
+          } else if (machineState.value.currentModeIndex == 1) {
+            return machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
+          }
+        };
+        const isStepActive = function (stepIndex) {
+          if (machineState.value.currentModeIndex == 0) {
+            return machineState.value.parts[
+              machineState.value.currentPartIndex
+            ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
+              (st) =>
+                st.instrumentIndex ==
+                machineState.value.currentPartInstrumentIndex
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            return stepIndex == machineState.value.currentSelectedStepIndex;
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
+          }
+        };
+
+        const updateCurrentMode = function (modeIndex) {
+          httpAction("UPDATECURRENTMODE", modeIndex);
+        };
+        const updateSongName = function (event) {
+          httpAction("UPDATESONGNAME", event.target.value);
+        };
+        const updateTempo = function (event) {
+          httpAction("UPDATETEMPO", Number(event.target.value));
+        };
+        const play = function () {
+          httpAction("PLAY", {});
+        };
+        const stop = function () {
+          httpAction("STOP", {});
+        };
+        const loadPreviousPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
+        };
+        const loadNextPart = function () {
+          httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
+        };
+        const createNextPart = function () {
+          httpAction("CREATEPART", {});
+        };
+        const updateStaveNumber = function (staveNumber) {
+          httpAction("UPDATESTAVENUMBER", staveNumber);
+        };
+        const selectStave = function (staveIndex) {
+          httpAction("SELECTSTAVE", staveIndex);
+        };
+        const selectInstrument = function (instrumentIndex) {
+          httpAction("SELECTINSTRUMENT", instrumentIndex);
+        };
+        const updateSelectedInstrumentSample = function (sampleIndex) {
+          httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
+        };
+        const toggleInstrumentStep = function (stepIndex) {
+          const stepIndexToUpdate =
+            stepIndex + 16 * machineState.value.currentStaveIndex;
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction("UPDATECURRENTSELECTEDSTEP", stepIndexToUpdate);
+          }
+        };
+
+        const updateVolume = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEVOLUME",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPVOLUME",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        const updatePitch = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEPITCH",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPPITCH",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        const updateStartPosition = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTARTPOSITION",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        const updateEndPosition = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEENDPOSITION",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        updateMachineStateRef().then((_) => {
+          connectToWebsocket();
+        });
+
+        updateWavFilesListRef();
+
+        return {
+          wsStatus,
+          machineState,
+          wavFilesList,
+          connectToWebsocket,
+          sendMessageViaWebsocket,
+          updateCurrentMode,
+          updateSongName,
+          updateTempo,
+          play,
+          stop,
+          loadPreviousPart,
+          loadNextPart,
+          createNextPart,
+          updateStaveNumber,
+          selectStave,
+          selectInstrument,
+          updateSelectedInstrumentSample,
+          getCommonsControlValues,
+          isStepClickable,
+          isStepActive,
+          toggleInstrumentStep,
+          updateTempo,
+          updateVolume,
+          updatePitch,
+        };
+      },
+    }).mount("#app");
+    // });
+  </script>
+</body>

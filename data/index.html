@@ -9,12 +9,12 @@
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
     crossorigin="anonymous"
   />
-  <link
+  <!-- <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
     integrity="sha384-RxqHG2ilm4r6aFRpGmBbGTjsqwfqHOKy1ArsMhHusnRO47jcGqpIQqlQK/kmGy9R"
     crossorigin="anonymous"
-  />
+  /> -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
     integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
@@ -37,15 +37,13 @@
 <body>
   <div id="app">
     <div class="topnav">
-      <button
+      <!-- <button
         :disabled="wsStatus"
         id="connect"
         @click="($event)=>{connectToWebsocket();}"
       >
         Connecter
       </button>
-      <!-- @click="($event)=>{sendMessageViaWebsocket('ping');}" -->
-      <!-- @click="($event)=>{sendMessageViaWebsocket('Trigger async');}" -->
       <button
         :disabled="!wsStatus"
         id="send-ping"
@@ -60,9 +58,15 @@
         >
           {{wsStatus ? "Connected": "Disconnected"}}
         </span>
-      </span>
+      </span> -->
 
-      <h1 class="text-center">BBKing</h1>
+      <h1
+        v-if="wsStatus"
+        class="text-center"
+        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
+      >
+        BBKing
+      </h1>
     </div>
     <div class="container-fluid">
       <div class="row pb-4">
@@ -122,12 +126,12 @@
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
                   <!-- <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-record-vinyl"></i>
-                  </button> -->
+                      disabled
+                      type="button"
+                      class="btn btn-outline-primary w-25"
+                    >
+                      <i class="fas fa-record-vinyl"></i>
+                    </button> -->
                   <button
                     type="button"
                     class="btn btn-outline-primary w-25"
@@ -146,17 +150,20 @@
               </div>
               <div class="card-text">
                 <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
+                  <!-- <i class="fas fa-music"></i> -->
+                  <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+                  <button
                     disabled
                     type="button"
-                    class="btn btn-outline-primary w-25"
+                    @click="() => {updateCurrentMode(0);}"
+                    class="btn btn-outline-primary"
                   >
-                    <i class="fas fa-music"></i>
-                  </button> -->
+                    FX
+                  </button>
                   <button
                     @click="() => {updateCurrentMode(0);}"
                     type="button"
-                    class="btn w-25"
+                    class="btn"
                     :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
                   >
                     <i class="fas fa-guitar"></i>
@@ -164,7 +171,7 @@
                   <button
                     @click="() => {updateCurrentMode(1);}"
                     type="button"
-                    class="btn w-25"
+                    class="btn"
                     :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
                   >
                     <i class="fas fa-shoe-prints"></i>
@@ -174,12 +181,12 @@
               <div class="card-text">
                 <div class="btn-group w-100 mb" role="group">
                   <!-- <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-vial"></i>
-                  </button> -->
+                      disabled
+                      type="button"
+                      class="btn btn-outline-primary w-25"
+                    >
+                      <i class="fas fa-vial"></i>
+                    </button> -->
                   <button
                     disabled
                     type="button"
@@ -210,7 +217,7 @@
                 aria-label="Button group with nested dropdown"
               >
                 <button type="button" class="btn btn-outline-primary">
-                  {{getCurrentInstrumentSample().filePath}}
+                  {{machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath}}
                 </button>
                 <div class="btn-group" role="group">
                   <button
@@ -221,18 +228,13 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                   ></button>
-                  <div
-                    class="dropdown-menu"
-                    aria-labelledby="btnGroupDrop1"
-                    style=""
-                  >
-                    <!-- TODO : remove les $event presque partout -->
+                  <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <a
-                      v-for="(s, s_index) in machineState.samples"
+                      v-for="(s, s_index) in wavFilesList"
                       class="dropdown-item"
                       href="#"
                       @click="($event) => updateSelectedInstrumentSample(s_index)"
-                      >{{s.filePath}}</a
+                      >{{s}}</a
                     >
                   </div>
                 </div>
@@ -247,7 +249,7 @@
                     >
                     <input
                       type="number"
-                      class="form-control"
+                      class="form-range"
                       min="-48"
                       max="48"
                       step="1"
@@ -257,7 +259,7 @@
                     />
                     <label for="volumeRange" class="form-label">Volume :</label>
                     <input
-                      type="range"
+                      type="number"
                       class="form-range"
                       min="0"
                       max="1"
@@ -266,6 +268,46 @@
                       :value="getCommonsControlValues().volume"
                       @change="($event)=>{updateVolume($event);}"
                     />
+
+                    <label for="startPositionRange" class="form-label"
+                      >Start :</label
+                    >
+                    <input
+                      type="number"
+                      class="form-range"
+                      min="0"
+                      max="1"
+                      step="0.0025"
+                      id="startPositionRange"
+                      :value="getCommonsControlValues().startPosition"
+                      @change="($event)=>{updateStartPosition($event);}"
+                    />
+                    <label for="endPositionRange" class="form-label"
+                      >End :</label
+                    >
+                    <input
+                      type="number"
+                      class="form-range"
+                      min="0"
+                      max="1"
+                      step="0.0025"
+                      id="endPositionRange"
+                      :value="getCommonsControlValues().endPosition"
+                      @change="($event)=>{updateEndPosition($event);}"
+                    />
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="isReverseSwitch"
+                        :value="getCommonsControlValues().isReverse"
+                        @change="($event)=>{updateIsReverse($event);}"
+                      />
+                      <label class="form-check-label" for="isReverseSwitch"
+                        >Is reverse</label
+                      >
+                    </div>
                   </fieldset>
                 </form>
               </div>
@@ -307,18 +349,18 @@
         <div class="col">
           <div class="card border-primary h-100">
             <div class="card-header">
-              <!-- <div class="btn-group" role="group">
+              <div class="btn-group" role="group">
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-hand-spock"></i>
                 </button>
                 <button disabled type="button" class="btn btn-outline-primary">
                   <i class="fas fa-keyboard"></i>
                 </button>
-              </div> -->
+              </div>
 
-              <!-- <button disabled type="button" class="btn btn-outline-light">
+              <button disabled type="button" class="btn btn-outline-light">
                 Light
-              </button> -->
+              </button>
 
               <div class="btn-group" role="group">
                 <button
@@ -422,31 +464,28 @@
                     Light
                   </button>
                   <button
-                    disabled
                     @click="($event)=>{selectInstrument(7);}"
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 7}"
                   >
-                    Si
+                    D8
                   </button>
                   <button
-                    disabled
                     @click="($event)=>{selectInstrument(8);}"
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 8}"
                   >
-                    Sa
+                    D9
                   </button>
                   <button
-                    disabled
                     @click="($event)=>{selectInstrument(9);}"
                     type="button"
                     class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 9}"
                   >
-                    Sy
+                    D10
                   </button>
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
@@ -506,24 +545,21 @@
           currentModeIndex: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
-          songName: "Demo song",
-          songTempo: 154,
-          samples: [
-            { filePath: "/data/kick.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/snare.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/clap.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/rim.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/bass-C.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/hhc.wav", pitch: 0, volume: "0.750000" },
-            { filePath: "/data/hho.wav", pitch: 0, volume: "0.750000" },
+          songName: "NULL song",
+          songTempo: 666,
+          instruments: [
+            {
+              sample: {
+                filePath: "/data/kick.wav",
+                isMono: true,
+                fileSize: 9502,
+              },
+              isSolo: false,
+              isMuted: false,
+              volume: 0.5,
+              pitch: 0,
+            },
           ],
-          drumRackSampleFileRefIndex1: 0,
-          drumRackSampleFileRefIndex2: 1,
-          drumRackSampleFileRefIndex3: 2,
-          drumRackSampleFileRefIndex4: 3,
-          drumRackSampleFileRefIndex5: 4,
-          drumRackSampleFileRefIndex6: 5,
-          drumRackSampleFileRefIndex7: 6,
           currentPartIndex: 0,
           currentPartInstrumentIndex: 0,
           currentStaveIndex: 0,
@@ -532,7 +568,13 @@
             {
               staves: 1,
               steps: [
-                [],
+                [
+                  {
+                    instrumentIndex: 0,
+                    pitch: 0,
+                    volume: 0.9,
+                  },
+                ],
                 [],
                 [],
                 [],
@@ -552,6 +594,9 @@
             },
           ],
         });
+
+        const wavFilesList = ref([]);
+
         const ws = ref(null);
 
         const httpAction = async function (actionName, actionParameters) {
@@ -570,8 +615,14 @@
         const updateMachineStateRef = async function () {
           const response = await fetch(`/state`);
           const json = await response.json();
-          console.log("httpGet res : ", json);
+          console.log("updateMachineStateRef httpGet res : ", json);
           machineState.value = json;
+        };
+        const updateWavFilesListRef = async function () {
+          const response = await fetch(`/wavFiles`);
+          const json = await response.json();
+          console.log("updateWavFilesListRef httpGet res : ", json);
+          wavFilesList.value = json;
         };
         const connectToWebsocket = function () {
           ws.value = new WebSocket(wsUri);
@@ -595,6 +646,7 @@
               // console.log("Message received as json :", JSON.parse(message));
               // machineState.value = message;
               updateMachineStateRef();
+              // updateWavFilesListRef();
             }
           };
         };
@@ -607,15 +659,35 @@
           }
         };
 
-        const getCurrentInstrumentSample = function () {
-          return machineState.value.samples[getCurrentInstrumentSampleIndex()];
-        };
+        // TODO : Refactor to prevent code duplication ( returns and var initialization outside the if statement )
         const getCommonsControlValues = function () {
           if (machineState.value.currentModeIndex == 0) {
             const obj =
-              machineState.value.samples[getCurrentInstrumentSampleIndex()];
-            return { volume: obj.volume, pitch: obj.pitch };
+              machineState.value.instruments[
+                machineState.value.currentPartInstrumentIndex
+              ];
+            return {
+              volume: obj.volume,
+              pitch: obj.pitch,
+              startPosition: obj.startPosition,
+              endPosition: obj.endPosition,
+              isReverse: obj.isReverse,
+            };
           } else if (machineState.value.currentModeIndex == 1) {
+            // console.log(
+            //   machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
+            //   " / ",
+            //   machineState.value.parts[
+            //     machineState.value.currentPartIndex
+            //   ].steps[
+            //     machineState.value.currentSelectedStepIndex +
+            //       16 * machineState.value.currentStaveIndex
+            //   ].find(
+            //     (st) =>
+            //       st.instrumentIndex ==
+            //       machineState.value.currentPartInstrumentIndex
+            //   )
+            // );
             const obj = machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[
@@ -626,35 +698,19 @@
                 st.instrumentIndex ==
                 machineState.value.currentPartInstrumentIndex
             );
-            return { volume: obj.volume, pitch: obj.pitch };
+            return {
+              volume: obj.volume,
+              pitch: obj.pitch,
+              startPosition: obj.startPosition,
+              endPosition: obj.endPosition,
+              isReverse: obj.isReverse,
+            };
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
           }
-        };
-        const getCurrentInstrumentSampleIndex = function () {
-          let sampleIndex = 0;
-          switch (machineState.value.currentPartInstrumentIndex) {
-            case 0:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex1;
-              break;
-            case 1:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex2;
-              break;
-            case 2:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex3;
-              break;
-            case 3:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex4;
-              break;
-            case 4:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex5;
-              break;
-            case 5:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex6;
-              break;
-            case 6:
-              sampleIndex = machineState.value.drumRackSampleFileRefIndex7;
-              break;
-          }
-          return sampleIndex;
         };
         const isStepClickable = function (stepIndex) {
           if (machineState.value.currentModeIndex == 0) {
@@ -667,6 +723,11 @@
                 st.instrumentIndex ==
                 machineState.value.currentPartInstrumentIndex
             );
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
           }
         };
         const isStepActive = function (stepIndex) {
@@ -680,6 +741,11 @@
             );
           } else if (machineState.value.currentModeIndex == 1) {
             return stepIndex == machineState.value.currentSelectedStepIndex;
+          } else if (machineState.value.currentModeIndex == 2) {
+            // TODO : implement for fx
+            return null;
+          } else {
+            return null;
           }
         };
 
@@ -688,11 +754,9 @@
         };
         const updateSongName = function (event) {
           httpAction("UPDATESONGNAME", event.target.value);
-          // songName.value = event.target.value;
         };
         const updateTempo = function (event) {
           httpAction("UPDATETEMPO", Number(event.target.value));
-          // machineState.value.songTempo = event.target.value;
         };
         const play = function () {
           httpAction("PLAY", {});
@@ -702,64 +766,21 @@
         };
         const loadPreviousPart = function () {
           httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
-          // machineState.value.currentPartIndex -= 1;
-          // machineState.value.currentStaveIndex = 0;
         };
         const loadNextPart = function () {
           httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
-          // machineState.value.currentPartIndex += 1;
-          // machineState.value.currentStaveIndex = 0;
         };
         const createNextPart = function () {
           httpAction("CREATEPART", {});
-          // machineState.value.parts.push({
-          //   staves: 1,
-          //   steps: [
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //     [],
-          //   ],
-          // });
-          // machineState.value.currentPartIndex += 1;
         };
         const updateStaveNumber = function (staveNumber) {
           httpAction("UPDATESTAVENUMBER", staveNumber);
-          // if (machineState.value.currentStaveIndex >= staveNumber) {
-          //   machineState.value.currentStaveIndex = staveNumber - 1;
-          // }
-          // machineState.value.parts[machineState.value.currentPartIndex].staves =
-          //   staveNumber;
-
-          // machineState.value.parts[machineState.value.currentPartIndex].steps =
-          //   resizeArray(
-          //     machineState.value.parts[machineState.value.currentPartIndex]
-          //       .steps,
-          //     16 *
-          //       machineState.value.parts[machineState.value.currentPartIndex]
-          //         .staves,
-          //     []
-          //   );
         };
         const selectStave = function (staveIndex) {
           httpAction("SELECTSTAVE", staveIndex);
-          // machineState.value.currentStaveIndex = staveIndex;
         };
         const selectInstrument = function (instrumentIndex) {
           httpAction("SELECTINSTRUMENT", instrumentIndex);
-          // machineState.value.currentPartInstrumentIndex = instrumentIndex;
         };
         const updateSelectedInstrumentSample = function (sampleIndex) {
           httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
@@ -772,29 +793,9 @@
           } else if (machineState.value.currentModeIndex == 1) {
             httpAction("UPDATECURRENTSELECTEDSTEP", stepIndexToUpdate);
           }
-          // if (isStepActive(stepIndex)) {
-          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
-          //     stepIndex
-          //   ] = machineState.value.parts[
-          //     machineState.value.currentPartIndex
-          //   ].steps[stepIndex].filter(
-          //     (i) =>
-          //       i.instrumentIndex !=
-          //       machineState.value.currentPartInstrumentIndex
-          //   );
-          // } else {
-          //   machineState.value.parts[machineState.value.currentPartIndex].steps[
-          //     stepIndex
-          //   ].push({
-          //     instrumentIndex: machineState.value.currentPartInstrumentIndex,
-          //     pitch: 0,
-          //     volume: 0.5,
-          //   });
-          // }
         };
 
         const updateVolume = function (event) {
-          // console.log("eventtargetvalue", event.target.value)
           if (machineState.value.currentModeIndex == 0) {
             httpAction(
               "UPDATEINSTRUMENTSAMPLEVOLUME",
@@ -806,11 +807,9 @@
               Number(event.target.value)
             );
           }
-          // getCurrentInstrumentSample().volume = event.target.value;
         };
 
         const updatePitch = function (event) {
-          // console.log("eventtargetvalue", event.target.value)
           if (machineState.value.currentModeIndex == 0) {
             httpAction(
               "UPDATEINSTRUMENTSAMPLEPITCH",
@@ -822,16 +821,62 @@
               Number(event.target.value)
             );
           }
-          // getCurrentInstrumentSample().pitch = event.target.value;
+        };
+
+        const updateStartPosition = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTARTPOSITION",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        const updateEndPosition = function (event) {
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLEENDPOSITION",
+              Number(event.target.value)
+            );
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION",
+              Number(event.target.value)
+            );
+          }
+        };
+
+        const updateIsReverse = function (event) {
+          // console.log(
+          //   "updateIsReverse event.target.checked : ",
+          //   event.target.checked
+          // );
+          const isChecked = event.target.checked ? 1 : 0;
+          if (machineState.value.currentModeIndex == 0) {
+            httpAction("UPDATEINSTRUMENTSAMPLEISREVERSE", isChecked);
+          } else if (machineState.value.currentModeIndex == 1) {
+            httpAction(
+              "UPDATEINSTRUMENTSAMPLESTEPISREVERSE",
+              isChecked
+            );
+          }
         };
 
         updateMachineStateRef().then((_) => {
           connectToWebsocket();
         });
 
+        updateWavFilesListRef();
+
         return {
           wsStatus,
           machineState,
+          wavFilesList,
           connectToWebsocket,
           sendMessageViaWebsocket,
           updateCurrentMode,
@@ -846,21 +891,19 @@
           selectStave,
           selectInstrument,
           updateSelectedInstrumentSample,
-          getCurrentInstrumentSample,
           getCommonsControlValues,
-          getCurrentInstrumentSampleIndex,
           isStepClickable,
           isStepActive,
           toggleInstrumentStep,
           updateTempo,
           updateVolume,
           updatePitch,
+          updateStartPosition,
+          updateEndPosition,
+          updateIsReverse,
         };
       },
     }).mount("#app");
     // });
   </script>
-
-  <!-- <script>
-  </script> -->
 </body>
