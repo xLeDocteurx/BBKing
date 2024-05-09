@@ -492,7 +492,7 @@ static esp_err_t action_handler(httpd_req_t *req)
 
         if (!isDrumRackSampleStepActive)
         {
-            statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 0, 1.0});
+            statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 0, 1.0, 0.0, 1.0, false});
         }
     }
     else
