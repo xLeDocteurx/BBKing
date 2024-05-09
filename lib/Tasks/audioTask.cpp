@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <Defs.h>
+#include <Effects.h>
 #include <MyUtils.h>
 
 #include <driver/i2s.h>
@@ -71,7 +72,16 @@ void audioTask(void *parameter)
                     // Write sample buffer to _masterBuffer
                     for (int i = 0; i < sizeToWriteInSamples; i++)
                     {
-                        statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        // TODO : Rethink this later ... It feels wrong
+                        // TODO NB : temporaryInt32 outside the for loop ?
+                        int32_t temporaryInt32 = 0;
+                        temporaryInt32 += statePointer->_masterBuffer[i];
+                        temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                        statePointer->_masterBuffer[i] = temporaryInt32;
+                        masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                        masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter -= round(sizeToWriteInSamples * playbackSpeed);
                 }
@@ -80,8 +90,19 @@ void audioTask(void *parameter)
                     // Write sample buffer to _masterBuffer
                     for (int i = 0; i < sizeToWriteInSamples; i++)
                     {
-                        statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        // TODO : Rethink this later ... It feels wrong
+                        // TODO NB : temporaryInt32 outside the for loop ?
+                        int32_t temporaryInt32 = 0;
+                        temporaryInt32 += statePointer->_masterBuffer[i];
+                        temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
+                        temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                        statePointer->_masterBuffer[i] = temporaryInt32;
+                        masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                        masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
+
+
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
                 }
             }

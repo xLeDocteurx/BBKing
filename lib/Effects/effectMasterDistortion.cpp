@@ -1,8 +1,11 @@
 #include <Defs.h>
 
-void masterEffectDistortion(State* statePointer)
+void masterEffectDistortion(int16_t *sample)
 {
-    for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++) {
-        statePointer->_masterBuffer[i] = statePointer->_masterBuffer[i];
-    }
+    // float threshold = 0.5;
+    float q = 0.5;
+
+    float dryWetRatio = 1.0;
+    float inputGain = 1.0;
+    float outputGain = 1.0;
 }
