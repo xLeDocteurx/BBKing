@@ -19,6 +19,7 @@
 #include <Init.h>
 #include <SDCard.h>
 #include <MyUtils.h>
+#include <Effects.h>
 #include <Tasks.h>
 
 // TODO : WHAT THE FUCK

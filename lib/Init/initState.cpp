@@ -8,6 +8,7 @@
 
 #include <Defs.h>
 #include <MyUtils.h>
+#include <SDCard.h>
 #include <Init.h>
 
 // bool initState(&statePointer auto)
@@ -328,45 +329,69 @@ bool initState(State *statePointer)
     statePointer->wavFilePaths.push_back("/sdcard/toxic-1.wav");
     statePointer->wavFilePaths.push_back("/sdcard/toxic-2.wav");
 
+    std::string jsonString;
+    bool readJsonFileRet = readJsonFile("/data/songs.json", &jsonString);
+    if (!readJsonFileRet)
+    {
+        printf("Failed to readJsonFile \"/data/songs.json\"\n");
+        return NULL;
+    }
+    // printf("-\n");
+    // printf("-\n");
+    // printf("-\n");
+    // printf("%s\n", jsonString.c_str());
+    // printf("-\n");
+    // printf("-\n");
+    // printf("-\n");
+
+    // Parse JSON
+    cJSON *root = cJSON_Parse(jsonString.c_str());
+    if (root == NULL)
+    {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL)
+        {
+            printf("Error before: %s\n", error_ptr);
+        }
+        printf("Failed to parse JSON\n");
+        // free(jsonBuffer);
+        return NULL;
+    }
+
     // Init state
     statePointer->currentModeIndex = 0;
     statePointer->currentSelectedStepIndex = 0;
     statePointer->currentSongIndex = 0;
-    statePointer->songName = "Demo song";
-    statePointer->songTempo = 142;
+
+    // TODO : pushback error handling;
+    cJSON *songArrayItem = cJSON_GetArrayItem(root, statePointer->currentSongIndex);
+
+    cJSON *songName = cJSON_GetObjectItemCaseSensitive(songArrayItem, "songName");
+    statePointer->songName = songName->valuestring;
+    cJSON *songTempo = cJSON_GetObjectItemCaseSensitive(songArrayItem, "songTempo");
+    statePointer->songTempo = songTempo->valueint;
 
     // Instruments
-    // TODO : Error handling for loadInstrument and the rest
-    Instrument instrument1;
-    loadInstrument(statePointer->wavFilePaths[1], true, 0.5, 0, 0.0, 1.0, false, &instrument1);
-    statePointer->instruments.push_back(instrument1);
-    Instrument instrument2;
-    loadInstrument(statePointer->wavFilePaths[51], true, 0.75, 0, 0.0, 1.0, false, &instrument2);
-    statePointer->instruments.push_back(instrument2);
-    Instrument instrument3;
-    loadInstrument(statePointer->wavFilePaths[132], true, 0.5, 0, 0.0, 1.0, false, &instrument3);
-    statePointer->instruments.push_back(instrument3);
-    Instrument instrument4;
-    loadInstrument(statePointer->wavFilePaths[62], true, 0.5, 0, 0.0, 1.0, false, &instrument4);
-    statePointer->instruments.push_back(instrument4);
-    Instrument instrument5;
-    loadInstrument(statePointer->wavFilePaths[213], true, 0.4, 2, 0.0, 1.0, false, &instrument5);
-    statePointer->instruments.push_back(instrument5);
-    Instrument instrument6;
-    loadInstrument(statePointer->wavFilePaths[78], true, 0.5, 0, 0.0, 1.0, false, &instrument6);
-    statePointer->instruments.push_back(instrument6);
-    Instrument instrument7;
-    loadInstrument(statePointer->wavFilePaths[96], true, 0.5, 0, 0.0, 1.0, false, &instrument7);
-    statePointer->instruments.push_back(instrument7);
-    Instrument instrument8;
-    loadInstrument(statePointer->wavFilePaths[112], true, 0.5, 0, 0.0, 1.0, false, &instrument8);
-    statePointer->instruments.push_back(instrument8);
-    Instrument instrument9;
-    loadInstrument(statePointer->wavFilePaths[310], true, 0.5, 1, 0.0, 0.5, false, &instrument9);
-    statePointer->instruments.push_back(instrument9);
-    Instrument instrument10;
-    loadInstrument(statePointer->wavFilePaths[311], true, 0.5, 1, 0.0, 1.0, true, &instrument10);
-    statePointer->instruments.push_back(instrument10);
+    cJSON *songInstruments = cJSON_GetObjectItemCaseSensitive(songArrayItem, "instruments");
+
+    // int arraySize = cJSON_GetArraySize(root);
+    // for (int i = 0; i < arraySize; i++)
+    for (int i = 0; i < 10; i++)
+    {
+        // TODO : Error handling for loadInstrument and the rest
+        Instrument instrument;
+        cJSON *songInstrument = cJSON_GetArrayItem(songInstruments, i);
+        cJSON *songInstrumentSample = cJSON_GetObjectItemCaseSensitive(songInstrument, "sample");
+        cJSON *songInstrumentFilePath = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "filePath");
+        cJSON *songInstrumentIsMono = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "isMono");
+        cJSON *songInstrumentVolume = cJSON_GetObjectItemCaseSensitive(songInstrument, "volume");
+        cJSON *songInstrumentPitch = cJSON_GetObjectItemCaseSensitive(songInstrument, "pitch");
+        cJSON *songInstrumentStartPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "startPosition");
+        cJSON *songInstrumentEndPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "endPosition");
+        cJSON *songInstrumentIsReverse = cJSON_GetObjectItemCaseSensitive(songInstrument, "isReverse");
+        loadInstrument(songInstrumentFilePath->valuestring, songInstrumentIsMono->valueint, (float)songInstrumentVolume->valuedouble, songInstrumentPitch->valueint, (float)songInstrumentStartPosition->valuedouble, (float)songInstrumentEndPosition->valuedouble, (bool)songInstrumentIsReverse->valueint, &instrument);
+        statePointer->instruments.push_back(instrument);
+    }
 
     statePointer->currentStaveIndex = 0;
     statePointer->currentOctaveIndex = 0;
@@ -378,288 +403,44 @@ bool initState(State *statePointer)
 
     statePointer->currentStepIndex = 0;
 
-    // part 1
-    std::vector<std::vector<Step>> part1Steps = {};
-    const int part1Staves = 2;
-    for (int i = 0; i < STATE_PART_STEPS_LENGTH * part1Staves; i++)
+    cJSON *songParts = cJSON_GetObjectItemCaseSensitive(songArrayItem, "parts");
+    // cJSON *songInstrument = cJSON_GetArrayItem(songInstruments, i);
+    int songPartsLength = cJSON_GetArraySize(songParts);
+    for (int i = 0; i < songPartsLength; i++)
     {
-        switch (i)
+        cJSON *songPart = cJSON_GetArrayItem(songParts, i);
+        
+        cJSON *songPartStaves = cJSON_GetObjectItemCaseSensitive(songPart, "staves");
+        const int partStaves = songPartStaves->valueint;
+        cJSON *songPartSteps = cJSON_GetObjectItemCaseSensitive(songPart, "steps");
+        int songPartStepsLength = cJSON_GetArraySize(songPartSteps);
+        std::vector<std::vector<Step>> partSteps = {};
+        // for (int j = 0; j < STATE_PART_STEPS_LENGTH * partStaves; j++)
+        for (int j = 0; j < songPartStepsLength; j++)
         {
-        case 0:
-            part1Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {8, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 2:
-            part1Steps.push_back({});
-            break;
-        case 4:
-            part1Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 6:
-            part1Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 8:
-            part1Steps.push_back({});
-            break;
-        case 10:
-            part1Steps.push_back({});
-            break;
-        case 12:
-            part1Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 14:
-            part1Steps.push_back({});
-            break;
+            cJSON *songPartStep = cJSON_GetArrayItem(songPartSteps, j);
+            int songPartStepContentLength = cJSON_GetArraySize(songPartStep);
+            std::vector<Step> partStepContent = {};
 
-        case 16:
-            part1Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {9, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 18:
-            part1Steps.push_back({});
-            break;
-        case 20:
-            part1Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 22:
-            part1Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 24:
-            part1Steps.push_back({});
-            break;
-        case 26:
-            part1Steps.push_back({});
-            break;
-        case 28:
-            part1Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 30:
-            part1Steps.push_back({});
-            break;
+            // printf("songPartStepContentLength : %i\n", songPartStepContentLength);
+            for (int k = 0; k < songPartStepContentLength; k++)
+            {
+                cJSON *songPartStepContent = cJSON_GetArrayItem(songPartStep, k);
+                cJSON *songPartStepContentInstrumentIndex = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "instrumentIndex");
+                cJSON *songPartStepContentVolume = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "volume");
+                cJSON *songPartStepContentPitch = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "pitch");
+                cJSON *songPartStepContentStartPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "startPosition");
+                cJSON *songPartStepContentEndPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "endPosition");
+                cJSON *songPartStepContentIsReverse = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "isReverse");
+                partStepContent.push_back({songPartStepContentInstrumentIndex->valueint, (float)songPartStepContentVolume->valuedouble, songPartStepContentPitch->valueint, (float)songPartStepContentStartPosition->valuedouble, (float)songPartStepContentEndPosition->valuedouble, (bool)songPartStepContentIsReverse->valueint});
+            }
 
-        default:
-            part1Steps.push_back({});
-            break;
+            partSteps.push_back(partStepContent);
         }
+
+        Part part = {partStaves, partSteps};
+        statePointer->parts.push_back(part);
     }
-    Part part1 = {part1Staves, part1Steps};
-    statePointer->parts.push_back(part1);
-
-    // part 2
-    std::vector<std::vector<Step>> part2Steps = {};
-    const int part2Staves = 8;
-    for (int i = 0; i < STATE_PART_STEPS_LENGTH * part2Staves; i++)
-    {
-        switch (i)
-        {
-        case 0:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 2:
-            part2Steps.push_back({});
-            break;
-        case 4:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 6:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 8:
-            part2Steps.push_back({});
-            break;
-        case 10:
-            part2Steps.push_back({});
-            break;
-        case 12:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 18, 1.0, 0.0, 1.0, false}});
-            break;
-        case 14:
-            part2Steps.push_back({{4, 15, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 16:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 18:
-            part2Steps.push_back({});
-            break;
-        case 20:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 22:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 24:
-            part2Steps.push_back({});
-            break;
-        case 26:
-            part2Steps.push_back({});
-            break;
-        case 28:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 18, 1.0, 0.0, 1.0, false}});
-            break;
-        case 30:
-            part2Steps.push_back({{4, 20, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 32:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 34:
-            part2Steps.push_back({});
-            break;
-        case 36:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 38:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 40:
-            part2Steps.push_back({});
-            break;
-        case 42:
-            part2Steps.push_back({});
-            break;
-        case 44:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 46:
-            part2Steps.push_back({});
-            break;
-
-        case 48:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 50:
-            part2Steps.push_back({{4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 52:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 54:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 5, 1.0, 0.0, 1.0, false}});
-            break;
-        case 56:
-            part2Steps.push_back({{4, 6, 1.0, 0.0, 1.0, false}});
-            break;
-        case 58:
-            part2Steps.push_back({{4, 5, 1.0, 0.0, 1.0, false}});
-            break;
-        case 60:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 62:
-            part2Steps.push_back({{4, 5, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 64:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 6, 1.0, 0.0, 1.0, false}});
-            break;
-        case 66:
-            part2Steps.push_back({});
-            break;
-        case 68:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 70:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 6, 1.0, 0.0, 1.0, false}});
-            break;
-        case 72:
-            part2Steps.push_back({});
-            break;
-        case 74:
-            part2Steps.push_back({{4, 6, 1.0, 0.0, 1.0, false}});
-            break;
-        case 76:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 78:
-            part2Steps.push_back({{4, 4, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 80:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, -2, 1.0, 0.0, 1.0, false}});
-            break;
-        case 82:
-            part2Steps.push_back({});
-            break;
-        case 84:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 86:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 88:
-            part2Steps.push_back({{4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 90:
-            part2Steps.push_back({{4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 91:
-            part2Steps.push_back({{4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 92:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 94:
-            part2Steps.push_back({{4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 96:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 98:
-            part2Steps.push_back({});
-            break;
-        case 100:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 102:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 104:
-            part2Steps.push_back({});
-            break;
-        case 106:
-            part2Steps.push_back({});
-            break;
-        case 108:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 18, 1.0, 0.0, 1.0, false}});
-            break;
-        case 110:
-            part2Steps.push_back({{4, 15, 1.0, 0.0, 1.0, false}});
-            break;
-
-        case 112:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 114:
-            part2Steps.push_back({});
-            break;
-        case 116:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}});
-            break;
-        case 118:
-            part2Steps.push_back({{0, 0, 1.0, 0.0, 1.0, false}, {4, 3, 1.0, 0.0, 1.0, false}});
-            break;
-        case 120:
-            part2Steps.push_back({{4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 122:
-            part2Steps.push_back({});
-            break;
-        case 124:
-            part2Steps.push_back({{1, 0, 1.0, 0.0, 1.0, false}, {4, 10, 1.0, 0.0, 1.0, false}});
-            break;
-        case 126:
-            part2Steps.push_back({});
-            break;
-
-        default:
-            part2Steps.push_back({});
-            break;
-        }
-    }
-    Part part2 = {part2Staves, part2Steps};
-    statePointer->parts.push_back(part2);
 
     statePointer->isPlaying = false;
 

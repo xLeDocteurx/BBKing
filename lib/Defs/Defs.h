@@ -95,8 +95,8 @@ struct Instrument
 struct Step
 {
     int instrumentIndex;
-    int pitch;
     float volume;
+    int pitch;
     float startPosition;
     float endPosition;
     bool isReverse;
