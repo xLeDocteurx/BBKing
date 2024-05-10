@@ -61,7 +61,7 @@ void audioTask(void *parameter)
                 // When reaching sample end
                 if (sizeToWriteInSamples <= 0)
                 {
-                    printf("stop : %s\n", statePointer->instruments[instrumentIndex].sample.filePath);
+                    // printf("stop : %s\n", statePointer->instruments[instrumentIndex].sample.filePath);
                     statePointer->instruments[instrumentIndex].isPlaying = false;
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter = 0;
                     continue; // End of file or error
@@ -80,8 +80,8 @@ void audioTask(void *parameter)
                         temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
                         temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
                         statePointer->_masterBuffer[i] = temporaryInt32;
-                        masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                        masterEffectDistortion(&statePointer->_masterBuffer[i]);
+                        // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                        // masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter -= round(sizeToWriteInSamples * playbackSpeed);
                 }
@@ -98,10 +98,9 @@ void audioTask(void *parameter)
                         temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
                         temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
                         statePointer->_masterBuffer[i] = temporaryInt32;
-                        masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                        masterEffectDistortion(&statePointer->_masterBuffer[i]);
+                        // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                        // masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
-
 
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
                 }

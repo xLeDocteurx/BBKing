@@ -72,7 +72,7 @@ void sequencerTask(void *parameter)
                 {
                     statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].startingStepStartPosition == 0.0) ? statePointer->instruments[stepInstrumentIndex].startPosition : statePointer->instruments[stepInstrumentIndex].startingStepStartPosition));
                 }
-                printf("start %i/%i : %s\n", statePointer->currentStepIndex, stepInstrumentIndex, statePointer->instruments[stepInstrumentIndex].sample.filePath);
+                // printf("start %i/%i : %s\n", statePointer->currentStepIndex, stepInstrumentIndex, statePointer->instruments[stepInstrumentIndex].sample.filePath);
 
                 statePointer->instruments[stepInstrumentIndex].isPlaying = true;
             }
