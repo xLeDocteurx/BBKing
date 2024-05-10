@@ -415,8 +415,8 @@ bool initState(State *statePointer)
         cJSON *songPartSteps = cJSON_GetObjectItemCaseSensitive(songPart, "steps");
         int songPartStepsLength = cJSON_GetArraySize(songPartSteps);
         std::vector<std::vector<Step>> partSteps = {};
-        // for (int j = 0; j < STATE_PART_STEPS_LENGTH * partStaves; j++)
-        for (int j = 0; j < songPartStepsLength; j++)
+        for (int j = 0; j < STATE_PART_STEPS_LENGTH * partStaves; j++)
+        // for (int j = 0; j < songPartStepsLength; j++)
         {
             cJSON *songPartStep = cJSON_GetArrayItem(songPartSteps, j);
             int songPartStepContentLength = cJSON_GetArraySize(songPartStep);
