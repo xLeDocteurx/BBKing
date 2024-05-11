@@ -8,8 +8,8 @@
 #define SDCARD_H
 
 bool listFiles();
-bool readFile(const char* path);
-bool readJsonFile(const char* path, std::string *jsonStringPointer);
-bool writeFile(const char* path);
+bool readFile(const char *path);
+bool readJsonFile(const char *path, std::string *jsonStringPointer);
+bool writeFile(const char *path, char *content);
 
 #endif // SDCARD_H

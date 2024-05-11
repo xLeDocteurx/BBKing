@@ -13,9 +13,11 @@
 #include <esp_http_server.h>
 #include <esp_netif.h>
 #include <esp_netif_defaults.h>
+#include <cJSON.h>
 
 #include <Defs.h>
 #include <MyUtils.h>
+#include <Songs.h>
 
 State *statePointer;
 
@@ -168,10 +170,11 @@ httpd_uri_t websocket_uri = {
 
 static esp_err_t state_handler(httpd_req_t *req)
 {
-    std::string jsonString = "";
-    getMachineStateAsJsonString(statePointer, &jsonString);
+    // TODO : error handling
+    cJSON *cJsonObject = cJSON_CreateObject();
+    getMachineStateAsCJson(statePointer, cJsonObject);
     httpd_resp_set_type(req, "text/json");
-    httpd_resp_send(req, jsonString.c_str(), HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send(req, cJsonObject->valuestring, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
 httpd_uri_t state_uri = {
@@ -236,7 +239,11 @@ static esp_err_t action_handler(httpd_req_t *req)
     // {
     // }
     // else
-    if (actionType == "UPDATECURRENTMODE")
+    if (actionType == "SAVESONG")
+    {
+        saveSong(statePointer);
+    }
+    else if (actionType == "UPDATECURRENTMODE")
     {
         statePointer->currentModeIndex = stoi(actionParameters);
     }

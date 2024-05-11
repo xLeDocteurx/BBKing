@@ -7,7 +7,7 @@
 #include "esp_vfs_fat.h"
 #include "esp_vfs.h"
 
-bool writeFile(const char *path)
+bool writeFile(const char *path, char *content)
 {
     FILE *file = fopen(path, "w");
     if (file == NULL)
@@ -16,7 +16,7 @@ bool writeFile(const char *path)
         return false;
     }
 
-    fprintf(file, "Hello world\n");
+    fprintf(file, content);
     fclose(file);
 
     return true;

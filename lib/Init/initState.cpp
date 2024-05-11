@@ -376,6 +376,7 @@ bool initState(State *statePointer)
 
     // int arraySize = cJSON_GetArraySize(root);
     // for (int i = 0; i < arraySize; i++)
+    // TODO : cJsonForEach
     for (int i = 0; i < 10; i++)
     {
         // TODO : Error handling for loadInstrument and the rest
@@ -406,6 +407,7 @@ bool initState(State *statePointer)
     cJSON *songParts = cJSON_GetObjectItemCaseSensitive(songArrayItem, "parts");
     // cJSON *songInstrument = cJSON_GetArrayItem(songInstruments, i);
     int songPartsLength = cJSON_GetArraySize(songParts);
+    // TODO : cJsonForEach
     for (int i = 0; i < songPartsLength; i++)
     {
         cJSON *songPart = cJSON_GetArrayItem(songParts, i);

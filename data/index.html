@@ -37,6 +37,12 @@
 <body>
   <div id="app">
     <div class="topnav">
+      <button
+        id="saveSong"
+        @click="($event)=>{saveSong();}"
+      >
+        Connecter
+      </button>
       <!-- <button
         :disabled="wsStatus"
         id="connect"
@@ -749,6 +755,11 @@
           }
         };
 
+        const saveSong = function (modeIndex) {
+          // TODO : try it everywhere for actions wiuth no arguments
+          // httpAction("SAVESONG");
+          httpAction("SAVESONG", {});
+        };
         const updateCurrentMode = function (modeIndex) {
           httpAction("UPDATECURRENTMODE", modeIndex);
         };
@@ -879,6 +890,7 @@
           wavFilesList,
           connectToWebsocket,
           sendMessageViaWebsocket,
+          saveSong,
           updateCurrentMode,
           updateSongName,
           updateTempo,
