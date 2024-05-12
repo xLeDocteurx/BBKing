@@ -52,7 +52,7 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
         cJSON_AddNumberToObject(cJsonPartObject, "staves", statePointer->parts[i].staves);
 
         std::string stepsString = "[";
-        cJSON *stepsArray = cJSON_AddArrayToObject(cjsonObjectPointer, "steps");
+        cJSON *stepsArray = cJSON_AddArrayToObject(cJsonPartObject, "steps");
         for (int j = 0; j < statePointer->parts[i].steps.size(); j++)
         {
             cJSON *stepArray = cJSON_CreateArray();

@@ -21,6 +21,7 @@
 #include <MyUtils.h>
 #include <Effects.h>
 #include <Tasks.h>
+#include <Songs.h>
 
 // TODO : WHAT THE FUCK
 TaskHandle_t audioTaskHandle;
