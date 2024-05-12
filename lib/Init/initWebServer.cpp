@@ -171,10 +171,20 @@ httpd_uri_t websocket_uri = {
 static esp_err_t state_handler(httpd_req_t *req)
 {
     // TODO : error handling
+    // printf("1\n");
     cJSON *cJsonObject = cJSON_CreateObject();
+    // printf("2\n");
     getMachineStateAsCJson(statePointer, cJsonObject);
+    // printf("3\n");
+    // printf("%s\n", cJSON_Print(cJsonObject));
+    // printf("4\n");
+    // printf("%s\n", cJsonObject->valuestring);
+    // printf("5\n");
     httpd_resp_set_type(req, "text/json");
-    httpd_resp_send(req, cJsonObject->valuestring, HTTPD_RESP_USE_STRLEN);
+    // printf("6\n");
+    // httpd_resp_send(req, cJsonObject->valuestring, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send(req, cJSON_Print(cJsonObject), HTTPD_RESP_USE_STRLEN);
+    // printf("7\n");
     return ESP_OK;
 }
 httpd_uri_t state_uri = {

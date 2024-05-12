@@ -4,6 +4,7 @@
 
 #include <Defs.h>
 
+// TODO : Redo with cJson
 void getWavFilesAsJsonString(State *statePointer, std::string *jsonStringPointer)
 {
     std::string wavFilePathsString = "[";
