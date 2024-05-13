@@ -330,10 +330,10 @@ bool initState(State *statePointer)
     statePointer->wavFilePaths.push_back("/sdcard/toxic-2.wav");
 
     std::string jsonString;
-    bool readJsonFileRet = readJsonFile("/data/songs.json", &jsonString);
+    bool readJsonFileRet = readJsonFile("/sdcard/songs.json", &jsonString);
     if (!readJsonFileRet)
     {
-        printf("Failed to readJsonFile \"/data/songs.json\"\n");
+        printf("Failed to readJsonFile \"/sdcard/songs.json\"\n");
         return NULL;
     }
     // printf("-\n");

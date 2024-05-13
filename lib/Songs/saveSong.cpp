@@ -10,15 +10,13 @@
 
 bool saveSong(State *statePointer)
 {
-    printf("1\n");
     std::string jsonString;
-    bool readJsonFileRet = readJsonFile("/data/songs.json", &jsonString);
+    bool readJsonFileRet = readJsonFile("/sdcard/songs.json", &jsonString);
     if (!readJsonFileRet)
     {
-        printf("Failed to readJsonFile \"/data/songs.json\"\n");
+        printf("Failed to readJsonFile \"/sdcard/songs.json\"\n");
         return false;
     }
-    printf("2\n");
 
     // Parse JSON
     cJSON *root = cJSON_Parse(jsonString.c_str());
@@ -33,23 +31,18 @@ bool saveSong(State *statePointer)
         // free(jsonBuffer);
         return NULL;
     }
-    printf("3\n");
 
     // TODO : error handling;
     cJSON *songFromState = cJSON_CreateObject();
-    printf("4\n");
     // TODO : error handling
     getMachineStateAsCJson(statePointer, songFromState);
-    printf("5\n");
 
     cJSON_ReplaceItemInArray(root, statePointer->currentSongIndex, songFromState);
-    printf("6\n");
 
 
     // TODO : error handling
     // writeFile("/data/songs.json", root->valuestring);
-    writeFile("/data/songs.json", cJSON_Print(root));
-    printf("7\n");
+    writeFile("/sdcard/songs.json", cJSON_Print(root));
 
     return true;
 }

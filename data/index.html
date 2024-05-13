@@ -45,29 +45,6 @@
       >
         Save song
       </button>
-      <!-- <button
-        :disabled="wsStatus"
-        id="connect"
-        @click="($event)=>{connectToWebsocket();}"
-      >
-        Connecter
-      </button>
-      <button
-        :disabled="!wsStatus"
-        id="send-ping"
-        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
-      >
-        Envoyer un ping
-      </button>
-      <span id="status">
-        <span
-          class="badge rounded-pill"
-          :class="{ 'bg-success': wsStatus, 'bg-danger': !wsStatus}"
-        >
-          {{wsStatus ? "Connected": "Disconnected"}}
-        </span>
-      </span> -->
-
       <h1
         v-if="wsStatus"
         class="text-center"
@@ -82,12 +59,57 @@
           <div class="card border-primary h-100">
             <div class="card-header">
               <div class="input-group">
+                <!-- <button
+                  v-if="machineState.currentPartIndex > 0"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadPreviousPart();}"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button> -->
                 <input
-                  disabled
                   type="text"
                   class="form-control"
                   :value="machineState.songName"
                   @change="($event)=>{updateSongName($event);}"
+                />
+                <!-- <button
+                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{loadNextPart();}"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{createNextPart();}"
+                >
+                  <i class="fas fa-plus"></i>
+                </button> -->
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="input-group">
+                <span class="input-group-text">bpm</span>
+                <input
+                  type="number"
+                  step="1"
+                  class="form-control"
+                  :value="machineState.songTempo"
+                  @change="($event)=>{updateTempo($event);}"
+                />
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-text">part</span>
+                <input
+                  disabled
+                  type="text"
+                  class="form-control"
+                  :value="machineState.currentPartIndex + 1"
                 />
                 <button
                   v-if="machineState.currentPartIndex > 0"
@@ -97,9 +119,6 @@
                 >
                   <i class="fas fa-chevron-left"></i>
                 </button>
-                <span class="input-group-text"
-                  >Part : {{ machineState.currentPartIndex + 1 }}</span
-                >
                 <button
                   v-if="machineState.currentPartIndex < machineState.parts.length -1"
                   type="button"
@@ -116,18 +135,6 @@
                 >
                   <i class="fas fa-plus"></i>
                 </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="input-group">
-                <input
-                  type="number"
-                  step="1"
-                  class="form-control"
-                  :value="machineState.songTempo"
-                  @change="($event)=>{updateTempo($event);}"
-                />
-                <span class="input-group-text">bpm</span>
               </div>
             </div>
             <div class="card-footer">
@@ -224,6 +231,13 @@
                 role="group"
                 aria-label="Button group with nested dropdown"
               >
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event)=>{getPreviousSample();}"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
                 <button type="button" class="btn btn-outline-primary">
                   {{machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath}}
                 </button>
@@ -246,6 +260,13 @@
                     >
                   </div>
                 </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  @click="($event) => getNextSample()"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
               </div>
             </div>
             <div class="card-body">
@@ -795,6 +816,30 @@
         const selectInstrument = function (instrumentIndex) {
           httpAction("SELECTINSTRUMENT", instrumentIndex);
         };
+        const getPreviousSample = function () {
+          const currentFilePath =
+            machineState.value.instruments[
+              machineState.value.currentPartInstrumentIndex
+            ].sample.filePath;
+          const currentFileIndex = wavFilesList.value.indexOf(currentFilePath);
+          console.log("bouya", currentFileIndex);
+          if (currentFileIndex - 1 >= 0) {
+            console.log("kasha");
+            updateSelectedInstrumentSample(currentFileIndex - 1);
+          }
+        };
+        const getNextSample = function () {
+          const currentFilePath =
+            machineState.value.instruments[
+              machineState.value.currentPartInstrumentIndex
+            ].sample.filePath;
+          const currentFileIndex = wavFilesList.value.indexOf(currentFilePath);
+          console.log("bouya", currentFileIndex, wavFilesList.value.length);
+          if (currentFileIndex + 1 <= wavFilesList.value.length - 1) {
+            console.log("kasha");
+            updateSelectedInstrumentSample(currentFileIndex + 1);
+          }
+        };
         const updateSelectedInstrumentSample = function (sampleIndex) {
           httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
         };
@@ -873,10 +918,7 @@
           if (machineState.value.currentModeIndex == 0) {
             httpAction("UPDATEINSTRUMENTSAMPLEISREVERSE", isChecked);
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLESTEPISREVERSE",
-              isChecked
-            );
+            httpAction("UPDATEINSTRUMENTSAMPLESTEPISREVERSE", isChecked);
           }
         };
 
@@ -904,6 +946,8 @@
           updateStaveNumber,
           selectStave,
           selectInstrument,
+          getPreviousSample,
+          getNextSample,
           updateSelectedInstrumentSample,
           getCommonsControlValues,
           isStepClickable,
