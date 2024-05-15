@@ -9,12 +9,12 @@
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
     crossorigin="anonymous"
   />
-  <!-- <link
+  <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
     integrity="sha384-RxqHG2ilm4r6aFRpGmBbGTjsqwfqHOKy1ArsMhHusnRO47jcGqpIQqlQK/kmGy9R"
     crossorigin="anonymous"
-  /> -->
+  />
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
     integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
@@ -89,6 +89,19 @@
                 >
                   <i class="fas fa-plus"></i>
                 </button> -->
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-text">master gain</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.25"
+                  class="form-control"
+                  :value="machineState.masterGain"
+                  @change="($event)=>{updateMasterGain($event);}"
+                />
               </div>
             </div>
             <div class="card-body">
@@ -571,6 +584,7 @@
         const wsStatus = ref(false);
 
         const machineState = ref({
+          masterGain:0,
           currentModeIndex: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
@@ -783,6 +797,9 @@
           // httpAction("SAVESONG");
           httpAction("SAVESONG", {});
         };
+        const updateMasterGain = function (event) {
+          httpAction("UPDATEMASTERGAIN", Number(event.target.value));
+        };
         const updateCurrentMode = function (modeIndex) {
           httpAction("UPDATECURRENTMODE", modeIndex);
         };
@@ -935,6 +952,7 @@
           connectToWebsocket,
           sendMessageViaWebsocket,
           saveSong,
+          updateMasterGain,
           updateCurrentMode,
           updateSongName,
           updateTempo,

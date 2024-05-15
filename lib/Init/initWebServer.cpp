@@ -253,6 +253,11 @@ static esp_err_t action_handler(httpd_req_t *req)
     {
         saveSong(statePointer);
     }
+    else if (actionType == "UPDATEMASTERGAIN")
+    {
+        printf("stof(actionParameters) : %lf\n", stof(actionParameters));
+        statePointer->masterGain = stof(actionParameters);
+    }
     else if (actionType == "UPDATECURRENTMODE")
     {
         statePointer->currentModeIndex = stoi(actionParameters);

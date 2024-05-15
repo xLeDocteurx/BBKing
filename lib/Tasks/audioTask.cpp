@@ -98,9 +98,6 @@ void audioTask(void *parameter)
                         temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
                         temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
                         statePointer->_masterBuffer[i] = temporaryInt32;
-                        // masterEffectPreamp(&statePointer->_masterBuffer[i]);
-                        // masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                        // masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
 
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
@@ -110,6 +107,13 @@ void audioTask(void *parameter)
 
         // MasterEffectsStage
         // masterEffectDistortion(statePointer)
+
+        for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+        {
+            masterEffectPreamp(statePointer, &statePointer->_masterBuffer[i]);
+            // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+            // masterEffectDistortion(&statePointer->_masterBuffer[i]);
+        }
 
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable

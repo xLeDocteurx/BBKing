@@ -136,6 +136,8 @@ struct State
     // std::vector<std::string> wavFilePaths;
     std::vector<char *> wavFilePaths;
 
+    float masterGain;
+
     int currentSongIndex;
     int currentModeIndex;
     int currentSelectedStepIndex;

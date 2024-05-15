@@ -10,6 +10,7 @@
 void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
 {
     // TODO : error handling
+    cJSON_AddNumberToObject(cjsonObjectPointer, "masterGain", statePointer->masterGain);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentModeIndex", statePointer->currentModeIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSelectedStepIndex", statePointer->currentSelectedStepIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSongIndex", statePointer->currentSongIndex);

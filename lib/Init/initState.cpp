@@ -359,6 +359,8 @@ bool initState(State *statePointer)
     }
 
     // Init state
+    statePointer->masterGain = 1.0;
+
     statePointer->currentModeIndex = 0;
     statePointer->currentSelectedStepIndex = 0;
     statePointer->currentSongIndex = 0;
