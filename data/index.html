@@ -3,28 +3,14 @@
   <link rel="icon" href="data:," />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-    crossorigin="anonymous"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
-    integrity="sha384-RxqHG2ilm4r6aFRpGmBbGTjsqwfqHOKy1ArsMhHusnRO47jcGqpIQqlQK/kmGy9R"
-    crossorigin="anonymous"
-  />
+
+  <!-- <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
   <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"
-  ></script>
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="semantic/dist/semantic.min.js"></script> -->
+
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -36,357 +22,269 @@
 </head>
 <body>
   <div id="app">
-    <div class="topnav">
-      <button
-        id="saveSong"
-        type="button"
-        class="btn btn-outline-primary"
-        @click="($event)=>{saveSong();}"
-      >
-        Save song
-      </button>
-      <h1
-        v-if="wsStatus"
-        class="text-center"
+    <header>
+      <!-- v-if="wsStatus" -->
+      <h2
         @click="($event)=>{sendMessageViaWebsocket('toggle');}"
+        style="text-align: center"
       >
         BBKing
-      </h1>
-    </div>
-    <div class="container-fluid">
-      <div class="row pb-4">
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">
-              <div class="input-group">
-                <!-- <button
-                  v-if="machineState.currentPartIndex > 0"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadPreviousPart();}"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button> -->
-                <input
-                  type="text"
-                  class="form-control"
-                  :value="machineState.songName"
-                  @change="($event)=>{updateSongName($event);}"
-                />
-                <!-- <button
-                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadNextPart();}"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-                <button
-                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{createNextPart();}"
-                >
-                  <i class="fas fa-plus"></i>
-                </button> -->
-              </div>
+      </h2>
+    </header>
+    <div
+      style="display: flex; flex-direction: row; justify-content: space-evenly"
+    >
+      <div style="flex-grow: 1">
+        <div>Project</div>
+        <div style="display: flex; flex-direction: column">
+          <div>song</div>
+          <button
+          disabled
+          type="button"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <input
+            type="text"
+            :value="machineState.songName"
+            @change="($event)=>{updateSongName($event);}"
+          />
+          <button
+          disabled
+            type="button"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+          <button
+          disabled
+          type="button"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+          <button
+          disabled
+          type="button"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <div>master gain</div>
+          <input
+            type="number"
+            min="0"
+            max="5"
+            step="0.25"
+            :value="machineState.masterGain"
+            @change="($event)=>{updateMasterGain($event);}"
+          />
+          <div>bpm</div>
+          <input
+            type="number"
+            step="1"
+            :value="machineState.songTempo"
+            @change="($event)=>{updateTempo($event);}"
+          />
+          <div>part</div>
+          <button
+            v-if="machineState.currentPartIndex > 0"
+            type="button"
+            @click="($event)=>{loadPreviousPart();}"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <input
+            disabled
+            type="text"
+            :value="machineState.currentPartIndex + 1"
+          />
+          <button
+            v-if="machineState.currentPartIndex >= machineState.parts.length -1"
+            type="button"
+            @click="($event)=>{createNextPart();}"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+          <button
+          disabled
+          type="button"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+          <button
+            v-if="machineState.currentPartIndex < machineState.parts.length -1"
+            type="button"
+            @click="($event)=>{loadNextPart();}"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
 
-              <div class="input-group">
-                <span class="input-group-text">master gain</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  step="0.25"
-                  class="form-control"
-                  :value="machineState.masterGain"
-                  @change="($event)=>{updateMasterGain($event);}"
-                />
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="input-group">
-                <span class="input-group-text">bpm</span>
-                <input
-                  type="number"
-                  step="1"
-                  class="form-control"
-                  :value="machineState.songTempo"
-                  @change="($event)=>{updateTempo($event);}"
-                />
-              </div>
-
-              <div class="input-group">
-                <span class="input-group-text">part</span>
-                <input
-                  disabled
-                  type="text"
-                  class="form-control"
-                  :value="machineState.currentPartIndex + 1"
-                />
-                <button
-                  v-if="machineState.currentPartIndex > 0"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadPreviousPart();}"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-                <button
-                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadNextPart();}"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-                <button
-                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{createNextPart();}"
-                >
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="card-text">
-                <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
-                      disabled
-                      type="button"
-                      class="btn btn-outline-primary w-25"
-                    >
-                      <i class="fas fa-record-vinyl"></i>
-                    </button> -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                    @click="($event)=>{play();}"
-                  >
-                    <i class="fas fa-play"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                    @click="($event)=>{stop();}"
-                  >
-                    <i class="fas fa-stop"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-text">
-                <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <i class="fas fa-music"></i> -->
-                  <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
-                  <button
-                    disabled
-                    type="button"
-                    @click="() => {updateCurrentMode(0);}"
-                    class="btn btn-outline-primary"
-                  >
-                    FX
-                  </button>
-                  <button
-                    @click="() => {updateCurrentMode(0);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
-                  >
-                    <i class="fas fa-guitar"></i>
-                  </button>
-                  <button
-                    @click="() => {updateCurrentMode(1);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
-                  >
-                    <i class="fas fa-shoe-prints"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-text">
-                <div class="btn-group w-100 mb" role="group">
-                  <!-- <button
-                      disabled
-                      type="button"
-                      class="btn btn-outline-primary w-25"
-                    >
-                      <i class="fas fa-vial"></i>
-                    </button> -->
-                  <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-volume-up"></i>
-                  </button>
-                  <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-volume-mute"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">
-              Common / Instrument
-
-              <div
-                class="btn-group"
-                role="group"
-                aria-label="Button group with nested dropdown"
+          <div>Sample</div>
+          <button
+            type="button"
+            @click="($event)=>{getPreviousSample();}"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="nes-select">
+            <select>
+              <option
+                v-for="(s, s_index) in wavFilesList"
+                @click="($event) => updateSelectedInstrumentSample(s_index)"
+                :value="s_index"
+                :selected="machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath == s"
               >
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{getPreviousSample();}"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-                <button type="button" class="btn btn-outline-primary">
-                  {{machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath}}
-                </button>
-                <div class="btn-group" role="group">
-                  <button
-                    id="btnGroupDrop1"
-                    type="button"
-                    class="btn btn-outline-primary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  ></button>
-                  <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a
-                      v-for="(s, s_index) in wavFilesList"
-                      class="dropdown-item"
-                      href="#"
-                      @click="($event) => updateSelectedInstrumentSample(s_index)"
-                      >{{s}}</a
-                    >
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event) => getNextSample()"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="card-text">
-                <form>
-                  <fieldset>
-                    <label for="pitchSustainRange" class="form-label"
-                      >Pitch / Sustain :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="-48"
-                      max="48"
-                      step="1"
-                      id="pitchSustainRange"
-                      :value="getCommonsControlValues().pitch"
-                      @change="($event)=>{updatePitch($event);}"
-                    />
-                    <label for="volumeRange" class="form-label">Volume :</label>
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="volumeRange"
-                      :value="getCommonsControlValues().volume"
-                      @change="($event)=>{updateVolume($event);}"
-                    />
+                {{s}}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            @click="($event) => getNextSample()"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
 
-                    <label for="startPositionRange" class="form-label"
-                      >Start :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="startPositionRange"
-                      :value="getCommonsControlValues().startPosition"
-                      @change="($event)=>{updateStartPosition($event);}"
-                    />
-                    <label for="endPositionRange" class="form-label"
-                      >End :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="endPositionRange"
-                      :value="getCommonsControlValues().endPosition"
-                      @change="($event)=>{updateEndPosition($event);}"
-                    />
-                    <div class="form-check form-switch">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        id="isReverseSwitch"
-                        :value="getCommonsControlValues().isReverse"
-                        @change="($event)=>{updateIsReverse($event);}"
-                      />
-                      <label class="form-check-label" for="isReverseSwitch"
-                        >Is reverse</label
-                      >
-                    </div>
-                  </fieldset>
-                </form>
-              </div>
+          <hr />
+
+          <div class="card-text">
+            <div class="btn-group w-100 mb-2" role="group">
+              <button type="button" @click="($event)=>{saveSong();}">
+                <i class="fas fa-save"></i>
+              </button>
+              <button type="button" @click="($event)=>{stop();}">
+                <i class="fas fa-stop"></i>
+              </button>
+              <button type="button" @click="($event)=>{play();}">
+                <i class="fas fa-play"></i>
+              </button>
             </div>
           </div>
-        </div>
-        <div class="col">
-          <div class="row pb-2 h-50">
-            <div class="col">
-              <div class="card border-primary h-100">
-                <div class="card-header">Modulation</div>
-                <div class="card-body">
-                  <div class="card-text"></div>
-                </div>
-              </div>
+          <div class="card-text">
+            <div class="btn-group w-100 mb-2" role="group">
+              <!-- <i class="fas fa-music"></i> -->
+              <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+              <button
+                disabled
+                type="button"
+                @click="() => {updateCurrentMode(0);}"
+              >
+                FX
+              </button>
+              <button
+                @click="() => {updateCurrentMode(0);}"
+                type="button"
+                :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+              >
+                <i class="fas fa-guitar"></i>
+              </button>
+              <button
+                @click="() => {updateCurrentMode(1);}"
+                type="button"
+                :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+              >
+                <i class="fas fa-shoe-prints"></i>
+              </button>
             </div>
           </div>
-          <div class="row pt-2 h-50">
-            <div class="col">
-              <div class="card border-primary h-100">
-                <div class="card-header">Filter</div>
-                <div class="card-body">
-                  <div class="card-text"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">Effects</div>
-            <div class="card-body">
-              <div class="card-text"></div>
+          <div class="card-text">
+            <div class="btn-group w-100 mb" role="group">
+              <!-- <button
+                disabled
+                type="button"
+              >
+                <i class="fas fa-vial"></i>
+              </button> -->
+              <button
+                disabled
+                type="button"
+              >
+                <i class="fas fa-volume-up"></i>
+              </button>
+              <button
+                disabled
+                type="button"
+              >
+                <i class="fas fa-volume-mute"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <div style="flex-grow: 1">
+        <div>Commons</div>
+        <div style="display: flex; flex-direction: column">
+          <label for="pitchSustainRange" class="form-label"
+            >Pitch / Sustain :</label
+          >
+          <input
+            type="number"
+            min="-48"
+            max="48"
+            step="1"
+            id="pitchSustainRange"
+            :value="getCommonsControlValues().pitch"
+            @change="($event)=>{updatePitch($event);}"
+          />
+          <label for="volumeRange" class="form-label">Volume :</label>
+          <input
+            type="number"
+            min="0"
+            max="1"
+            step="0.025"
+            id="volumeRange"
+            :value="getCommonsControlValues().volume"
+            @change="($event)=>{updateVolume($event);}"
+          />
+
+          <label for="startPositionRange" class="form-label">Start :</label>
+          <input
+            type="number"
+            min="0"
+            max="1"
+            step="0.0025"
+            id="startPositionRange"
+            :value="getCommonsControlValues().startPosition"
+            @change="($event)=>{updateStartPosition($event);}"
+          />
+          <label for="endPositionRange" class="form-label">End :</label>
+          <input
+            type="number"
+            min="0"
+            max="1"
+            step="0.0025"
+            id="endPositionRange"
+            :value="getCommonsControlValues().endPosition"
+            @change="($event)=>{updateEndPosition($event);}"
+          />
+          <input
+            type="checkbox"
+            role="switch"
+            id="isReverseSwitch"
+            :value="getCommonsControlValues().isReverse"
+            @change="($event)=>{updateIsReverse($event);}"
+          />
+          <label class="form-check-label" for="isReverseSwitch"
+            >Is reverse</label
+          >
+        </div>
+      </div>
+      <div style="flex-grow: 1; display: flex; flex-direction: column">
+        <div style="">
+          <div>Modulation</div>
+          <div style="display: flex; flex-direction: column">xxx</div>
+        </div>
+        <div style="">
+          <div>Filter</div>
+          <div style="display: flex; flex-direction: column">xxx</div>
+        </div>
+      </div>
+      <div style="flex-grow: 1">
+        <div>Effects</div>
+        <div style="display: flex; flex-direction: column">xxx</div>
+      </div>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; justify-content: space-evenly"
+    >
       <div class="row">
         <div class="col">
           <div class="card border-primary h-100">
@@ -409,7 +307,6 @@
                   v-if="machineState.parts[machineState.currentPartIndex].staves>1"
                   @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
                   type="button"
-                  class="btn btn-outline-primary"
                 >
                   <i class="fas fa-minus"></i>
                 </button>
@@ -417,7 +314,6 @@
                   v-for="n in machineState.parts[machineState.currentPartIndex].staves"
                   @click="($event) => {selectStave(n-1);}"
                   type="button"
-                  class="btn"
                   :class="{ 'btn-primary': machineState.currentStaveIndex == n-1, 'btn-outline-primary': !(machineState.currentStaveIndex == n-1)}"
                 >
                   <b>{{n}}</b>
@@ -425,7 +321,6 @@
                 <button
                   @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
                   type="button"
-                  class="btn btn-outline-primary"
                 >
                   <i class="fas fa-plus"></i>
                 </button>
@@ -434,7 +329,6 @@
             <div class="card-body">
               <div class="card-text py-2">
                 <div
-                  class="input-group-lg d-flex flex-row justify-content-between"
                   role="group"
                 >
                   <button disabled type="button" class="btn btn-outline-light">
@@ -443,7 +337,6 @@
                   <button
                     @click="($event)=>{selectInstrument(0);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 0}"
                   >
                     D1
@@ -451,7 +344,6 @@
                   <button
                     @click="($event)=>{selectInstrument(1);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 1}"
                   >
                     D2
@@ -462,7 +354,6 @@
                   <button
                     @click="($event)=>{selectInstrument(2);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 2}"
                   >
                     D3
@@ -470,7 +361,6 @@
                   <button
                     @click="($event)=>{selectInstrument(3);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 3}"
                   >
                     D4
@@ -478,7 +368,6 @@
                   <button
                     @click="($event)=>{selectInstrument(4);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 4}"
                   >
                     D5
@@ -489,7 +378,6 @@
                   <button
                     @click="($event)=>{selectInstrument(5);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 5}"
                   >
                     D6
@@ -497,7 +385,6 @@
                   <button
                     @click="($event)=>{selectInstrument(6);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 6}"
                   >
                     D7
@@ -508,7 +395,6 @@
                   <button
                     @click="($event)=>{selectInstrument(7);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 7}"
                   >
                     D8
@@ -516,7 +402,6 @@
                   <button
                     @click="($event)=>{selectInstrument(8);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 8}"
                   >
                     D9
@@ -524,7 +409,6 @@
                   <button
                     @click="($event)=>{selectInstrument(9);}"
                     type="button"
-                    class="btn btn-outline-primary"
                     :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 9}"
                   >
                     D10
@@ -536,14 +420,12 @@
               </div>
               <div class="card-text py-2">
                 <div
-                  class="input-group-lg d-flex flex-row justify-content-around"
                   role="group"
                 >
                   <button
                     v-for="n in 16"
                     @click="($event)=>{toggleInstrumentStep(n-1);}"
                     type="button"
-                    class="btn"
                     :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1)}"
                     :disabled="!isStepClickable(n-1)"
                   >
@@ -584,7 +466,7 @@
         const wsStatus = ref(false);
 
         const machineState = ref({
-          masterGain:0,
+          masterGain: 0,
           currentModeIndex: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
