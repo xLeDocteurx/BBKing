@@ -8,6 +8,18 @@
 #ifndef MYUTILS_H
 #define MYUTILS_H
 
+  
+// // One function works for all data types. 
+// // This would work even for user defined types 
+// // if operator '>' is overloaded 
+// template <typename T>
+
+template <typename T>
+T clip(const T& n, const T& lower, const T& upper) {
+  return std::max(lower, std::min(n, upper));
+}
+uint32_t clampInt32(uint32_t input, uint32_t min, uint32_t max);
+
 std::string getCurrentModeAsString(State *statePointer);
 void getMachineStateAsCJson(State *statePointer, cJSON *cjsonStringPointer);
 void getWavFilesAsJsonString(State *statePointer, std::string *jsonStringPointer);

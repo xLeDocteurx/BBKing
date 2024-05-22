@@ -26,12 +26,14 @@
 // #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_ONLY_RIGHT
 // #define DMA_CHANNEL_FORMAT I2S_CHANNEL_FMT_RIGHT_LEFT
 #define DMA_WAV_BUFFER_COUNT 8
-// #define DMA_WAV_BUFFER_SIZE 128
-#define DMA_WAV_BUFFER_SIZE 64
-// #define DMA_WAV_BUFFER_SIZE 32
+// #define DMA_WAV_BUFFER_SIZE 256 // 2048
+// #define DMA_WAV_BUFFER_SIZE 128 // 1024
+#define DMA_WAV_BUFFER_SIZE 64 // 512
+// #define DMA_WAV_BUFFER_SIZE 32 // 256
+// #define PLAY_WAV_WAV_BUFFER_SIZE 8 * 256 // 2048
 // #define PLAY_WAV_WAV_BUFFER_SIZE 8 * 128 // 1024
 #define PLAY_WAV_WAV_BUFFER_SIZE 8 * 64 // 512
-// #define PLAY_WAV_WAV_BUFFER_SIZE 8 * 32
+// #define PLAY_WAV_WAV_BUFFER_SIZE 8 * 32 // 256
 
 // For lolin32
 // #define I2S_BCK_IO_NUM 26
@@ -58,6 +60,8 @@
 
 #ifndef DEFS_H
 #define DEFS_H
+
+
 
 struct Sample
 {
@@ -133,6 +137,9 @@ struct WavHeader
 
 struct State
 {
+    // TODO : Remove
+    bool isBlbl;
+
     // std::vector<std::string> wavFilePaths;
     std::vector<char *> wavFilePaths;
 

@@ -11,6 +11,9 @@
 // #include <driver/i2s_tdm.h>
 #include "esp_http_server.h"
 
+// TODO : Remove
+#include "esp_dsp.h"
+
 // libs
 
 // Includes
@@ -111,9 +114,86 @@ extern "C" void app_main()
     // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
     xTaskCreatePinnedToCore(sequencerTask, "sequencerTask", 4096, &state, 10, &sequencerTaskHandle, 0);
     xTaskCreatePinnedToCore(audioTask, "audioTask", 8192, &state, 10, &audioTaskHandle, 1);
+    // // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 1);
+    // xTaskCreatePinnedToCore(sequencerTask, "sequencerTask", 4096, &state, 10, &sequencerTaskHandle, 1);
+    // xTaskCreatePinnedToCore(audioTask, "audioTask", 8192, &state, 10, &audioTaskHandle, 0);
     printf("----- INIT TASKS DONE -----\n");
+
+    size_t signalLength = 4;
+    float signal[signalLength] = {1.0, 2.0, 3.0, 4.0};
+    size_t kernelLength = 3;
+    float kernel[kernelLength] = {5.0, 6.0, 7.0};
+    size_t outputLength = signalLength + kernelLength - 1;
+    float output[outputLength] = {};
+    dsps_conv_f32_ae32(signal, signalLength, kernel, kernelLength, output);
+
+    std::string outputString = "";
+    for (size_t i = 0; i < outputLength; i++)
+    {
+        outputString += std::to_string(output[i]);
+        outputString += ", ";
+    }
+    printf("dsps_conv_f32_ae32 output : %s\n", outputString.c_str());
+
+    int16_t inputBuffer[3] = {1, 2, 3};
+    int16_t memoryBufferChunk[3] = {0};
+    int16_t memoryBuffer[10] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+
+    printf("----------\n");
+    for (size_t i = 0; i < (sizeof(inputBuffer) / sizeof(inputBuffer[0])); i++)
+    {
+        printf(",%i", inputBuffer[i]);
+    }
+    printf("---\n");
+    for (size_t i = 0; i < (sizeof(memoryBufferChunk) / sizeof(memoryBufferChunk[0])); i++)
+    {
+        printf(",%i", memoryBufferChunk[i]);
+    }
+    printf("---\n");
+    for (size_t i = 0; i < (sizeof(memoryBuffer) / sizeof(memoryBuffer[0])); i++)
+    {
+        printf(",%i", memoryBuffer[i]);
+    }
+    printf("---\n");
+
+    memcpy(memoryBufferChunk, memoryBuffer, 3 * sizeof(int16_t));
+    int startIndex = 0;
+    int endIndex = 3 - 1;
+    int numOfElements = 10 - (endIndex - startIndex + 1);
+    memmove(memoryBuffer + startIndex, memoryBuffer + endIndex + 1, numOfElements * sizeof(int16_t));
+    int arraysDiff = 10 - 3;
+    memmove(memoryBuffer + arraysDiff, inputBuffer, 3 * sizeof(int16_t));
+    memcpy(inputBuffer, memoryBufferChunk, 3 * sizeof(int16_t));
+
+    printf("----------\n");
+    for (size_t i = 0; i < (sizeof(inputBuffer) / sizeof(inputBuffer[0])); i++)
+    {
+        printf(",%i", inputBuffer[i]);
+    }
+    printf("---\n");
+    for (size_t i = 0; i < (sizeof(memoryBufferChunk) / sizeof(memoryBufferChunk[0])); i++)
+    {
+        printf(",%i", memoryBufferChunk[i]);
+    }
+    printf("---\n");
+    for (size_t i = 0; i < (sizeof(memoryBuffer) / sizeof(memoryBuffer[0])); i++)
+    {
+        printf(",%i", memoryBuffer[i]);
+    }
+    printf("---\n");
+
+    printf("----------\n");
 
     printf("!!!!! TOUT MARCHE BIEN NAVETTE !!!!!\n");
 
+    // state.songTempo = 55;
+    state.currentPartIndex = 2;
+    // state.isPlaying = true;
+    // state.masterGain = 0.5;
 
+    // while (true)
+    // {
+    //     vTaskDelay(pdMS_TO_TICKS(10000));
+    //     state.isBlbl = !state.isBlbl;
+    // }
 }

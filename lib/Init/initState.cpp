@@ -448,5 +448,8 @@ bool initState(State *statePointer)
 
     statePointer->isPlaying = false;
 
+    // TODO : Remove
+    statePointer->isBlbl = false;
+
     return true;
 }

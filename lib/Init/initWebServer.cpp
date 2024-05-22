@@ -538,7 +538,8 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     serverPointer = serverPointer_p;
     statePointer = statePointer_p;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.stack_size = 20480; // TODO : test random values
+    // config.stack_size = 20480; // TODO : test random values
+    config.stack_size = 10240; // TODO : test random values
 
     esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)

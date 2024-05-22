@@ -32,7 +32,7 @@ bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, float 
 
     // Read the WAV header
     WavHeader header;
-    fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
+    fread(reinterpret_cast<char *>(&header), sizeof(uint8_t), sizeof(WavHeader), file);
 
     // Check if the file is a WAV file
     if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")

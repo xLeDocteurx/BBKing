@@ -35,38 +35,8 @@
       style="display: flex; flex-direction: row; justify-content: space-evenly"
     >
       <div style="flex-grow: 1">
-        <div>Project</div>
+        <div>Master</div>
         <div style="display: flex; flex-direction: column">
-          <div>song</div>
-          <button
-          disabled
-          type="button"
-          >
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <input
-            type="text"
-            :value="machineState.songName"
-            @change="($event)=>{updateSongName($event);}"
-          />
-          <button
-          disabled
-            type="button"
-          >
-            <i class="fas fa-plus"></i>
-          </button>
-          <button
-          disabled
-          type="button"
-          >
-            <i class="fas fa-trash"></i>
-          </button>
-          <button
-          disabled
-          type="button"
-          >
-            <i class="fas fa-chevron-right"></i>
-          </button>
           <div>master gain</div>
           <input
             type="number"
@@ -76,6 +46,27 @@
             :value="machineState.masterGain"
             @change="($event)=>{updateMasterGain($event);}"
           />
+        </div>
+        <div>Project</div>
+        <div style="display: flex; flex-direction: column">
+          <div>song</div>
+          <button disabled type="button">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <input
+            type="text"
+            :value="machineState.songName"
+            @change="($event)=>{updateSongName($event);}"
+          />
+          <button disabled type="button">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button disabled type="button">
+            <i class="fas fa-trash"></i>
+          </button>
+          <button disabled type="button">
+            <i class="fas fa-chevron-right"></i>
+          </button>
           <div>bpm</div>
           <input
             type="number"
@@ -103,10 +94,7 @@
           >
             <i class="fas fa-plus"></i>
           </button>
-          <button
-          disabled
-          type="button"
-          >
+          <button disabled type="button">
             <i class="fas fa-trash"></i>
           </button>
           <button
@@ -117,11 +105,8 @@
             <i class="fas fa-chevron-right"></i>
           </button>
 
-          <div>Sample</div>
-          <button
-            type="button"
-            @click="($event)=>{getPreviousSample();}"
-          >
+          <div>sample</div>
+          <button type="button" @click="($event)=>{getPreviousSample();}">
             <i class="fas fa-chevron-left"></i>
           </button>
           <div class="nes-select">
@@ -136,10 +121,7 @@
               </option>
             </select>
           </div>
-          <button
-            type="button"
-            @click="($event) => getNextSample()"
-          >
+          <button type="button" @click="($event) => getNextSample()">
             <i class="fas fa-chevron-right"></i>
           </button>
 
@@ -193,16 +175,10 @@
               >
                 <i class="fas fa-vial"></i>
               </button> -->
-              <button
-                disabled
-                type="button"
-              >
+              <button disabled type="button">
                 <i class="fas fa-volume-up"></i>
               </button>
-              <button
-                disabled
-                type="button"
-              >
+              <button disabled type="button">
                 <i class="fas fa-volume-mute"></i>
               </button>
             </div>
@@ -328,9 +304,7 @@
             </div>
             <div class="card-body">
               <div class="card-text py-2">
-                <div
-                  role="group"
-                >
+                <div role="group">
                   <button disabled type="button" class="btn btn-outline-light">
                     Light
                   </button>
@@ -419,9 +393,7 @@
                 </div>
               </div>
               <div class="card-text py-2">
-                <div
-                  role="group"
-                >
+                <div role="group">
                   <button
                     v-for="n in 16"
                     @click="($event)=>{toggleInstrumentStep(n-1);}"

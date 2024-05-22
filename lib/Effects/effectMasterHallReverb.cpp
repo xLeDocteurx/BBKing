@@ -1,40 +1,47 @@
 #include <Defs.h>
 #include <Effects.h>
+#include <MyUtils.h>
 
 #include <vector>
 #include <math.h>
 #include <complex.h>
 // #include <fftw3.h>
 // #include <ESP_fft.h>
+#include <cstdint>
+#include <cstring>
 
-int16_t **hallImpulseFileBufferPointer = NULL;
+#include "esp_dsp.h"
+
+int16_t *hallImpulseFileBufferPointer = NULL;
 int hallImpulseFileSizeInSamples = 0;
-std::vector<int16_t> memoryBufferAsVector = {};
+// std::vector<int16_t> memoryBufferAsVector(PLAY_WAV_WAV_BUFFER_SIZE + hallImpulseFileSizeInSamples - 1);
+// std::vector<int16_t> memoryBufferAsVector(PLAY_WAV_WAV_BUFFER_SIZE + hallImpulseFileSizeInSamples);
+// int16_t memoryBufferAsArray[PLAY_WAV_WAV_BUFFER_SIZE + hallImpulseFileSizeInSamples - 1];
+// float memoryBufferAsArray[100000];
+// float *memoryBufferAsArray;
+// float memoryBufferAsArray[PLAY_WAV_WAV_BUFFER_SIZE + 77143];
+// float *memoryBufferAsArray = NULL;
+const size_t memoryBufferAsArrayLength = 11249 + PLAY_WAV_WAV_BUFFER_SIZE;
+float convolutionFrameAsArray[memoryBufferAsArrayLength] = {};
+float memoryBufferAsArray[memoryBufferAsArrayLength] = {};
+// TODO : malloc !!!
+float hallImpulseFileBufferAsFloats[memoryBufferAsArrayLength] = {};
 
-void masterEffectHallReverb(int16_t *inputBuffer[PLAY_WAV_WAV_BUFFER_SIZE], int16_t *outputBuffer[PLAY_WAV_WAV_BUFFER_SIZE])
+void masterEffectHallReverb(int16_t buffer[PLAY_WAV_WAV_BUFFER_SIZE])
+// void masterEffectHallReverb(int16_t **buffer, int16_t **outputBufferPointer)
 {
-    // float threshold = 0.5;
-    // // float ratio = 1 / 2;
-    // int ratio = 2;
-    // float q = 0.5;
-    // int attackInMs = 20;
-    // int releaseInMs = 200;
-
-    // float dryWetRatio = 0.75;
-    // float inputGain = 1.0;
-    // float outputGain = 1.0;
-
     if (hallImpulseFileBufferPointer == NULL)
     {
-        char *impulseFilePath = "/data/hall.wav";
+        char *impulseFilePath = "/data/room.wav";
         FILE *file = fopen(impulseFilePath, "r");
         if (file == NULL)
         {
             printf("Failed to open file : %s\n", impulseFilePath);
             return;
         }
+        // printf("1.1\n");
         WavHeader header;
-        fread(reinterpret_cast<char *>(&header), sizeof(u_int8_t), sizeof(WavHeader), file);
+        fread(reinterpret_cast<char *>(&header), sizeof(uint8_t), sizeof(WavHeader), file);
         // Check if the file is a WAV file
         if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
         {
@@ -45,63 +52,114 @@ void masterEffectHallReverb(int16_t *inputBuffer[PLAY_WAV_WAV_BUFFER_SIZE], int1
         hallImpulseFileSizeInSamples = header.subchunk2Size / sizeof(int16_t);
         hallImpulseFileBufferPointer = (int16_t *)malloc(header.subchunk2Size);
 
+        // printf("1.2\n");
+
         fread(hallImpulseFileBufferPointer, sizeof(int16_t), hallImpulseFileSizeInSamples, file);
         fclose(file);
+        printf("hallImpulseFileSizeInSamples : %i\n", hallImpulseFileSizeInSamples);
+
+        // TODO
+        for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+        {
+            hallImpulseFileBufferAsFloats[i] = (float)hallImpulseFileBufferPointer[i];
+            // printf("hallImpulseFileBufferAsFloats[i] : %f\n", hallImpulseFileBufferAsFloats[i]);
+        }
+
+        // memoryBufferAsArray = (float *)malloc(PLAY_WAV_WAV_BUFFER_SIZE + hallImpulseFileSizeInSamples - 1);
+
+        // printf("1.3\n");²
+
+        // esp_err_t ret;
+        // ret = dsps_fft2r_init_fc32(NULL, CONFIG_DSP_MAX_FFT_SIZE);
+        // if (ret != ESP_OK)
+        // {
+        //     printf("Not possible to initialize FFT. Error = %i\n", ret);
+        //     return;
+        // }
+        // printf("1.4\n");
+        // for (size_t i = 0; i < hallImpulseFileSizeInSamples; i++)
+        // {
+        //     printf("hallImpulseFileSizeInSamples : %i\n", hallImpulseFileBufferPointer[i]);
+        // }
+
+        for (size_t i = 0; i < memoryBufferAsArrayLength; i++)
+        {
+            // printf("convolutionFrameAsArray[i] : %f\n", convolutionFrameAsArray[i]);
+            memoryBufferAsArray[i] = 0;
+        }
     }
+    // printf("2\n");
 
-    // void conv_fft(const int16_t *input1, const int16_t *input2, int16_t *output, int DMA_WAV_BUFFER_SIZE, int hallImpulseFileSizeInSamples) {
-    // // Vérifier les longueurs des entrées
-    // if (DMA_WAV_BUFFER_SIZE < hallImpulseFileSizeInSamples)
-    // {
-    //     return;
-    // }
-
-    // Déterminer la longueur de convolution requise
-    int conv_len = DMA_WAV_BUFFER_SIZE + hallImpulseFileSizeInSamples - 1;
-
-    // Allouer de la mémoire pour les données complexes
-    std::complex<int16_t> *X1 = new std::complex<int16_t>[conv_len];
-    std::complex<int16_t> *X2 = new std::complex<int16_t>[conv_len];
-    std::complex<int16_t> *Y = new std::complex<int16_t>[conv_len];
-
-    // Copier les données d'entrée dans les données complexes
-    for (int i = 0; i < DMA_WAV_BUFFER_SIZE; i++)
+    float bufferAsFloats[PLAY_WAV_WAV_BUFFER_SIZE] = {};
+    for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
     {
-        X1[i] = std::complex<int16_t>(*inputBuffer[i], 0);
+        // printf("---");
+        // printf("buffer[i] : %i\n", buffer[i]);
+        bufferAsFloats[i] = (float)buffer[i];
+        // printf("bufferAsFloats[i] : %f\n", bufferAsFloats[i]);
     }
-    for (int i = 0; i < hallImpulseFileSizeInSamples; i++)
+
+    dsps_conv_f32_ae32(bufferAsFloats, PLAY_WAV_WAV_BUFFER_SIZE, hallImpulseFileBufferAsFloats, hallImpulseFileSizeInSamples / 16, convolutionFrameAsArray);
+
+    // printf("4\n");
+
+    // // TODO : Only loop to fill buffer ( do some search. I'm sure it can be prevented and I can copy directly a chunk of the memory buffer into the output buffer in a single operation )
+    // // TODO : Handle the ERASE / FILL memorybufferVector outside the loop in one opération
+    // for (size_t i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+    // {
+    //     // // *outputBufferPointer[i] = memoryBufferAsVector.front();
+    //     // *outputBufferPointer[i] = memoryBufferAsVector.front();
+    //     // // *outputBufferPointer[i] = memoryBufferAsVector[i];
+    //     // memoryBufferAsVector.erase(memoryBufferAsVector.begin());
+    //     // memoryBufferAsVector.push_back(0);
+
+    //     *outputBufferPointer[i] = memoryBufferAsArray[i];
+    // }
+    for (size_t i = 0; i < memoryBufferAsArrayLength; i++)
     {
-        X2[i] = std::complex<int16_t>(*hallImpulseFileBufferPointer[i], 0);
+        memoryBufferAsArray[i] += convolutionFrameAsArray[i];
+
+        // // memcpy(*outputBufferPointer, memoryBufferAsArray, PLAY_WAV_WAV_BUFFER_SIZE);z
+        // for (size_t i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+        // {
+        //     // *outputBufferPointer[i] = memoryBufferAsArray[i];
+        //     *outputBufferPointer[i] = (int16_t)memoryBufferAsArray[i];
+        //     // *outputBufferPointer[i] = buffer[i];
+        // }
+        // int startIndex = 0;
+        // int endIndex = PLAY_WAV_WAV_BUFFER_SIZE - 1;
+        // int numOfElements = endIndex - startIndex + 1;
+        // memmove(memoryBufferAsArray + startIndex, memoryBufferAsArray + endIndex + 1, numOfElements * sizeof(int));
+        // // memoryBufferAsVector.push_back(0);
+        // // TODO : Rethink the "memoryBufferAsArrayLength - 1" !!!
+        // for (size_t i = memoryBufferAsArrayLength - 1 - PLAY_WAV_WAV_BUFFER_SIZE; i < memoryBufferAsArrayLength; i++)
+        // {
+        //     memoryBufferAsArray[i] = 0;
+        // }
+        if (i < PLAY_WAV_WAV_BUFFER_SIZE)
+        {
+
+            // *outputBufferPointer[i] = memoryBufferAsArray[i];
+            // outputBufferPointer[i] = (int16_t)clip(memoryBufferAsArray[i], (float)INT16_MIN, (float)INT16_MAX);
+
+            buffer[i] = (int16_t)clip(memoryBufferAsArray[i], (float)INT16_MIN, (float)INT16_MAX);
+            // outputBufferPointer[i] = (int16_t)clip((memoryBufferAsArray[i] * INT16_MAX) / __FLT_MAX__, (float)INT16_MIN, (float)INT16_MAX);
+            // outputBufferPointer[i] = (memoryBufferAsArray[i] * INT16_MAX) / __FLT_MAX__;
+
+            // outputBufferPointer[i] = buffer[i];
+            // *outputBufferPointer[i] = rand() % (INT16_MAX - INT16_MIN + 1) + INT16_MIN;
+        }
     }
 
-    // // Effectuer la transformée de Fourier rapide (FFT)
-    // fftw3_plan inputPlan = fftw3_plan_dft_1d(conv_len, X1, X1, FFTW_FORWARD, FFTW_ESTIMATE);
-    // fftw3_execute(inputPlan);
-    // fftw3_destroy_plan(inputPlan);
+    // printf("5\n");
 
-    // fftw3_plan impulsePlan = fftw3_plan_dft_1d(conv_len, X2, X2, FFTW_FORWARD, FFTW_ESTIMATE);
-    // fftw3_execute(impulsePlan);
-    // fftw3_destroy_plan(impulsePlan);
+    // // Libération des buffers
+    // free(input_real);
+    // free(input_imag);
+    // free(impulse_real);
+    // free(impulse_imag);
+    // free(result_real);
+    // free(result_imag);
 
-    // // Effectuer la multiplication point par point
-    // for (int i = 0; i < conv_len; i++)
-    // {
-    //     Y[i] = X1[i] * X2[i];
-    // }
-
-    // // Effectuer la transformée de Fourier rapide inverse (IFFT)
-    // fftw3_plan plan3 = fftw3_plan_dft_1d(conv_len, Y, Y, FFTW_BACKWARD, FFTW_ESTIMATE);
-    // fftw3_execute(plan3);
-    // fftw3_destroy_plan(plan3);
-
-    // // Normaliser la sortie
-    // for (int i = 0; i < conv_len; i++)
-    // {
-    //     outputBuffer[i] = std::real(Y[i]) / conv_len;
-    // }
-
-    // // Libérer la mémoire allouée
-    // delete[] X1;
-    // delete[] X2;
-    // delete[] Y;
+    // printf("6\n");
 }
