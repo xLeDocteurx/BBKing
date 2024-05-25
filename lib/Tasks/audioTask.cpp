@@ -110,11 +110,11 @@ void audioTask(void *parameter)
         for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
         {
             masterEffectPreamp(statePointer, &statePointer->_masterBuffer[i]);
-            if (statePointer->isBlbl)
-            {
-                // masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                masterEffectDistortion(&statePointer->_masterBuffer[i]);
-            }
+            // if (statePointer->isBlbl)
+            // {
+            //     // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+            //     masterEffectDistortion(&statePointer->_masterBuffer[i]);
+            // }
         }
         // if (statePointer->isBlbl)
         // // if (true)

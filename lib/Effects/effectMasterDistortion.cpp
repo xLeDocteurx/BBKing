@@ -11,7 +11,9 @@ void masterEffectDistortion(int16_t *sample)
 {
 
     // float q = 1.0;
-    float q = 1.5;
+    // float q = 1.5;
+    float q = 1.75;
+    // float q = 2.0;
     float x = pow((float)(*sample >= 0 ? *sample : -*sample) / INT16_MAX, 2 - q);
     // int32_t temporaryInt32 = (int32_t)round(b * q);
     int32_t temporaryInt32 = round(x);

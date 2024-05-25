@@ -11,6 +11,8 @@
     crossorigin="anonymous"></script>
   <script src="semantic/dist/semantic.min.js"></script> -->
 
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -24,93 +26,161 @@
   <div id="app">
     <header>
       <!-- v-if="wsStatus" -->
-      <h2
+      <h1
         @click="($event)=>{sendMessageViaWebsocket('toggle');}"
         style="text-align: center"
+        class="text-3xl font-bold underline"
       >
         BBKing
-      </h2>
+      </h1>
     </header>
-    <div
-      style="display: flex; flex-direction: row; justify-content: space-evenly"
-    >
-      <div style="flex-grow: 1">
-        <div>Master</div>
-        <div style="display: flex; flex-direction: column">
-          <div>master gain</div>
-          <input
-            type="number"
-            min="0"
-            max="5"
-            step="0.25"
-            :value="machineState.masterGain"
-            @change="($event)=>{updateMasterGain($event);}"
-          />
+    <div class="grid grid-cols-4 gap-4">
+      <div class="border border-solid">
+        <h2 class="font-bold">Master</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              gain
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="0"
+              max="5"
+              step="0.25"
+              :value="machineState.masterGain"
+              @change="($event)=>{updateMasterGain($event);}"
+            />
+          </div>
         </div>
-        <div>Project</div>
-        <div style="display: flex; flex-direction: column">
-          <div>song</div>
-          <button disabled type="button">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <input
-            type="text"
-            :value="machineState.songName"
-            @change="($event)=>{updateSongName($event);}"
-          />
-          <button disabled type="button">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button disabled type="button">
-            <i class="fas fa-trash"></i>
-          </button>
-          <button disabled type="button">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          <div>bpm</div>
-          <input
-            type="number"
-            step="1"
-            :value="machineState.songTempo"
-            @change="($event)=>{updateTempo($event);}"
-          />
-          <div>part</div>
-          <button
-            v-if="machineState.currentPartIndex > 0"
-            type="button"
-            @click="($event)=>{loadPreviousPart();}"
-          >
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <input
-            disabled
-            type="text"
-            :value="machineState.currentPartIndex + 1"
-          />
-          <button
-            v-if="machineState.currentPartIndex >= machineState.parts.length -1"
-            type="button"
-            @click="($event)=>{createNextPart();}"
-          >
-            <i class="fas fa-plus"></i>
-          </button>
-          <button disabled type="button">
-            <i class="fas fa-trash"></i>
-          </button>
-          <button
-            v-if="machineState.currentPartIndex < machineState.parts.length -1"
-            type="button"
-            @click="($event)=>{loadNextPart();}"
-          >
-            <i class="fas fa-chevron-right"></i>
-          </button>
+        <h2 class="font-bold">Song</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              song
+            </button>
+            <input
+              type="text"
+              class="w-full py-2 px-3"
+              :value="machineState.songName"
+              @change="($event)=>{updateSongName($event);}"
+            />
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
 
-          <div>sample</div>
-          <button type="button" @click="($event)=>{getPreviousSample();}">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <div class="nes-select">
-            <select>
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              bpm
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              step="1"
+              :value="machineState.songTempo"
+              @change="($event)=>{updateTempo($event);}"
+            />
+          </div>
+        </div>
+
+        <h2 class="font-bold">Part</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm">
+            <!-- v-if="machineState.currentPartIndex > 0" -->
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              part
+            </button>
+            <input
+              disabled
+              class="w-full py-2 px-3"
+              type="text"
+              :value="machineState.currentPartIndex + 1"
+            />
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{loadPreviousPart();}"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <!-- v-if="machineState.currentPartIndex >= machineState.parts.length -1" -->
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{createNextPart();}"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+            <!-- v-if="machineState.currentPartIndex < machineState.parts.length -1" -->
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{loadNextPart();}"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              sample
+            </button>
+            <select
+            class="w-full py-2 px-3"
+            >
               <option
                 v-for="(s, s_index) in wavFilesList"
                 @click="($event) => updateSelectedInstrumentSample(s_index)"
@@ -120,74 +190,108 @@
                 {{s}}
               </option>
             </select>
-          </div>
-          <button type="button" @click="($event) => getNextSample()">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-
-          <hr />
-
-          <div class="card-text">
-            <div class="btn-group w-100 mb-2" role="group">
-              <button type="button" @click="($event)=>{saveSong();}">
-                <i class="fas fa-save"></i>
-              </button>
-              <button type="button" @click="($event)=>{stop();}">
-                <i class="fas fa-stop"></i>
-              </button>
-              <button type="button" @click="($event)=>{play();}">
-                <i class="fas fa-play"></i>
-              </button>
-            </div>
-          </div>
-          <div class="card-text">
-            <div class="btn-group w-100 mb-2" role="group">
-              <!-- <i class="fas fa-music"></i> -->
-              <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
-              <button
-                disabled
-                type="button"
-                @click="() => {updateCurrentMode(0);}"
-              >
-                FX
-              </button>
-              <button
-                @click="() => {updateCurrentMode(0);}"
-                type="button"
-                :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
-              >
-                <i class="fas fa-guitar"></i>
-              </button>
-              <button
-                @click="() => {updateCurrentMode(1);}"
-                type="button"
-                :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
-              >
-                <i class="fas fa-shoe-prints"></i>
-              </button>
-            </div>
-          </div>
-          <div class="card-text">
-            <div class="btn-group w-100 mb" role="group">
-              <!-- <button
-                disabled
-                type="button"
-              >
-                <i class="fas fa-vial"></i>
-              </button> -->
-              <button disabled type="button">
-                <i class="fas fa-volume-up"></i>
-              </button>
-              <button disabled type="button">
-                <i class="fas fa-volume-mute"></i>
-              </button>
-            </div>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{getPreviousSample();}"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{getNextSample();}"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
+
+        <h2 class="font-bold">Controls</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{saveSong();}"
+            >
+              <i class="fas fa-save"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{stop();}"
+            >
+              <i class="fas fa-stop"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{play();}"
+            >
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm">
+            <!-- <i class="fas fa-music"></i> -->
+            <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="() => {updateCurrentMode(0);}"
+            >
+              FX
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(0);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+            >
+              <i class="fas fa-guitar"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(1);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+            >
+              <i class="fas fa-shoe-prints"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm">
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-vial"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-up"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-mute"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-text">
+          <div class="btn-group w-100 mb" role="group"></div>
+        </div>
       </div>
-      <div style="flex-grow: 1">
-        <div>Commons</div>
-        <div style="display: flex; flex-direction: column">
+      <div class="border border-solid">
+        <div class="font-bold">Commons</div>
+        <div>
           <label for="pitchSustainRange" class="form-label"
             >Pitch / Sustain :</label
           >
@@ -243,19 +347,19 @@
           >
         </div>
       </div>
-      <div style="flex-grow: 1; display: flex; flex-direction: column">
-        <div style="">
+      <div class="border border-solid">
+        <div>
           <div>Modulation</div>
-          <div style="display: flex; flex-direction: column">xxx</div>
+          <div>xxx</div>
         </div>
-        <div style="">
+        <div>
           <div>Filter</div>
-          <div style="display: flex; flex-direction: column">xxx</div>
+          <div>xxx</div>
         </div>
       </div>
-      <div style="flex-grow: 1">
+      <div class="border border-solid">
         <div>Effects</div>
-        <div style="display: flex; flex-direction: column">xxx</div>
+        <div>xxx</div>
       </div>
     </div>
     <div
@@ -305,9 +409,11 @@
             <div class="card-body">
               <div class="card-text py-2">
                 <div role="group">
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-light"
+                  ></button>
                   <button
                     @click="($event)=>{selectInstrument(0);}"
                     type="button"
@@ -322,9 +428,11 @@
                   >
                     D2
                   </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-light"
+                  ></button>
                   <button
                     @click="($event)=>{selectInstrument(2);}"
                     type="button"
@@ -346,9 +454,11 @@
                   >
                     D5
                   </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-light"
+                  ></button>
                   <button
                     @click="($event)=>{selectInstrument(5);}"
                     type="button"
@@ -363,9 +473,11 @@
                   >
                     D7
                   </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-light"
+                  ></button>
                   <button
                     @click="($event)=>{selectInstrument(7);}"
                     type="button"
@@ -387,9 +499,11 @@
                   >
                     D10
                   </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
+                  <button
+                    disabled
+                    type="button"
+                    class="btn btn-outline-light"
+                  ></button>
                 </div>
               </div>
               <div class="card-text py-2">

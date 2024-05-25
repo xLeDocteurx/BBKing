@@ -11,11 +11,16 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
 {
     // TODO : error handling
     cJSON_AddNumberToObject(cjsonObjectPointer, "masterGain", statePointer->masterGain);
+    cJSON_AddStringToObject(cjsonObjectPointer, "songName", statePointer->songName);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "songTempo", statePointer->songTempo);
+
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentModeIndex", statePointer->currentModeIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSelectedStepIndex", statePointer->currentSelectedStepIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSongIndex", statePointer->currentSongIndex);
-    cJSON_AddStringToObject(cjsonObjectPointer, "songName", statePointer->songName);
-    cJSON_AddNumberToObject(cjsonObjectPointer, "songTempo", statePointer->songTempo);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentPartIndex", statePointer->currentPartIndex);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentPartInstrumentIndex", statePointer->currentPartInstrumentIndex);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentStaveIndex", statePointer->currentStaveIndex);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentOctaveIndex", statePointer->currentOctaveIndex);
 
     // TODO : TODO
     cJSON *instrumentsArray = cJSON_AddArrayToObject(cjsonObjectPointer, "instruments");
@@ -38,11 +43,6 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
 
         cJSON_AddItemToArray(instrumentsArray, cJsonInstrumentObject);
     }
-
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentPartIndex", statePointer->currentPartIndex);
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentPartInstrumentIndex", statePointer->currentPartInstrumentIndex);
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentStaveIndex", statePointer->currentStaveIndex);
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentOctaveIndex", statePointer->currentOctaveIndex);
 
     // TODO : TODO
     cJSON *partsArray = cJSON_AddArrayToObject(cjsonObjectPointer, "parts");

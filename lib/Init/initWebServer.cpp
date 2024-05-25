@@ -245,10 +245,6 @@ static esp_err_t action_handler(httpd_req_t *req)
     printf("actionParameters.c_str() : %s\n", actionParameters.c_str());
 
     // TODO : In a separate file to server for other purposes (keyboard, etc...)
-    // if (actionType == "UPDATESONGINDEX")
-    // {
-    // }
-    // else
     if (actionType == "SAVESONG")
     {
         saveSong(statePointer);
@@ -266,10 +262,31 @@ static esp_err_t action_handler(httpd_req_t *req)
     {
         statePointer->currentSelectedStepIndex = stoi(actionParameters);
     }
+
+    else if (actionType == "CREATESONGATINDEX")
+    {
+        int songIndex = stof(actionParameters);
+        createSongAtIndex(statePointer, songIndex);
+        statePointer->currentSongIndex = songIndex;
+        readSong(statePointer, songIndex);
+    }
+    else if (actionType == "DELETESONGATINDEX")
+    {
+        int songIndex = stof(actionParameters);
+        deleteSongAtIndex(statePointer, songIndex);
+        statePointer->currentSongIndex = songIndex > 0 ? songIndex - 1 : 0;
+        readSong(statePointer, songIndex);
+    }
+    else if (actionType == "UPDATECURRENTSONGINDEX")
+    {
+        int songIndex = stof(actionParameters);
+        readSong(statePointer, songIndex);
+    }
     else if (actionType == "UPDATESONGNAME")
     {
         statePointer->songName = (char *)actionParameters.c_str();
     }
+
     else if (actionType == "UPDATETEMPO")
     {
         statePointer->songTempo = stoi(actionParameters);
@@ -292,15 +309,15 @@ static esp_err_t action_handler(httpd_req_t *req)
     else if (actionType == "SOLOPART")
     {
         int desiredIndex = stoi(actionParameters);
-        for (int i = 0; i < statePointer->instruments.size(); i++)
-        {
-            // if(statePointer->instruments[i] == i) {
-            //     // TODO
-            //     // statePointer->samples[statePointer->instruments[i].sampleFileRefIndex].
-            // } else {
+        // for (int i = 0; i < statePointer->instruments.size(); i++)
+        // {
+        //     // if(statePointer->instruments[i] == i) {
+        //     //     // TODO
+        //     //     // statePointer->samples[statePointer->instruments[i].sampleFileRefIndex].
+        //     // } else {
 
-            // }
-        }
+        //     // }
+        // }
     }
     else if (actionType == "MUTEPART")
     {
@@ -539,7 +556,10 @@ bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_n
     statePointer = statePointer_p;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     // config.stack_size = 20480; // TODO : test random values
-    config.stack_size = 10240; // TODO : test random values
+    // config.stack_size = 10240; // TODO : test random values
+    // config.stack_size = 4096; // TODO : test random values
+    // config.stack_size = 8192; // TODO : test random values
+    config.stack_size = 12288; // TODO : test random values
 
     esp_err_t httpd_start_ret = httpd_start(serverPointer_p, &config);
     if (httpd_start_ret != ESP_OK)

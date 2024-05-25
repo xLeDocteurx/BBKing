@@ -22,6 +22,7 @@ uint32_t clampInt32(uint32_t input, uint32_t min, uint32_t max);
 
 std::string getCurrentModeAsString(State *statePointer);
 void getMachineStateAsCJson(State *statePointer, cJSON *cjsonStringPointer);
+void getNewSongAsCJson(State *statePointer, cJSON *cjsonObjectPointer, int newSongIndex);
 void getWavFilesAsJsonString(State *statePointer, std::string *jsonStringPointer);
 bool getIndexHtml(std::string *stringPointer);
 
