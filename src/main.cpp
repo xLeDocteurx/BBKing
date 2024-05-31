@@ -193,7 +193,8 @@ extern "C" void app_main()
 
     // while (true)
     // {
-    //     vTaskDelay(pdMS_TO_TICKS(10000));
-    //     state.isBlbl = !state.isBlbl;
+    //     vTaskDelay(pdMS_TO_TICKS(500));
+    //     // state.isBlbl = !state.isBlbl;
+    //     printf("state.songName : %s\n", state.songName);
     // }
 }

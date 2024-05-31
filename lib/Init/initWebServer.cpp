@@ -265,26 +265,30 @@ static esp_err_t action_handler(httpd_req_t *req)
 
     else if (actionType == "CREATESONGATINDEX")
     {
-        int songIndex = stof(actionParameters);
+        int songIndex = stoi(actionParameters);
         createSongAtIndex(statePointer, songIndex);
         statePointer->currentSongIndex = songIndex;
         readSong(statePointer, songIndex);
     }
     else if (actionType == "DELETESONGATINDEX")
     {
-        int songIndex = stof(actionParameters);
+        int songIndex = stoi(actionParameters);
         deleteSongAtIndex(statePointer, songIndex);
         statePointer->currentSongIndex = songIndex > 0 ? songIndex - 1 : 0;
         readSong(statePointer, songIndex);
     }
     else if (actionType == "UPDATECURRENTSONGINDEX")
     {
-        int songIndex = stof(actionParameters);
+        int songIndex = stoi(actionParameters);
         readSong(statePointer, songIndex);
     }
     else if (actionType == "UPDATESONGNAME")
     {
-        statePointer->songName = (char *)actionParameters.c_str();
+        // char *copy;
+        // strcpy(copy, actionParameters.c_str());
+        // statePointer->songName = copy;
+        strcpy(statePointer->songName, actionParameters.c_str());
+        // statePointer->songName = actionParameters.c_str();
     }
 
     else if (actionType == "UPDATETEMPO")

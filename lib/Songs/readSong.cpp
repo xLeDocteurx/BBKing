@@ -10,6 +10,7 @@
 
 bool readSong(State *statePointer, int songIndex)
 {
+    printf("READ SONG %i\n", songIndex);
     std::string jsonString;
     bool readJsonFileRet = readJsonFile("/sdcard/songs.json", &jsonString);
     if (!readJsonFileRet)
@@ -40,7 +41,8 @@ bool readSong(State *statePointer, int songIndex)
     }
 
     // TODO : pushback error handling;
-    cJSON *songArrayItem = cJSON_GetArrayItem(root, statePointer->currentSongIndex);
+    statePointer->currentSongIndex = songIndex;
+    cJSON *songArrayItem = cJSON_GetArrayItem(root, songIndex);
 
     cJSON *songName = cJSON_GetObjectItemCaseSensitive(songArrayItem, "songName");
     statePointer->songName = songName->valuestring;

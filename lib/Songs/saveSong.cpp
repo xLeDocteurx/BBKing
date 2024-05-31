@@ -39,6 +39,7 @@ bool saveSong(State *statePointer)
 
     cJSON_ReplaceItemInArray(root, statePointer->currentSongIndex, songFromState);
 
+    // printf("savesong  root->valuestring : %s\n", root->valuestring);
 
     // TODO : error handling
     // writeFile("/data/songs.json", root->valuestring);
