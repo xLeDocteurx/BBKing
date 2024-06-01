@@ -22,6 +22,7 @@
 
 void audioTask(void *parameter)
 {
+    printf("blbl");
     State *statePointer = (State *)parameter;
     while (1)
     {
@@ -115,6 +116,7 @@ void audioTask(void *parameter)
             //     // masterEffectCompressor(&statePointer->_masterBuffer[i]);
             //     masterEffectDistortion(&statePointer->_masterBuffer[i]);
             // }
+            // printf("%i\n", statePointer->_masterBuffer[i]);
         }
         // if (statePointer->isBlbl)
         // // if (true)

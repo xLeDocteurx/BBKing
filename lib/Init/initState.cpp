@@ -338,7 +338,7 @@ bool initState(State *statePointer)
     statePointer->currentModeIndex = 0;
     statePointer->currentSelectedStepIndex = 0;
     // statePointer->currentSongIndex = 0;
-    statePointer->currentSongIndex = 1;
+    statePointer->currentSongIndex = 2;
     statePointer->currentStaveIndex = 0;
     statePointer->currentOctaveIndex = 0;
     statePointer->currentPartIndex = 0;
@@ -347,7 +347,7 @@ bool initState(State *statePointer)
     // TODO : Remove
     statePointer->isBlbl = true;
 
-    readSong(statePointer, 0);
+    readSong(statePointer, statePointer->currentSongIndex);
 
     return true;
 }

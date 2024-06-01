@@ -43,6 +43,7 @@ extern "C" void app_main()
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
     vTaskDelay(pdMS_TO_TICKS(1500));
+    vTaskDelay(pdMS_TO_TICKS(1500));
 
     bool initRes = true;
     printf("----- INIT PSRAM -----\n");
@@ -87,28 +88,28 @@ extern "C" void app_main()
     // }
     // printf("----- INIT KEYBOARD DONE -----\n");
 
-    printf("----- INIT WIFI -----\n");
-    esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
-    if (initWifiRes == NULL)
-    {
-        printf("----- INIT WIFI FAILED -----\n");
-        return;
-    }
-    else
-    {
-        sta_netif = initWifiRes;
-        printf("----- INIT WIFI DONE -----\n");
-        printf("iwd sta_netif int : %p\n", (void *)sta_netif);
-        printf("iwd sta_netif int : %p\n", sta_netif);
-        printf("----- INIT WEB SERVER -----\n");
-        initRes = initWebServer(&state, &httpServer, sta_netif);
-        if (!initRes)
-        {
-            printf("----- INIT WEB SERVER FAILED -----\n");
-            return;
-        }
-        printf("----- INIT WEB SERVER DONE -----\n");
-    }
+    // printf("----- INIT WIFI -----\n");
+    // esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
+    // if (initWifiRes == NULL)
+    // {
+    //     printf("----- INIT WIFI FAILED -----\n");
+    //     return;
+    // }
+    // else
+    // {
+    //     sta_netif = initWifiRes;
+    //     printf("----- INIT WIFI DONE -----\n");
+    //     printf("iwd sta_netif int : %p\n", (void *)sta_netif);
+    //     printf("iwd sta_netif int : %p\n", sta_netif);
+        // printf("----- INIT WEB SERVER -----\n");
+        // initRes = initWebServer(&state, &httpServer, sta_netif);
+        // if (!initRes)
+        // {
+        //     printf("----- INIT WEB SERVER FAILED -----\n");
+        //     return;
+        // }
+        // printf("----- INIT WEB SERVER DONE -----\n");
+    // }
 
     printf("----- INIT TASKS -----\n");
     // xTaskCreatePinnedToCore(keyboardTask, "keyboardTask", 4096, &state, 10, &keyboardTaskHandle, 0);
@@ -188,7 +189,7 @@ extern "C" void app_main()
 
     // state.songTempo = 55;
     // state.currentPartIndex = 2;
-    // state.isPlaying = true;
+    state.isPlaying = true;
     // state.masterGain = 0.5;
 
     // while (true)
@@ -197,4 +198,36 @@ extern "C" void app_main()
     //     // state.isBlbl = !state.isBlbl;
     //     printf("state.songName : %s\n", state.songName);
     // }
+
+
+
+
+
+
+
+
+
+
+    printf("----- INIT WIFI -----\n");
+    esp_netif_t *initWifiRes = initWifi(&wifiConfigs);
+    if (initWifiRes == NULL)
+    {
+        printf("----- INIT WIFI FAILED -----\n");
+        return;
+    }
+    else
+    {
+        sta_netif = initWifiRes;
+        printf("----- INIT WIFI DONE -----\n");
+        printf("iwd sta_netif int : %p\n", (void *)sta_netif);
+        printf("iwd sta_netif int : %p\n", sta_netif);
+        printf("----- INIT WEB SERVER -----\n");
+        initRes = initWebServer(&state, &httpServer, sta_netif);
+        if (!initRes)
+        {
+            printf("----- INIT WEB SERVER FAILED -----\n");
+            return;
+        }
+        printf("----- INIT WEB SERVER DONE -----\n");
+    }
 }
