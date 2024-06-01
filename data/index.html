@@ -22,7 +22,7 @@
   />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
-<body class="p-4">
+<body>
   <div id="app">
     <header>
       <h1
@@ -34,8 +34,88 @@
         BBKing
       </h1>
     </header>
-    <div class="grid grid-cols-4 gap-4">
-      <div class="border border-solid p-4">
+    <div class="h-full p-4 grid grid-cols-4 grid-rows-3 gap-4">
+      <div
+        class="row-start-1 row-end-3 col-start-1 col-end-2 border border-solid p-4"
+      >
+        <h2 class="font-bold">Controls</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{saveSong();}"
+            >
+              <i class="fas fa-save"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{stop();}"
+            >
+              <i class="fas fa-stop"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{play();}"
+            >
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm my-2">
+            <!-- <i class="fas fa-music"></i> -->
+            <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="() => {updateCurrentMode(0);}"
+            >
+              FX
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(0);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+            >
+              <i class="fas fa-guitar"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(1);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+            >
+              <i class="fas fa-shoe-prints"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-vial"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-up"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-mute"></i>
+            </button>
+          </div>
+        </div>
+
         <h2 class="font-bold">Master</h2>
         <div class="divide-y divide-dotted">
           <div class="flex rounded-lg shadow-sm my-2">
@@ -57,6 +137,7 @@
             />
           </div>
         </div>
+
         <h2 class="font-bold">Song</h2>
         <div class="divide-y divide-dotted">
           <div class="flex rounded-lg shadow-sm my-2">
@@ -172,89 +253,13 @@
           </div>
         </div>
 
-        <h2 class="font-bold">Controls</h2>
-        <div class="divide-y divide-dotted">
-          <div class="flex rounded-lg shadow-sm my-2">
-            <button
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-              @click="($event)=>{saveSong();}"
-            >
-              <i class="fas fa-save"></i>
-            </button>
-            <button
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-              @click="($event)=>{stop();}"
-            >
-              <i class="fas fa-stop"></i>
-            </button>
-            <button
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-              @click="($event)=>{play();}"
-            >
-              <i class="fas fa-play"></i>
-            </button>
-          </div>
-          <div class="flex rounded-lg shadow-sm my-2">
-            <!-- <i class="fas fa-music"></i> -->
-            <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
-            <button
-              disabled
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-              @click="() => {updateCurrentMode(0);}"
-            >
-              FX
-            </button>
-            <button
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {updateCurrentMode(0);}"
-              type="button"
-              :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
-            >
-              <i class="fas fa-guitar"></i>
-            </button>
-            <button
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {updateCurrentMode(1);}"
-              type="button"
-              :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
-            >
-              <i class="fas fa-shoe-prints"></i>
-            </button>
-          </div>
-          <div class="flex rounded-lg shadow-sm my-2">
-            <button
-              disabled
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-            >
-              <i class="fas fa-vial"></i>
-            </button>
-            <button
-              disabled
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-            >
-              <i class="fas fa-volume-up"></i>
-            </button>
-            <button
-              disabled
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              type="button"
-            >
-              <i class="fas fa-volume-mute"></i>
-            </button>
-          </div>
-        </div>
-
         <div class="card-text">
           <div class="btn-group w-100 mb"></div>
         </div>
       </div>
-      <div class="border border-solid p-4">
+      <div
+        class="row-start-1 row-end-3 col-start-2 col-end-3 border border-solid p-4"
+      >
         <div class="font-bold">Commons</div>
 
         <div class="divide-y divide-dotted">
@@ -357,7 +362,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class="row-start-1 row-end-3 col-start-3 col-end-4">
         <div class="border border-solid p-4 h-1/2">
           <h2 class="font-bold">Modulation</h2>
           <div>xxx</div>
@@ -367,211 +372,214 @@
           <div>xxx</div>
         </div>
       </div>
-      <div class="border border-solid p-4">
+      <div
+        class="row-start-1 row-end-3 col-start-4 col-end-5 border border-solid p-4"
+      >
         <h2 class="font-bold">Effects</h2>
         <div>xxx</div>
       </div>
-    </div>
-    <div class="border border-solid p-4">
-      <h2 class="font-bold">Instrument</h2>
-      <div class="flex rounded-lg shadow-sm my-2">
-        <button
-          disabled
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-        >
-          sample
-        </button>
-        <select class="w-full py-2 px-3">
-          <option
-            v-for="(s, s_index) in wavFilesList"
-            @click="($event) => updateSelectedInstrumentSample(s_index)"
-            :value="s_index"
-            :selected="machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath == s"
+      <div
+        class="row-start-3 row-end-4 col-start-1 col-end-5 border border-solid p-4"
+      >
+        <h2 class="font-bold">Instrument</h2>
+        <div class="flex rounded-lg shadow-sm my-2">
+          <button
+            disabled
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
           >
-            {{s}}
-          </option>
-        </select>
-        <button
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-          @click="($event)=>{getPreviousSample();}"
-        >
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-          @click="($event)=>{getNextSample();}"
-        >
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-      <div>
-        <button
-          :disabled="machineState.parts[machineState.currentPartIndex].staves<2"
-          @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-        >
-          <i class="fas fa-minus"></i>
-        </button>
-        <button
-          v-for="n in machineState.parts[machineState.currentPartIndex].staves"
-          @click="($event) => {selectStave(n-1);}"
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-          :class="{ 'border-gray-800': machineState.currentStaveIndex == n-1, 'text-gray-200': machineState.currentStaveIndex == n-1, 'bg-black': machineState.currentStaveIndex == n-1 }"
-        >
-          <b>{{n}}</b>
-        </button>
-        <button
-          @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
-          type="button"
-          class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-        >
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-      <div>
+            sample
+          </button>
+          <select class="w-full py-2 px-3">
+            <option
+              v-for="(s, s_index) in wavFilesList"
+              @click="($event) => updateSelectedInstrumentSample(s_index)"
+              :value="s_index"
+              :selected="machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath == s"
+            >
+              {{s}}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            @click="($event)=>{getPreviousSample();}"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            @click="($event)=>{getNextSample();}"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div>
+          <button
+            :disabled="machineState.parts[machineState.currentPartIndex].staves<2"
+            @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <i class="fas fa-minus"></i>
+          </button>
+          <button
+            v-for="n in machineState.parts[machineState.currentPartIndex].staves"
+            @click="($event) => {selectStave(n-1);}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            :class="{ 'border-gray-800': machineState.currentStaveIndex == n-1, 'text-gray-200': machineState.currentStaveIndex == n-1, 'bg-black': machineState.currentStaveIndex == n-1 }"
+          >
+            <b>{{n}}</b>
+          </button>
+          <button
+            @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div>
           <div>
             <!-- <button
-              disabled
-              type="button"
-              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              <i class="fas fa-hand-spock"></i>
-            </button>
-            <button
-              disabled
-              type="button"
-              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              <i class="fas fa-keyboard"></i>
-            </button> -->
+                disabled
+                type="button"
+                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <i class="fas fa-hand-spock"></i>
+              </button>
+              <button
+                disabled
+                type="button"
+                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <i class="fas fa-keyboard"></i>
+              </button> -->
           </div>
-        <!-- <div class="relative h-12"> -->
-        <div class="relative h-1/6">
-          <div
-            class="absolute bottom-0 inset-x-0 h-1/2 flex place-content-center"
-          >
-            <button
-              v-for="n in 16"
-              @click="($event)=>{toggleInstrumentStep(n-1);}"
-              type="button"
-              style="width: 6vw"
-              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              :class="{ 'border-gray-800': isStepActive(n-1), 'text-gray-200': isStepActive(n-1), 'bg-black': isStepActive(n-1) }"
-              :disabled="!isStepClickable(n-1)"
+          <div class="relative h-1/2">
+            <div
+              class="absolute bottom-0 inset-x-0 h-1/2 flex place-content-center"
             >
-              <b>{{n}}</b>
-            </button>
-          </div>
-          <div
-            class="absolute bottom-1/3 inset-x-0 h-1/2 flex place-content-between"
-          >
-            <div class="flex" style="width: 3.5vw"></div>
+              <button
+                v-for="n in 16"
+                @click="($event)=>{toggleInstrumentStep(n-1);}"
+                type="button"
+                style="width: 6vw"
+                class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                :class="{ 'border-gray-800': isStepActive(n-1), 'text-gray-200': isStepActive(n-1), 'bg-black': isStepActive(n-1) }"
+                :disabled="!isStepClickable(n-1)"
+              >
+                <b>{{n}}</b>
+              </button>
+            </div>
+            <div
+              class="absolute bottom-1/3 inset-x-0 h-1/2 flex place-content-between"
+            >
+              <div class="flex" style="width: 3.5vw"></div>
 
-            <div class="flex">
-              <button
-                @click="($event)=>{selectInstrument(0);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 0, 'text-gray-200': machineState.currentPartInstrumentIndex == 0, 'bg-black': machineState.currentPartInstrumentIndex == 0 }"
-              >
-                D1
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(1);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 1, 'text-gray-200': machineState.currentPartInstrumentIndex == 1, 'bg-black': machineState.currentPartInstrumentIndex == 1 }"
-              >
-                D2
-              </button>
-            </div>
-            <div class="flex">
-              <button
-                @click="($event)=>{selectInstrument(2);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 2, 'text-gray-200': machineState.currentPartInstrumentIndex == 2, 'bg-black': machineState.currentPartInstrumentIndex == 2 }"
-              >
-                D3
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(3);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 3, 'text-gray-200': machineState.currentPartInstrumentIndex == 3, 'bg-black': machineState.currentPartInstrumentIndex == 3 }"
-              >
-                D4
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(4);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 4, 'text-gray-200': machineState.currentPartInstrumentIndex == 4, 'bg-black': machineState.currentPartInstrumentIndex == 4 }"
-              >
-                D5
-              </button>
-            </div>
-            <div class="flex">
-              <button
-                @click="($event)=>{selectInstrument(5);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 5, 'text-gray-200': machineState.currentPartInstrumentIndex == 5, 'bg-black': machineState.currentPartInstrumentIndex == 5 }"
-              >
-                D6
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(6);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 6, 'text-gray-200': machineState.currentPartInstrumentIndex == 6, 'bg-black': machineState.currentPartInstrumentIndex == 6 }"
-              >
-                D7
-              </button>
-            </div>
-            <div class="flex">
-              <button
-                @click="($event)=>{selectInstrument(7);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 7, 'text-gray-200': machineState.currentPartInstrumentIndex == 7, 'bg-black': machineState.currentPartInstrumentIndex == 7 }"
-              >
-                D8
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(8);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 8, 'text-gray-200': machineState.currentPartInstrumentIndex == 8, 'bg-black': machineState.currentPartInstrumentIndex == 8 }"
-              >
-                D9
-              </button>
-              <button
-                @click="($event)=>{selectInstrument(9);}"
-                type="button"
-                style="width: 6vw"
-                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-                :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 9, 'text-gray-200': machineState.currentPartInstrumentIndex == 9, 'bg-black': machineState.currentPartInstrumentIndex == 9 }"
-              >
-                D10
-              </button>
-            </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(0);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 0, 'text-gray-200': machineState.currentPartInstrumentIndex == 0, 'bg-black': machineState.currentPartInstrumentIndex == 0 }"
+                >
+                  D1
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(1);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 1, 'text-gray-200': machineState.currentPartInstrumentIndex == 1, 'bg-black': machineState.currentPartInstrumentIndex == 1 }"
+                >
+                  D2
+                </button>
+              </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(2);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 2, 'text-gray-200': machineState.currentPartInstrumentIndex == 2, 'bg-black': machineState.currentPartInstrumentIndex == 2 }"
+                >
+                  D3
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(3);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 3, 'text-gray-200': machineState.currentPartInstrumentIndex == 3, 'bg-black': machineState.currentPartInstrumentIndex == 3 }"
+                >
+                  D4
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(4);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 4, 'text-gray-200': machineState.currentPartInstrumentIndex == 4, 'bg-black': machineState.currentPartInstrumentIndex == 4 }"
+                >
+                  D5
+                </button>
+              </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(5);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 5, 'text-gray-200': machineState.currentPartInstrumentIndex == 5, 'bg-black': machineState.currentPartInstrumentIndex == 5 }"
+                >
+                  D6
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(6);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 6, 'text-gray-200': machineState.currentPartInstrumentIndex == 6, 'bg-black': machineState.currentPartInstrumentIndex == 6 }"
+                >
+                  D7
+                </button>
+              </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(7);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 7, 'text-gray-200': machineState.currentPartInstrumentIndex == 7, 'bg-black': machineState.currentPartInstrumentIndex == 7 }"
+                >
+                  D8
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(8);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 8, 'text-gray-200': machineState.currentPartInstrumentIndex == 8, 'bg-black': machineState.currentPartInstrumentIndex == 8 }"
+                >
+                  D9
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(9);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 9, 'text-gray-200': machineState.currentPartInstrumentIndex == 9, 'bg-black': machineState.currentPartInstrumentIndex == 9 }"
+                >
+                  D10
+                </button>
+              </div>
 
-            <div class="flex" style="width: 3.5vw"></div>
+              <div class="flex" style="width: 3.5vw"></div>
+            </div>
           </div>
         </div>
       </div>
