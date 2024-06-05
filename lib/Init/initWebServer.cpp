@@ -436,7 +436,7 @@ static esp_err_t action_handler(httpd_req_t *req)
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
     {
-        statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = std::stoi(actionParameters);
+        statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = stoi(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPPITCH")
@@ -451,7 +451,9 @@ static esp_err_t action_handler(httpd_req_t *req)
                 xxxIndex = i;
             }
         }
-        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = std::stoi(actionParameters);
+        printf("stoi(actionParameters) : %i\n", stoi(actionParameters));
+        // statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = stoi(actionParameters);
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch = stoi(actionParameters);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTARTPOSITION")
@@ -511,7 +513,7 @@ static esp_err_t action_handler(httpd_req_t *req)
                 xxxIndex = i;
             }
         }
-        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].isReverse = std::stoi(actionParameters);
+        statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].isReverse = stoi(actionParameters);
     }
 
     else if (actionType == "TOGGLEINSTRUMENTSTEP")

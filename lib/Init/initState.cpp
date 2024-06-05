@@ -337,8 +337,8 @@ bool initState(State *statePointer)
 
     statePointer->currentModeIndex = 0;
     statePointer->currentSelectedStepIndex = 0;
-    // statePointer->currentSongIndex = 0;
-    statePointer->currentSongIndex = 2;
+    statePointer->currentSongIndex = 0;
+    // statePointer->currentSongIndex = 2;
     statePointer->currentStaveIndex = 0;
     statePointer->currentOctaveIndex = 0;
     statePointer->currentPartIndex = 0;

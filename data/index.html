@@ -227,8 +227,8 @@
             >
               <i class="fas fa-chevron-left"></i>
             </button>
-            <!-- v-if="machineState.currentPartIndex >= machineState.parts.length -1" -->
             <button
+              :disabled="!(machineState.currentPartIndex >= machineState.parts.length -1)"
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
               @click="($event)=>{createNextPart();}"
@@ -242,8 +242,8 @@
             >
               <i class="fas fa-trash"></i>
             </button>
-            <!-- v-if="machineState.currentPartIndex < machineState.parts.length -1" -->
             <button
+              :disabled="!(machineState.currentPartIndex < machineState.parts.length -1)"
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
               @click="($event)=>{loadNextPart();}"
@@ -770,11 +770,24 @@
             //       machineState.value.currentPartInstrumentIndex
             //   )
             // );
+
+            // console.log("-----");
+            // console.log(
+            //   "before find : machineState.value.currentSelectedStepIndex=",
+            //   machineState.value.currentSelectedStepIndex,
+            //   " / machineState.value.currentStaveIndex=",
+            //   machineState.value.currentStaveIndex
+            // );
+            // console.log(
+            //   "machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex : ",
+            //   machineState.value.currentSelectedStepIndex +
+            //     16 * machineState.value.currentStaveIndex
+            // );
             const obj = machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[
-              machineState.value.currentSelectedStepIndex +
-                16 * machineState.value.currentStaveIndex
+              machineState.value.currentSelectedStepIndex
+              //  + 16 * machineState.value.currentStaveIndex
             ].find(
               (st) =>
                 st.instrumentIndex ==
@@ -822,7 +835,7 @@
                 machineState.value.currentPartInstrumentIndex
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            return stepIndex == machineState.value.currentSelectedStepIndex;
+            return stepIndex + 16 * machineState.value.currentStaveIndex == machineState.value.currentSelectedStepIndex;
           } else if (machineState.value.currentModeIndex == 2) {
             // TODO : implement for fx
             return null;
@@ -900,6 +913,7 @@
           httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
         };
         const toggleInstrumentStep = function (stepIndex) {
+          console.log("toggleInstrumentStep stepIndex : ", stepIndex);
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
           if (machineState.value.currentModeIndex == 0) {

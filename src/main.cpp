@@ -189,7 +189,7 @@ extern "C" void app_main()
 
     // state.songTempo = 55;
     // state.currentPartIndex = 2;
-    state.isPlaying = true;
+    // state.isPlaying = true;
     // state.masterGain = 0.5;
 
     // while (true)
