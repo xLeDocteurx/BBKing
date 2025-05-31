@@ -359,6 +359,8 @@ static esp_err_t action_handler(httpd_req_t *req)
         statePointer->currentStaveIndex = 0;
         // }
     }
+    // TODO : Rename to UPDATESELECTEDSTAVE
+    // TODO : Rename others containing "CURRENT" to "SELECTED"
     else if (actionType == "UPDATESTAVENUMBER")
     {
         int desiredStaveNumber = stoi(actionParameters);
@@ -445,15 +447,18 @@ static esp_err_t action_handler(httpd_req_t *req)
         int xxxIndex = 0;
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
-            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            // int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            if (statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
             }
         }
         printf("stoi(actionParameters) : %i\n", stoi(actionParameters));
         // statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = stoi(actionParameters);
+        
+        printf("pitch BEFORE : %i\n",statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch);
         statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch = stoi(actionParameters);
+        printf("pitch AFTER : %i\n",statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch);
     }
     // TODO : FUSIONNER COMME DANS LE FRONT
     else if (actionType == "UPDATEINSTRUMENTSAMPLESTARTPOSITION")
