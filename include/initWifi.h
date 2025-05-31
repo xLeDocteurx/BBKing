@@ -16,8 +16,8 @@
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;
 
-
-bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter) {
+bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
+{
 
     bool hasEstablishedConnection = false;
     for (int i = 0; i < wifiConfigsPointerParameter->size(); i++)
@@ -79,7 +79,8 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
 
         printf("!!! Event !!! Reconnecting...\n");
         bool reconnectRes = reconnect(wifiConfigsPointer);
-        if(reconnectRes) {
+        if (reconnectRes)
+        {
             printf("!!! Event !!! Reconnect SUCCEEDED\n");
         }
         else
@@ -141,9 +142,9 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
+    wifiConfigsPointerParameter->push_back(wifi_config_3);
     wifiConfigsPointerParameter->push_back(wifi_config_1);
     wifiConfigsPointerParameter->push_back(wifi_config_2);
-    wifiConfigsPointerParameter->push_back(wifi_config_3);
 
     esp_err_t nvs_flash_init_ret = nvs_flash_init();
     if (nvs_flash_init_ret != ESP_OK)
