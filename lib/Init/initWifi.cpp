@@ -263,7 +263,8 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
                         else
                         {
                             printf("Connecting to wifi : %s\n", wifiConfigsPointerParameter->at(i).sta.ssid);
-                            vTaskDelay(pdMS_TO_TICKS(3000));
+                            // vTaskDelay(pdMS_TO_TICKS(3000));
+                            vTaskDelay(pdMS_TO_TICKS(5000));
                             gpio_set_level(LED_PIN, 0);
                             if (hasEstablishedConnection)
                             {

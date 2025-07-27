@@ -1,140 +1,1610 @@
-[
-    {
-        "title": "Demo Song",
-        "tempo": 120,
-        "samples": [
-            {
-                "filePath": "/data/kick.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/snare.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/hithat.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/shake.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/clap.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/bass.wav",
-                "volume": 0.5,
-                "pitch": 0
-            },
-            {
-                "filePath": "/data/flo.wav",
-                "volume": 0.5,
-                "pitch": 0
-            }
-        ],
-        "drumRack": {
-            "sample1": 0,
-            "sample2": 1,
-            "sample3": 2,
-            "sample4": 3,
-            "sample5": 4,
-            "sample6": 5,
-            "sample7": 6
-        },
-        "parts": [
-            {
-                "staves": 1,
-                "steps": [
-                    [
-                        0
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        0
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [],
-                    []
-                ]
-            },
-            {
-                "staves": 2,
-                "steps": [
-                    [
-                        0
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        0
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        0
-                    ],
-                    [],
-                    [
-                        0
-                    ],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        0
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        1
-                    ],
-                    [],
-                    [
-                        1
-                    ],
-                    []
-                ]
-            }
-        ]
-    }
-]
+[{
+		"masterGain":	1,
+		"currentModeIndex":	0,
+		"currentSelectedStepIndex":	0,
+		"currentSongIndex":	0,
+		"songName":	"Demo song",
+		"songTempo":	111,
+		"instruments":	[{
+				"sample":	{
+					"filePath":	"/sdcard/1_micro kick.wav",
+					"isMono":	true,
+					"fileSize":	42170
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.5,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/119_snare pop.wav",
+					"isMono":	true,
+					"fileSize":	8892
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.75,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/300_nt clap.wav",
+					"isMono":	true,
+					"fileSize":	54740
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.5,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/130_nt rimshot.wav",
+					"isMono":	true,
+					"fileSize":	6304
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.300000011920929,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/447_flate.wav",
+					"isMono":	true,
+					"fileSize":	41292
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.25,
+				"pitch":	2,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/200_nt hh closed.wav",
+					"isMono":	true,
+					"fileSize":	24016
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.5,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/218_nt hh open.wav",
+					"isMono":	true,
+					"fileSize":	82986
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.75,
+				"pitch":	0,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/553_vox s6i2 eh.wav",
+					"isMono":	true,
+					"fileSize":	115052
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.300000011920929,
+				"pitch":	2,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/toxic-1.wav",
+					"isMono":	true,
+					"fileSize":	148058
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.5,
+				"pitch":	1,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}, {
+				"sample":	{
+					"filePath":	"/sdcard/toxic-2.wav",
+					"isMono":	true,
+					"fileSize":	148208
+				},
+				"isSolo":	false,
+				"isMuted":	false,
+				"volume":	0.5,
+				"pitch":	1,
+				"startPosition":	0,
+				"endPosition":	1,
+				"isReverse":	false
+			}],
+		"currentPartIndex":	6,
+		"currentPartInstrumentIndex":	6,
+		"currentStaveIndex":	0,
+		"currentOctaveIndex":	0,
+		"parts":	[{
+				"staves":	2,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	8,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	9,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], []]
+			}, {
+				"staves":	8,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	18,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	15,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	18,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	20,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	5,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	6,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	5,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	5,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	6,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	6,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	6,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	4,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	-2,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	18,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	15,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	10,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [], []]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	1,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	6,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	6,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}, {
+				"staves":	1,
+				"steps":	[[{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	2,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	3,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	4,
+							"volume":	1,
+							"pitch":	1,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}], [{
+							"instrumentIndex":	0,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	7,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}, {
+							"instrumentIndex":	5,
+							"volume":	1,
+							"pitch":	0,
+							"startPosition":	0,
+							"endPosition":	1,
+							"isReverse":	false
+						}]]
+			}]
+	}]

@@ -3,28 +3,16 @@
   <link rel="icon" href="data:," />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-    crossorigin="anonymous"
-  />
-  <!-- <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
-    integrity="sha384-RxqHG2ilm4r6aFRpGmBbGTjsqwfqHOKy1ArsMhHusnRO47jcGqpIQqlQK/kmGy9R"
-    crossorigin="anonymous"
-  /> -->
+
+  <!-- <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
   <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"
-  ></script>
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="semantic/dist/semantic.min.js"></script> -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -36,487 +24,561 @@
 </head>
 <body>
   <div id="app">
-    <div class="topnav">
-      <button
-        id="saveSong"
-        type="button"
-        class="btn btn-outline-primary"
-        @click="($event)=>{saveSong();}"
-      >
-        Save song
-      </button>
-      <!-- <button
-        :disabled="wsStatus"
-        id="connect"
-        @click="($event)=>{connectToWebsocket();}"
-      >
-        Connecter
-      </button>
-      <button
-        :disabled="!wsStatus"
-        id="send-ping"
-        @click="($event)=>{sendMessageViaWebsocket('toggle');}"
-      >
-        Envoyer un ping
-      </button>
-      <span id="status">
-        <span
-          class="badge rounded-pill"
-          :class="{ 'bg-success': wsStatus, 'bg-danger': !wsStatus}"
-        >
-          {{wsStatus ? "Connected": "Disconnected"}}
-        </span>
-      </span> -->
-
+    <header>
       <h1
         v-if="wsStatus"
-        class="text-center"
         @click="($event)=>{sendMessageViaWebsocket('toggle');}"
+        style="text-align: center"
+        class="text-3xl font-bold underline"
       >
         BBKing
       </h1>
-    </div>
-    <div class="container-fluid">
-      <div class="row pb-4">
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">
-              <div class="input-group">
-                <input
-                  disabled
-                  type="text"
-                  class="form-control"
-                  :value="machineState.songName"
-                  @change="($event)=>{updateSongName($event);}"
-                />
-                <button
-                  v-if="machineState.currentPartIndex > 0"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadPreviousPart();}"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-                <span class="input-group-text"
-                  >Part : {{ machineState.currentPartIndex + 1 }}</span
-                >
-                <button
-                  v-if="machineState.currentPartIndex < machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{loadNextPart();}"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-                <button
-                  v-if="machineState.currentPartIndex >= machineState.parts.length -1"
-                  type="button"
-                  class="btn btn-outline-primary"
-                  @click="($event)=>{createNextPart();}"
-                >
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="input-group">
-                <input
-                  type="number"
-                  step="1"
-                  class="form-control"
-                  :value="machineState.songTempo"
-                  @change="($event)=>{updateTempo($event);}"
-                />
-                <span class="input-group-text">bpm</span>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="card-text">
-                <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <button
-                      disabled
-                      type="button"
-                      class="btn btn-outline-primary w-25"
-                    >
-                      <i class="fas fa-record-vinyl"></i>
-                    </button> -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                    @click="($event)=>{play();}"
-                  >
-                    <i class="fas fa-play"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                    @click="($event)=>{stop();}"
-                  >
-                    <i class="fas fa-stop"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-text">
-                <div class="btn-group w-100 mb-2" role="group">
-                  <!-- <i class="fas fa-music"></i> -->
-                  <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
-                  <button
-                    disabled
-                    type="button"
-                    @click="() => {updateCurrentMode(0);}"
-                    class="btn btn-outline-primary"
-                  >
-                    FX
-                  </button>
-                  <button
-                    @click="() => {updateCurrentMode(0);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
-                  >
-                    <i class="fas fa-guitar"></i>
-                  </button>
-                  <button
-                    @click="() => {updateCurrentMode(1);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
-                  >
-                    <i class="fas fa-shoe-prints"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-text">
-                <div class="btn-group w-100 mb" role="group">
-                  <!-- <button
-                      disabled
-                      type="button"
-                      class="btn btn-outline-primary w-25"
-                    >
-                      <i class="fas fa-vial"></i>
-                    </button> -->
-                  <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-volume-up"></i>
-                  </button>
-                  <button
-                    disabled
-                    type="button"
-                    class="btn btn-outline-primary w-25"
-                  >
-                    <i class="fas fa-volume-mute"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+    </header>
+    <div class="h-full p-4 grid grid-cols-4 grid-rows-3 gap-4">
+      <div
+        class="row-start-1 row-end-3 col-start-1 col-end-2 border border-solid p-4"
+      >
+        <h2 class="font-bold">Controls</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{saveSong();}"
+            >
+              <i class="fas fa-save"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{stop();}"
+            >
+              <i class="fas fa-stop"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="($event)=>{play();}"
+            >
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm my-2">
+            <!-- <i class="fas fa-music"></i> -->
+            <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+              @click="() => {updateCurrentMode(0);}"
+            >
+              FX
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(0);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+            >
+              <i class="fas fa-guitar"></i>
+            </button>
+            <button
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {updateCurrentMode(1);}"
+              type="button"
+              :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+            >
+              <i class="fas fa-shoe-prints"></i>
+            </button>
+          </div>
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-vial"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-up"></i>
+            </button>
+            <button
+              disabled
+              class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              type="button"
+            >
+              <i class="fas fa-volume-mute"></i>
+            </button>
           </div>
         </div>
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">
-              Common / Instrument
 
-              <div
-                class="btn-group"
-                role="group"
-                aria-label="Button group with nested dropdown"
-              >
-                <button type="button" class="btn btn-outline-primary">
-                  {{machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath}}
-                </button>
-                <div class="btn-group" role="group">
-                  <button
-                    id="btnGroupDrop1"
-                    type="button"
-                    class="btn btn-outline-primary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  ></button>
-                  <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a
-                      v-for="(s, s_index) in wavFilesList"
-                      class="dropdown-item"
-                      href="#"
-                      @click="($event) => updateSelectedInstrumentSample(s_index)"
-                      >{{s}}</a
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="card-text">
-                <form>
-                  <fieldset>
-                    <label for="pitchSustainRange" class="form-label"
-                      >Pitch / Sustain :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="-48"
-                      max="48"
-                      step="1"
-                      id="pitchSustainRange"
-                      :value="getCommonsControlValues().pitch"
-                      @change="($event)=>{updatePitch($event);}"
-                    />
-                    <label for="volumeRange" class="form-label">Volume :</label>
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="volumeRange"
-                      :value="getCommonsControlValues().volume"
-                      @change="($event)=>{updateVolume($event);}"
-                    />
+        <h2 class="font-bold">Master</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              gain
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="0"
+              max="5"
+              step="0.25"
+              :value="machineState.masterGain"
+              @change="($event)=>{updateMasterGain($event);}"
+            />
+          </div>
+        </div>
 
-                    <label for="startPositionRange" class="form-label"
-                      >Start :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="startPositionRange"
-                      :value="getCommonsControlValues().startPosition"
-                      @change="($event)=>{updateStartPosition($event);}"
-                    />
-                    <label for="endPositionRange" class="form-label"
-                      >End :</label
-                    >
-                    <input
-                      type="number"
-                      class="form-range"
-                      min="0"
-                      max="1"
-                      step="0.0025"
-                      id="endPositionRange"
-                      :value="getCommonsControlValues().endPosition"
-                      @change="($event)=>{updateEndPosition($event);}"
-                    />
-                    <div class="form-check form-switch">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        id="isReverseSwitch"
-                        :value="getCommonsControlValues().isReverse"
-                        @change="($event)=>{updateIsReverse($event);}"
-                      />
-                      <label class="form-check-label" for="isReverseSwitch"
-                        >Is reverse</label
-                      >
-                    </div>
-                  </fieldset>
-                </form>
-              </div>
-            </div>
+        <h2 class="font-bold">Song</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              song
+            </button>
+            <input
+              type="text"
+              class="w-full py-2 px-3"
+              :value="machineState.songName"
+              @change="($event)=>{updateSongName($event);}"
+            />
+            <button
+              :disabled="machineState.currentSongIndex == 0"
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {httpAction('UPDATECURRENTSONGINDEX', machineState.currentSongIndex - 1)}"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {httpAction('CREATESONGATINDEX', machineState.currentSongIndex + 1)}"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {httpAction('DELETESONGATINDEX', machineState.currentSongIndex)}"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="() => {httpAction('UPDATECURRENTSONGINDEX', machineState.currentSongIndex + 1)}"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              bpm
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              step="1"
+              :value="machineState.songTempo"
+              @change="($event)=>{updateTempo($event);}"
+            />
           </div>
         </div>
-        <div class="col">
-          <div class="row pb-2 h-50">
-            <div class="col">
-              <div class="card border-primary h-100">
-                <div class="card-header">Modulation</div>
-                <div class="card-body">
-                  <div class="card-text"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row pt-2 h-50">
-            <div class="col">
-              <div class="card border-primary h-100">
-                <div class="card-header">Filter</div>
-                <div class="card-body">
-                  <div class="card-text"></div>
-                </div>
-              </div>
-            </div>
+
+        <h2 class="font-bold">Part</h2>
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <!-- v-if="machineState.currentPartIndex > 0" -->
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              part
+            </button>
+            <input
+              disabled
+              class="w-full py-2 px-3"
+              type="text"
+              :value="machineState.currentPartIndex + 1"
+            />
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{loadPreviousPart();}"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button
+              :disabled="!(machineState.currentPartIndex >= machineState.parts.length -1)"
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{createNextPart();}"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+            <button
+              :disabled="!(machineState.currentPartIndex < machineState.parts.length -1)"
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              @click="($event)=>{loadNextPart();}"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">Effects</div>
-            <div class="card-body">
-              <div class="card-text"></div>
-            </div>
+
+        <div class="card-text">
+          <div class="btn-group w-100 mb"></div>
+        </div>
+      </div>
+      <div
+        class="row-start-1 row-end-3 col-start-2 col-end-3 border border-solid p-4"
+      >
+        <div class="font-bold">Commons</div>
+
+        <div class="divide-y divide-dotted">
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              Pitch/Sustain
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="-48"
+              max="48"
+              step="1"
+              id="pitchSustainRange"
+              :value="getCommonsControlValues().pitch"
+              @change="($event)=>{updatePitch($event);}"
+            />
+          </div>
+
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              Volume
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="0"
+              max="1"
+              step="0.025"
+              id="volumeRange"
+              :value="getCommonsControlValues().volume"
+              @change="($event)=>{updateVolume($event);}"
+            />
+          </div>
+
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              Start
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="0"
+              max="1"
+              step="0.0025"
+              id="startPositionRange"
+              :value="getCommonsControlValues().startPosition"
+              @change="($event)=>{updateStartPosition($event);}"
+            />
+          </div>
+
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              End
+            </button>
+            <input
+              class="w-full py-2 px-3"
+              type="number"
+              min="0"
+              max="1"
+              step="0.0025"
+              id="endPositionRange"
+              :value="getCommonsControlValues().endPosition"
+              @change="($event)=>{updateEndPosition($event);}"
+            />
+          </div>
+
+          <div class="flex rounded-lg shadow-sm my-2">
+            <button
+              disabled
+              type="button"
+              class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              IsReverse
+            </button>
+            <!-- class="w-full py-2 px-3" -->
+            <input
+              type="checkbox"
+              role="switch"
+              id="isReverseSwitch"
+              :value="getCommonsControlValues().isReverse"
+              @change="($event)=>{updateIsReverse($event);}"
+            />
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          <div class="card border-primary h-100">
-            <div class="card-header">
-              <div class="btn-group" role="group">
-                <button disabled type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-hand-spock"></i>
-                </button>
-                <button disabled type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-keyboard"></i>
-                </button>
-              </div>
-
-              <button disabled type="button" class="btn btn-outline-light">
-                Light
+      <div class="row-start-1 row-end-3 col-start-3 col-end-4">
+        <div class="border border-solid p-4 h-1/2">
+          <h2 class="font-bold">Modulation</h2>
+          <div>xxx</div>
+        </div>
+        <div class="border border-solid p-4 h-1/2">
+          <h2 class="font-bold">Filter</h2>
+          <div>xxx</div>
+        </div>
+      </div>
+      <div
+        class="row-start-1 row-end-3 col-start-4 col-end-5 border border-solid p-4"
+      >
+        <h2 class="font-bold">Effects</h2>
+        <div>xxx</div>
+      </div>
+      <div
+        class="row-start-3 row-end-4 col-start-1 col-end-5 border border-solid p-4"
+      >
+        <h2 class="font-bold">Instrument</h2>
+        <div class="flex rounded-lg shadow-sm my-2">
+          <button
+            disabled
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            sample
+          </button>
+          <select class="w-full py-2 px-3">
+            <option
+              v-for="(s, s_index) in wavFilesList"
+              @click="($event) => updateSelectedInstrumentSample(s_index)"
+              :value="s_index"
+              :selected="machineState.instruments[machineState.currentPartInstrumentIndex].sample.filePath == s"
+            >
+              {{s}}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            @click="($event)=>{getPreviousSample();}"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            @click="($event)=>{getNextSample();}"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div>
+          <button
+            :disabled="machineState.parts[machineState.currentPartIndex].staves<2"
+            @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <i class="fas fa-minus"></i>
+          </button>
+          <button
+            v-for="n in machineState.parts[machineState.currentPartIndex].staves"
+            @click="($event) => {selectStave(n-1);}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+            :class="{ 'border-gray-800': machineState.currentStaveIndex == n-1, 'text-gray-200': machineState.currentStaveIndex == n-1, 'bg-black': machineState.currentStaveIndex == n-1 }"
+          >
+            <b>{{n}}</b>
+          </button>
+          <button
+            @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
+            type="button"
+            class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div>
+          <div>
+            <!-- <button
+                disabled
+                type="button"
+                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <i class="fas fa-hand-spock"></i>
               </button>
-
-              <div class="btn-group" role="group">
-                <button
-                  v-if="machineState.parts[machineState.currentPartIndex].staves>1"
-                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves-1)}"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button
-                  v-for="n in machineState.parts[machineState.currentPartIndex].staves"
-                  @click="($event) => {selectStave(n-1);}"
-                  type="button"
-                  class="btn"
-                  :class="{ 'btn-primary': machineState.currentStaveIndex == n-1, 'btn-outline-primary': !(machineState.currentStaveIndex == n-1)}"
-                >
-                  <b>{{n}}</b>
-                </button>
-                <button
-                  @click="($event) => {updateStaveNumber(machineState.parts[machineState.currentPartIndex].staves+1)}"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+              <button
+                disabled
+                type="button"
+                class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <i class="fas fa-keyboard"></i>
+              </button> -->
+          </div>
+          <div class="relative h-1/2">
+            <div
+              class="absolute bottom-0 inset-x-0 h-1/2 flex place-content-center"
+            >
+              <button
+                v-for="n in 16"
+                @click="($event)=>{toggleInstrumentStep(n-1);}"
+                type="button"
+                style="width: 6vw"
+                class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                :class="{ 'border-gray-800': isStepActive(n-1), 'text-gray-200': isStepActive(n-1), 'bg-black': isStepActive(n-1) }"
+                :disabled="!isStepClickable(n-1)"
+              >
+                <b>{{n}}</b>
+              </button>
             </div>
-            <div class="card-body">
-              <div class="card-text py-2">
-                <div
-                  class="input-group-lg d-flex flex-row justify-content-between"
-                  role="group"
+            <div
+              class="absolute bottom-1/3 inset-x-0 h-1/2 flex place-content-between"
+            >
+              <div class="flex" style="width: 3.5vw"></div>
+
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(0);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 0, 'text-gray-200': machineState.currentPartInstrumentIndex == 0, 'bg-black': machineState.currentPartInstrumentIndex == 0 }"
                 >
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(0);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 0}"
-                  >
-                    D1
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(1);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 1}"
-                  >
-                    D2
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(2);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 2}"
-                  >
-                    D3
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(3);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 3}"
-                  >
-                    D4
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(4);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 4}"
-                  >
-                    D5
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(5);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 5}"
-                  >
-                    D6
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(6);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 6}"
-                  >
-                    D7
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(7);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 7}"
-                  >
-                    D8
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(8);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 8}"
-                  >
-                    D9
-                  </button>
-                  <button
-                    @click="($event)=>{selectInstrument(9);}"
-                    type="button"
-                    class="btn btn-outline-primary"
-                    :class="{ 'btn-primary': machineState.currentPartInstrumentIndex == 9}"
-                  >
-                    D10
-                  </button>
-                  <button disabled type="button" class="btn btn-outline-light">
-                    Light
-                  </button>
-                </div>
-              </div>
-              <div class="card-text py-2">
-                <div
-                  class="input-group-lg d-flex flex-row justify-content-around"
-                  role="group"
+                  D1
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(1);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 1, 'text-gray-200': machineState.currentPartInstrumentIndex == 1, 'bg-black': machineState.currentPartInstrumentIndex == 1 }"
                 >
-                  <button
-                    v-for="n in 16"
-                    @click="($event)=>{toggleInstrumentStep(n-1);}"
-                    type="button"
-                    class="btn"
-                    :class="{ 'btn-primary': isStepActive(n-1), 'btn-outline-primary': !isStepActive(n-1)}"
-                    :disabled="!isStepClickable(n-1)"
-                  >
-                    <b>{{n}}</b>
-                  </button>
-                </div>
+                  D2
+                </button>
               </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(2);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 2, 'text-gray-200': machineState.currentPartInstrumentIndex == 2, 'bg-black': machineState.currentPartInstrumentIndex == 2 }"
+                >
+                  D3
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(3);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 3, 'text-gray-200': machineState.currentPartInstrumentIndex == 3, 'bg-black': machineState.currentPartInstrumentIndex == 3 }"
+                >
+                  D4
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(4);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 4, 'text-gray-200': machineState.currentPartInstrumentIndex == 4, 'bg-black': machineState.currentPartInstrumentIndex == 4 }"
+                >
+                  D5
+                </button>
+              </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(5);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 5, 'text-gray-200': machineState.currentPartInstrumentIndex == 5, 'bg-black': machineState.currentPartInstrumentIndex == 5 }"
+                >
+                  D6
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(6);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 6, 'text-gray-200': machineState.currentPartInstrumentIndex == 6, 'bg-black': machineState.currentPartInstrumentIndex == 6 }"
+                >
+                  D7
+                </button>
+              </div>
+              <div class="flex">
+                <button
+                  @click="($event)=>{selectInstrument(7);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 7, 'text-gray-200': machineState.currentPartInstrumentIndex == 7, 'bg-black': machineState.currentPartInstrumentIndex == 7 }"
+                >
+                  D8
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(8);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 8, 'text-gray-200': machineState.currentPartInstrumentIndex == 8, 'bg-black': machineState.currentPartInstrumentIndex == 8 }"
+                >
+                  D9
+                </button>
+                <button
+                  @click="($event)=>{selectInstrument(9);}"
+                  type="button"
+                  style="width: 6vw"
+                  class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
+                  :class="{ 'border-gray-800': machineState.currentPartInstrumentIndex == 9, 'text-gray-200': machineState.currentPartInstrumentIndex == 9, 'bg-black': machineState.currentPartInstrumentIndex == 9 }"
+                >
+                  D10
+                </button>
+              </div>
+
+              <div class="flex" style="width: 3.5vw"></div>
             </div>
           </div>
         </div>
@@ -550,6 +612,7 @@
         const wsStatus = ref(false);
 
         const machineState = ref({
+          masterGain: 0,
           currentModeIndex: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
@@ -608,9 +671,20 @@
         const ws = ref(null);
 
         const httpAction = async function (actionName, actionParameters) {
+          // console.log(
+          //   "httpAction actionName : ",
+          //   actionName,
+          //   " / actionParameters : ",
+          //   actionParameters
+          // );
           const response = await fetch(`/action`, {
             method: "POST",
-            body: `${actionName}@${JSON.stringify(actionParameters)}`,
+            body: `${actionName}@${
+              // typeof actionParameters == "string"
+              //   ? JSON.stringify(actionParameters)
+              //   : actionParameters
+              JSON.stringify(actionParameters)
+            }`,
           });
           // const json = await response.json();
           const text = await response.text();
@@ -696,11 +770,24 @@
             //       machineState.value.currentPartInstrumentIndex
             //   )
             // );
+
+            // console.log("-----");
+            // console.log(
+            //   "before find : machineState.value.currentSelectedStepIndex=",
+            //   machineState.value.currentSelectedStepIndex,
+            //   " / machineState.value.currentStaveIndex=",
+            //   machineState.value.currentStaveIndex
+            // );
+            // console.log(
+            //   "machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex : ",
+            //   machineState.value.currentSelectedStepIndex +
+            //     16 * machineState.value.currentStaveIndex
+            // );
             const obj = machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[
-              machineState.value.currentSelectedStepIndex +
-                16 * machineState.value.currentStaveIndex
+              machineState.value.currentSelectedStepIndex
+              //  + 16 * machineState.value.currentStaveIndex
             ].find(
               (st) =>
                 st.instrumentIndex ==
@@ -748,7 +835,7 @@
                 machineState.value.currentPartInstrumentIndex
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            return stepIndex == machineState.value.currentSelectedStepIndex;
+            return stepIndex + 16 * machineState.value.currentStaveIndex == machineState.value.currentSelectedStepIndex;
           } else if (machineState.value.currentModeIndex == 2) {
             // TODO : implement for fx
             return null;
@@ -761,6 +848,9 @@
           // TODO : try it everywhere for actions wiuth no arguments
           // httpAction("SAVESONG");
           httpAction("SAVESONG", {});
+        };
+        const updateMasterGain = function (event) {
+          httpAction("UPDATEMASTERGAIN", Number(event.target.value));
         };
         const updateCurrentMode = function (modeIndex) {
           httpAction("UPDATECURRENTMODE", modeIndex);
@@ -795,10 +885,35 @@
         const selectInstrument = function (instrumentIndex) {
           httpAction("SELECTINSTRUMENT", instrumentIndex);
         };
+        const getPreviousSample = function () {
+          const currentFilePath =
+            machineState.value.instruments[
+              machineState.value.currentPartInstrumentIndex
+            ].sample.filePath;
+          const currentFileIndex = wavFilesList.value.indexOf(currentFilePath);
+          console.log("bouya", currentFileIndex);
+          if (currentFileIndex - 1 >= 0) {
+            console.log("kasha");
+            updateSelectedInstrumentSample(currentFileIndex - 1);
+          }
+        };
+        const getNextSample = function () {
+          const currentFilePath =
+            machineState.value.instruments[
+              machineState.value.currentPartInstrumentIndex
+            ].sample.filePath;
+          const currentFileIndex = wavFilesList.value.indexOf(currentFilePath);
+          console.log("bouya", currentFileIndex, wavFilesList.value.length);
+          if (currentFileIndex + 1 <= wavFilesList.value.length - 1) {
+            console.log("kasha");
+            updateSelectedInstrumentSample(currentFileIndex + 1);
+          }
+        };
         const updateSelectedInstrumentSample = function (sampleIndex) {
           httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
         };
         const toggleInstrumentStep = function (stepIndex) {
+          console.log("toggleInstrumentStep stepIndex : ", stepIndex);
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
           if (machineState.value.currentModeIndex == 0) {
@@ -873,10 +988,7 @@
           if (machineState.value.currentModeIndex == 0) {
             httpAction("UPDATEINSTRUMENTSAMPLEISREVERSE", isChecked);
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
-              "UPDATEINSTRUMENTSAMPLESTEPISREVERSE",
-              isChecked
-            );
+            httpAction("UPDATEINSTRUMENTSAMPLESTEPISREVERSE", isChecked);
           }
         };
 
@@ -890,9 +1002,11 @@
           wsStatus,
           machineState,
           wavFilesList,
+          httpAction,
           connectToWebsocket,
           sendMessageViaWebsocket,
           saveSong,
+          updateMasterGain,
           updateCurrentMode,
           updateSongName,
           updateTempo,
@@ -904,6 +1018,8 @@
           updateStaveNumber,
           selectStave,
           selectInstrument,
+          getPreviousSample,
+          getNextSample,
           updateSelectedInstrumentSample,
           getCommonsControlValues,
           isStepClickable,

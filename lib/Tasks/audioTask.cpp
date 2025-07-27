@@ -15,11 +15,14 @@
 // #include <driver/i2s_tdm.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+// // TODO : should work since c++17 flag is set
+// #include "../../../../.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/algorithmfwd.h"
 
 // TaskHandle_t audioTaskHandle;
 
 void audioTask(void *parameter)
 {
+    printf("blbl");
     State *statePointer = (State *)parameter;
     while (1)
     {
@@ -78,7 +81,7 @@ void audioTask(void *parameter)
                         int32_t temporaryInt32 = 0;
                         temporaryInt32 += statePointer->_masterBuffer[i];
                         temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                        temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
                         statePointer->_masterBuffer[i] = temporaryInt32;
                         // masterEffectCompressor(&statePointer->_masterBuffer[i]);
                         // masterEffectDistortion(&statePointer->_masterBuffer[i]);
@@ -96,10 +99,8 @@ void audioTask(void *parameter)
                         int32_t temporaryInt32 = 0;
                         temporaryInt32 += statePointer->_masterBuffer[i];
                         temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        temporaryInt32 = std::clamp(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                        temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
                         statePointer->_masterBuffer[i] = temporaryInt32;
-                        // masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                        // masterEffectDistortion(&statePointer->_masterBuffer[i]);
                     }
 
                     statePointer->instruments[instrumentIndex].bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
@@ -107,16 +108,31 @@ void audioTask(void *parameter)
             }
         }
 
-        // MasterEffectsStage
-        // masterEffectDistortion(statePointer)
+        for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
+        {
+            masterEffectPreamp(statePointer, &statePointer->_masterBuffer[i]);
+            // if (statePointer->isBlbl)
+            // {
+            //     // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+            //     masterEffectDistortion(&statePointer->_masterBuffer[i]);
+            // }
+            // printf("%i\n", statePointer->_masterBuffer[i]);
+        }
+        // if (statePointer->isBlbl)
+        // // if (true)
+        // {
+        //     // TODO : WTF ** ???
+        //     // masterEffectHallReverb((int16_t *)&statePointer->_masterBuffer);
+        //     masterEffectReverb((int16_t *)&statePointer->_masterBuffer);
+        // } else {
+        //     // masterEffectDelay((int16_t *)&statePointer->_masterBuffer);
+        // }
 
         // Write _masterBuffer to I2S()
         size_t bytes_written; // Initialize bytes_written variable
 
         i2s_write(I2S_NUM_0, statePointer->_masterBuffer, sizeof(statePointer->_masterBuffer), &bytes_written, 1);
         // i2s_channel_write(statePointer->tx_handle, buffer, bytes_read, &bytes_written, portMAX_DELAY);
-        // i2s_channel_write(statePointer->tx_handle, statePointer->_masterBuffer, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t), &bytes_written, 1);
-        // i2s_channel_write(statePointer->tx_handle, statePointer->_masterBuffer, sizeof(statePointer->_masterBuffer), &bytes_written, 1);
 
         memset(statePointer->_masterBuffer, 0, PLAY_WAV_WAV_BUFFER_SIZE * sizeof(int16_t));
     }

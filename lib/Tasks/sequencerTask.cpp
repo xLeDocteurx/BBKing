@@ -22,21 +22,21 @@ void sequencerTask(void *parameter)
                 // Interruption groups
                 switch (stepInstrumentIndex)
                 {
-                case 0:
-                    // Interruption group for sample 1 and 2
-                    if (statePointer->instruments[1].isPlaying)
-                    {
-                        statePointer->instruments[1].isPlaying = false;
-                        statePointer->instruments[1].bufferSamplesReadCounter = 0;
-                    }
-                    break;
-                case 1:
-                    // Interruption group for sample 1 and 2
-                    if (statePointer->instruments[0].isPlaying)
-                    {
-                        statePointer->instruments[0].isPlaying = false;
-                        statePointer->instruments[0].bufferSamplesReadCounter = 0;
-                    }
+                // case 0:
+                //     // Interruption group for sample 1 and 2
+                //     if (statePointer->instruments[1].isPlaying)
+                //     {
+                //         statePointer->instruments[1].isPlaying = false;
+                //         statePointer->instruments[1].bufferSamplesReadCounter = 0;
+                //     }
+                //     break;
+                // case 1:
+                //     // Interruption group for sample 1 and 2
+                //     if (statePointer->instruments[0].isPlaying)
+                //     {
+                //         statePointer->instruments[0].isPlaying = false;
+                //         statePointer->instruments[0].bufferSamplesReadCounter = 0;
+                //     }
                 case 5:
                     // Interruption group for sample 6 and 7
                     if (statePointer->instruments[6].isPlaying)
