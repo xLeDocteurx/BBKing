@@ -52,5 +52,6 @@
         "ctime": "cpp",
         "iomanip": "cpp",
         "complex": "cpp"
-    }
+    },
+    "idf.pythonInstallPath": "/home/ledocteur/.pyenv/shims/python"
 }

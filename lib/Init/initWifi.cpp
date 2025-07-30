@@ -10,8 +10,9 @@
 #include "esp_log.h"
 // #include "esp_http_server.h"
 
-#include <readJsonFile.h>
-#include <WifiConfig.h>
+// #include <readJsonFile.h>
+// #include <WifiConfig.h>
+#include <SDCard.h>
 
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;

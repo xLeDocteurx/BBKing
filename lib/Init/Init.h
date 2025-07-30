@@ -12,13 +12,14 @@
 #ifndef INIT_H
 #define INIT_H
 
+bool initPSRAM();
 bool initFileSystem();
+bool initState(State *statePointer);
 bool initI2S(State *statePointer);
 // bool initI2S(i2s_chan_handle_t *tx_handle, i2s_chan_handle_t *rx_handle);
-bool initKeyboard();
-bool initPSRAM();
-bool initState(State *statePointer);
+bool initKeyboard(); 
 bool initWebServer(State *statePointer_p, httpd_handle_t *serverPointer_p, esp_netif_t *netif);
+
 esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter);
 
 #endif // INIT_H
