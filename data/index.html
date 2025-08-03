@@ -158,28 +158,28 @@
               :disabled="machineState.currentSongIndex == 0"
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {httpAction('UPDATECURRENTSONGINDEX', machineState.currentSongIndex - 1)}"
+              @click="() => {sendMessageViaWebsocket('UPDATECURRENTSONGINDEX', machineState.currentSongIndex - 1)}"
             >
               <i class="fas fa-chevron-left"></i>
             </button>
             <button
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {httpAction('CREATESONGATINDEX', machineState.currentSongIndex + 1)}"
+              @click="() => {sendMessageViaWebsocket('CREATESONGATINDEX', machineState.currentSongIndex + 1)}"
             >
               <i class="fas fa-plus"></i>
             </button>
             <button
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {httpAction('DELETESONGATINDEX', machineState.currentSongIndex)}"
+              @click="() => {sendMessageViaWebsocket('DELETESONGATINDEX', machineState.currentSongIndex)}"
             >
               <i class="fas fa-trash"></i>
             </button>
             <button
               type="button"
               class="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
-              @click="() => {httpAction('UPDATECURRENTSONGINDEX', machineState.currentSongIndex + 1)}"
+              @click="() => {sendMessageViaWebsocket('UPDATECURRENTSONGINDEX', machineState.currentSongIndex + 1)}"
             >
               <i class="fas fa-chevron-right"></i>
             </button>
@@ -609,8 +609,6 @@
     // allPromises.then((allPromisesRet) => {
     createApp({
       setup() {
-        const wsStatus = ref(false);
-
         const machineState = ref({
           masterGain: 0,
           currentModeIndex: 0,
@@ -668,44 +666,23 @@
 
         const wavFilesList = ref([]);
 
+        const wsStatus = ref(false);
         const ws = ref(null);
 
-        const httpAction = async function (actionName, actionParameters) {
-          // console.log(
-          //   "httpAction actionName : ",
-          //   actionName,
-          //   " / actionParameters : ",
-          //   actionParameters
-          // );
-          const response = await fetch(`/action`, {
-            method: "POST",
-            body: `${actionName}@${
-              // typeof actionParameters == "string"
-              //   ? JSON.stringify(actionParameters)
-              //   : actionParameters
-              JSON.stringify(actionParameters)
-            }`,
-          });
-          // const json = await response.json();
-          const text = await response.text();
-          // console.log("httpAction res : ", json);
-          console.log("httpAction res : ", text);
-          // TODO : temporary solution for pongs
-          sendMessageViaWebsocket("toggle");
-          // return json;
-        };
-        const updateMachineStateRef = async function () {
+        const recoverMachineStateRef = async function () {
           const response = await fetch(`/state`);
           const json = await response.json();
-          console.log("updateMachineStateRef httpGet res : ", json);
+          console.log("recoverMachineStateRef httpGet res : ", json);
           machineState.value = json;
         };
-        const updateWavFilesListRef = async function () {
+
+        const recoverWavFilesListRef = async function () {
           const response = await fetch(`/wavFiles`);
           const json = await response.json();
-          console.log("updateWavFilesListRef httpGet res : ", json);
+          console.log("recoverWavFilesListRef httpGet res : ", json);
           wavFilesList.value = json;
         };
+
         const connectToWebsocket = function () {
           ws.value = new WebSocket(wsUri);
 
@@ -721,21 +698,27 @@
 
           ws.value.onmessage = (event) => {
             const message = event.data;
-            if (message === "pong") {
-              console.log("Pong received !");
-            } else {
-              console.log("Message received :", message);
-              // console.log("Message received as json :", JSON.parse(message));
-              // machineState.value = message;
-              updateMachineStateRef();
-              // updateWavFilesListRef();
-            }
+            console.log("Message received :", message);
+            // console.log("Message received as json :", JSON.parse(message));
+            // machineState.value = message;
+            // recoverMachineStateRef();
+            // recoverWavFilesListRef();
           };
         };
 
-        const sendMessageViaWebsocket = function (message) {
+        const sendMessageViaWebsocket = function (
+          actionName,
+          actionParameters
+        ) {
           if (!!ws && ws.value.readyState === WebSocket.OPEN) {
-            ws.value.send(message);
+            ws.value.send(
+              `${actionName}@${
+                // typeof actionParameters == "string"
+                //   ? JSON.stringify(actionParameters)
+                //   : actionParameters
+                JSON.stringify(actionParameters)
+              }`
+            );
           } else {
             console.log("WebSocket non connected !");
           }
@@ -835,7 +818,10 @@
                 machineState.value.currentPartInstrumentIndex
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            return stepIndex + 16 * machineState.value.currentStaveIndex == machineState.value.currentSelectedStepIndex;
+            return (
+              stepIndex + 16 * machineState.value.currentStaveIndex ==
+              machineState.value.currentSelectedStepIndex
+            );
           } else if (machineState.value.currentModeIndex == 2) {
             // TODO : implement for fx
             return null;
@@ -846,44 +832,53 @@
 
         const saveSong = function (modeIndex) {
           // TODO : try it everywhere for actions wiuth no arguments
-          // httpAction("SAVESONG");
-          httpAction("SAVESONG", {});
+          // sendMessageViaWebsocket("SAVESONG");
+          sendMessageViaWebsocket("SAVESONG", {});
         };
         const updateMasterGain = function (event) {
-          httpAction("UPDATEMASTERGAIN", Number(event.target.value));
+          sendMessageViaWebsocket(
+            "UPDATEMASTERGAIN",
+            Number(event.target.value)
+          );
         };
         const updateCurrentMode = function (modeIndex) {
-          httpAction("UPDATECURRENTMODE", modeIndex);
+          sendMessageViaWebsocket("UPDATECURRENTMODE", modeIndex);
         };
         const updateSongName = function (event) {
-          httpAction("UPDATESONGNAME", event.target.value);
+          sendMessageViaWebsocket("UPDATESONGNAME", event.target.value);
         };
         const updateTempo = function (event) {
-          httpAction("UPDATETEMPO", Number(event.target.value));
+          sendMessageViaWebsocket("UPDATETEMPO", Number(event.target.value));
         };
         const play = function () {
-          httpAction("PLAY", {});
+          sendMessageViaWebsocket("PLAY", {});
         };
         const stop = function () {
-          httpAction("STOP", {});
+          sendMessageViaWebsocket("STOP", {});
         };
         const loadPreviousPart = function () {
-          httpAction("SELECTPART", machineState.value.currentPartIndex - 1);
+          sendMessageViaWebsocket(
+            "SELECTPART",
+            machineState.value.currentPartIndex - 1
+          );
         };
         const loadNextPart = function () {
-          httpAction("SELECTPART", machineState.value.currentPartIndex + 1);
+          sendMessageViaWebsocket(
+            "SELECTPART",
+            machineState.value.currentPartIndex + 1
+          );
         };
         const createNextPart = function () {
-          httpAction("CREATEPART", {});
+          sendMessageViaWebsocket("CREATEPART", {});
         };
         const updateStaveNumber = function (staveNumber) {
-          httpAction("UPDATESTAVENUMBER", staveNumber);
+          sendMessageViaWebsocket("UPDATESTAVENUMBER", staveNumber);
         };
         const selectStave = function (staveIndex) {
-          httpAction("SELECTSTAVE", staveIndex);
+          sendMessageViaWebsocket("SELECTSTAVE", staveIndex);
         };
         const selectInstrument = function (instrumentIndex) {
-          httpAction("SELECTINSTRUMENT", instrumentIndex);
+          sendMessageViaWebsocket("SELECTINSTRUMENT", instrumentIndex);
         };
         const getPreviousSample = function () {
           const currentFilePath =
@@ -910,27 +905,33 @@
           }
         };
         const updateSelectedInstrumentSample = function (sampleIndex) {
-          httpAction("UPDATESELECTEDINSTRUMENTSAMPLE", sampleIndex);
+          sendMessageViaWebsocket(
+            "UPDATESELECTEDINSTRUMENTSAMPLE",
+            sampleIndex
+          );
         };
         const toggleInstrumentStep = function (stepIndex) {
           console.log("toggleInstrumentStep stepIndex : ", stepIndex);
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
           if (machineState.value.currentModeIndex == 0) {
-            httpAction("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
+            sendMessageViaWebsocket("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction("UPDATECURRENTSELECTEDSTEP", stepIndexToUpdate);
+            sendMessageViaWebsocket(
+              "UPDATECURRENTSELECTEDSTEP",
+              stepIndexToUpdate
+            );
           }
         };
 
         const updateVolume = function (event) {
           if (machineState.value.currentModeIndex == 0) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEVOLUME",
               Number(event.target.value)
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPVOLUME",
               Number(event.target.value)
             );
@@ -939,12 +940,12 @@
 
         const updatePitch = function (event) {
           if (machineState.value.currentModeIndex == 0) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEPITCH",
               Number(event.target.value)
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPPITCH",
               Number(event.target.value)
             );
@@ -953,12 +954,12 @@
 
         const updateStartPosition = function (event) {
           if (machineState.value.currentModeIndex == 0) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTARTPOSITION",
               Number(event.target.value)
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION",
               Number(event.target.value)
             );
@@ -967,12 +968,12 @@
 
         const updateEndPosition = function (event) {
           if (machineState.value.currentModeIndex == 0) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEENDPOSITION",
               Number(event.target.value)
             );
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction(
+            sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION",
               Number(event.target.value)
             );
@@ -986,23 +987,30 @@
           // );
           const isChecked = event.target.checked ? 1 : 0;
           if (machineState.value.currentModeIndex == 0) {
-            httpAction("UPDATEINSTRUMENTSAMPLEISREVERSE", isChecked);
+            sendMessageViaWebsocket(
+              "UPDATEINSTRUMENTSAMPLEISREVERSE",
+              isChecked
+            );
           } else if (machineState.value.currentModeIndex == 1) {
-            httpAction("UPDATEINSTRUMENTSAMPLESTEPISREVERSE", isChecked);
+            sendMessageViaWebsocket(
+              "UPDATEINSTRUMENTSAMPLESTEPISREVERSE",
+              isChecked
+            );
           }
         };
 
-        updateMachineStateRef().then((_) => {
-          connectToWebsocket();
-        });
-
-        updateWavFilesListRef();
+        recoverMachineStateRef()
+          .then((_) => {
+            return recoverWavFilesListRef();
+          })
+          .then((_) => {
+            connectToWebsocket();
+          });
 
         return {
           wsStatus,
           machineState,
           wavFilesList,
-          httpAction,
           connectToWebsocket,
           sendMessageViaWebsocket,
           saveSong,
@@ -1025,7 +1033,6 @@
           isStepClickable,
           isStepActive,
           toggleInstrumentStep,
-          updateTempo,
           updateVolume,
           updatePitch,
           updateStartPosition,
