@@ -698,13 +698,219 @@
 
           ws.value.onmessage = (event) => {
             const message = event.data;
+            const messageType = message.split("@")[0];
+            const messageContent = message.split("@")[1];
+
             console.log("Message received :", message);
             // console.log("Message received as json :", JSON.parse(message));
             // machineState.value = message;
             // recoverMachineStateRef();
             // recoverWavFilesListRef();
+            switch (messageType) {
+              case "SAVESONG":
+                break;
+              case "UPDATEMASTERGAIN":
+                machineState.value.masterGain = Number(messageContent);
+                break;
+              case "UPDATECURRENTMODE":
+                machineState.value.currentModeIndex = Number(messageContent);
+                break;
+              case "UPDATESONGNAME":
+                machineState.value.songName = messageContent;
+                break;
+              case "UPDATETEMPO":
+                machineState.value.songTempo = Number(messageContent);
+                break;
+              case "PLAY":
+                console.log("PLAY command received");
+                break;
+              case "STOP":
+                console.log("STOP command received");
+                break;
+              case "SELECTPART":
+                machineState.value.currentPartIndex = Number(messageContent);
+                break;
+              case "CREATEPART":
+                machineState.value.parts.push({
+                  staves: 1,
+                  steps: resizeArray(
+                    [],
+                    16 * machineState.value.currentStaveIndex + 16,
+                    []
+                  ),
+                });
+                break;
+              case "UPDATESTAVENUMBER":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].staves = Number(messageContent);
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps = resizeArray(
+                  machineState.value.parts[machineState.value.currentPartIndex]
+                    .steps,
+                  16 * Number(messageContent),
+                  []
+                );
+                break;
+              case "SELECTSTAVE":
+                machineState.value.currentStaveIndex = Number(messageContent);
+                break;
+              case "SELECTINSTRUMENT":
+                machineState.value.currentPartInstrumentIndex =
+                  Number(messageContent);
+                break;
+              case "UPDATESELECTEDINSTRUMENTSAMPLE":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].sample.filePath = messageContent;
+                break;
+              case "UPDATEINSTRUMENTSAMPLEVOLUME":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].volume = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTEPVOLUME":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  machineState.value.currentSelectedStepIndex +
+                    16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                ).volume = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLEPITCH":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].pitch = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTEPPITCH":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  machineState.value.currentSelectedStepIndex +
+                    16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                ).pitch = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTARTPOSITION":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].startPosition = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  machineState.value.currentSelectedStepIndex +
+                    16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                ).startPosition = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLEENDPOSITION":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].endPosition = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  machineState.value.currentSelectedStepIndex +
+                    16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                ).endPosition = Number(messageContent);
+                break;
+              case "UPDATEINSTRUMENTSAMPLEISREVERSE":
+                machineState.value.instruments[
+                  machineState.value.currentPartInstrumentIndex
+                ].isReverse = messageContent === "true";
+                break;
+              case "UPDATEINSTRUMENTSAMPLESTEPISREVERSE":
+                machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  machineState.value.currentSelectedStepIndex +
+                    16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                ).isReverse = messageContent === "true";
+                break;
+              case "TOGGLEINSTRUMENTSTEP":
+                const stepIndex = Number(messageContent);
+                const step = machineState.value.parts[
+                  machineState.value.currentPartIndex
+                ].steps[
+                  stepIndex + 16 * machineState.value.currentStaveIndex
+                ].find(
+                  (st) =>
+                    st.instrumentIndex ==
+                    machineState.value.currentPartInstrumentIndex
+                );
+                if (step) {
+                  // If step exists, remove it
+                  machineState.value.parts[
+                    machineState.value.currentPartIndex
+                  ].steps[
+                    stepIndex + 16 * machineState.value.currentStaveIndex
+                  ] = machineState.value.parts[
+                    machineState.value.currentPartIndex
+                  ].steps[
+                    stepIndex + 16 * machineState.value.currentStaveIndex
+                  ].filter(
+                    (st) =>
+                      st.instrumentIndex !=
+                      machineState.value.currentPartInstrumentIndex
+                  );
+                } else {
+                  // If step does not exist, add it
+                  machineState.value.parts[
+                    machineState.value.currentPartIndex
+                  ].steps[
+                    stepIndex + 16 * machineState.value.currentStaveIndex
+                  ].push({
+                    instrumentIndex:
+                      machineState.value.currentPartInstrumentIndex,
+                    pitch: 0,
+                    volume: 0.9,
+                    startPosition: 0,
+                    endPosition: 1,
+                    isReverse: false,
+                  });
+                }
+                break;
+              case "UPDATECURRENTSELECTEDSTEP":
+                machineState.value.currentSelectedStepIndex =
+                  Number(messageContent);
+                break;
+
+              case "UPDATECURRENTSONGINDEX":
+                machineState.value.currentSongIndex = Number(messageContent);
+                break;
+              case "CREATESONGATINDEX":
+                break;
+              default:
+                console.log("Unknown message received :", message);
+                recoverWavFilesListRef();
+            }
           };
         };
+        // TODO : Une methode getstep et une methode getinstrument a remplacer dans le swtich plus haut
+        // En dessous isstepactive
 
         const sendMessageViaWebsocket = function (
           actionName,
