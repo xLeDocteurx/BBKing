@@ -25,6 +25,7 @@
 #include <Effects.h>
 #include <Tasks.h>
 #include <Songs.h>
+#include <Actions.h>
 
 // TODO : WHAT THE FUCK
 TaskHandle_t audioTaskHandle;
@@ -101,14 +102,14 @@ extern "C" void app_main()
     //     printf("----- INIT WIFI DONE -----\n");
     //     printf("iwd sta_netif int : %p\n", (void *)sta_netif);
     //     printf("iwd sta_netif int : %p\n", sta_netif);
-        // printf("----- INIT WEB SERVER -----\n");
-        // initRes = initWebServer(&state, &httpServer, sta_netif);
-        // if (!initRes)
-        // {
-        //     printf("----- INIT WEB SERVER FAILED -----\n");
-        //     return;
-        // }
-        // printf("----- INIT WEB SERVER DONE -----\n");
+    // printf("----- INIT WEB SERVER -----\n");
+    // initRes = initWebServer(&state, &httpServer, sta_netif);
+    // if (!initRes)
+    // {
+    //     printf("----- INIT WEB SERVER FAILED -----\n");
+    //     return;
+    // }
+    // printf("----- INIT WEB SERVER DONE -----\n");
     // }
 
     printf("----- INIT TASKS -----\n");
@@ -198,15 +199,6 @@ extern "C" void app_main()
     //     // state.isBlbl = !state.isBlbl;
     //     printf("state.songName : %s\n", state.songName);
     // }
-
-
-
-
-
-
-
-
-
 
     printf("----- INIT WIFI -----\n");
     esp_netif_t *initWifiRes = initWifi(&wifiConfigs);

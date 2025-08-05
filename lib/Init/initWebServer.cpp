@@ -18,6 +18,7 @@
 #include <Defs.h>
 #include <MyUtils.h>
 #include <Songs.h>
+#include <Actions.h>
 
 State *statePointer;
 
@@ -71,12 +72,36 @@ static void ws_async_send(void *arg)
     free(resp_arg);
 }
 
-static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req, const char *message)
-{
-    struct async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(struct async_resp_arg));
-    resp_arg->hd = req->handle;
-    // resp_arg->fd = httpd_req_to_sockfd(req);
+// static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req, const char *message)
+// {
+//     struct async_resp_arg *resp_arg = (async_resp_arg *)malloc(sizeof(struct async_resp_arg));
+//     resp_arg->hd = req->handle;
+//     // Copy message into heap so it survives async context
+//     resp_arg->message = strdup(message);
+//     if (!resp_arg->message)
+//     {
+//         free(resp_arg->message);
+//         free(resp_arg);
+//         return ESP_ERR_NO_MEM;
+//     }
+//     return httpd_queue_work(handle, ws_async_send, resp_arg);
+// }
 
+esp_err_t broadcast_ws_message(const char *message)
+{
+    if (!serverPointer || !*serverPointer)
+    {
+        printf("Server not initialized\n");
+        return ESP_FAIL;
+    }
+
+    struct async_resp_arg *resp_arg = (struct async_resp_arg *)malloc(sizeof(struct async_resp_arg));
+    if (!resp_arg)
+    {
+        return ESP_ERR_NO_MEM;
+    }
+
+    resp_arg->hd = *serverPointer;
     // Copy message into heap so it survives async context
     resp_arg->message = strdup(message);
     if (!resp_arg->message)
@@ -85,7 +110,8 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req, con
         free(resp_arg);
         return ESP_ERR_NO_MEM;
     }
-    return httpd_queue_work(handle, ws_async_send, resp_arg);
+
+    return httpd_queue_work(*serverPointer, ws_async_send, resp_arg);
 }
 
 static esp_err_t root_handler(httpd_req_t *req)
@@ -180,307 +206,163 @@ static esp_err_t websocket_handler(httpd_req_t *req)
             }
             else if (actionType == "UPDATEMASTERGAIN")
             {
-                printf("stof(actionParameters) : %lf\n", stof(actionParameters));
-                statePointer->masterGain = stof(actionParameters);
+                updateMasterGain(statePointer, actionParameters);
             }
             else if (actionType == "UPDATECURRENTMODE")
             {
-                statePointer->currentModeIndex = stoi(actionParameters);
+                updateCurrentMode(statePointer, actionParameters);
+            }
+            else if (actionType == "UPDATECURRENTPARTINDEX")
+            {
+                updateCurrentPartIndex(statePointer, actionParameters);
+            }
+            else if (actionType == "UPDATECURRENTSTAVEINDEX")
+            {
+                updateCurrentStaveIndex(statePointer, actionParameters);
+            }
+            else if (actionType == "UPDATECURRENTOCTAVEINDEX")
+            {
+                updateCurrentOctaveIndex(statePointer, actionParameters);
             }
             else if (actionType == "UPDATECURRENTSELECTEDSTEP")
             {
-                statePointer->currentSelectedStepIndex = stoi(actionParameters);
+                updateCurrentSelectedStep(statePointer, actionParameters);
             }
 
             else if (actionType == "CREATESONGATINDEX")
             {
-                int songIndex = stoi(actionParameters);
-                createSongAtIndex(statePointer, songIndex);
-                statePointer->currentSongIndex = songIndex;
-                readSong(statePointer, songIndex);
+                createSongAtIndex(statePointer, stoi(actionParameters));
             }
             else if (actionType == "DELETESONGATINDEX")
             {
-                int songIndex = stoi(actionParameters);
-                deleteSongAtIndex(statePointer, songIndex);
-                statePointer->currentSongIndex = songIndex > 0 ? songIndex - 1 : 0;
-                readSong(statePointer, songIndex);
+                deleteSongAtIndex(statePointer, stoi(actionParameters));
             }
             else if (actionType == "UPDATECURRENTSONGINDEX")
             {
-                int songIndex = stoi(actionParameters);
-                readSong(statePointer, songIndex);
+                updateCurrentSongIndex(statePointer, actionParameters);
             }
             else if (actionType == "UPDATESONGNAME")
             {
-                // char *copy;
-                // strcpy(copy, actionParameters.c_str());
-                // statePointer->songName = copy;
-                strcpy(statePointer->songName, actionParameters.c_str());
-                // statePointer->songName = actionParameters.c_str();
+                updateSongName(statePointer, actionParameters);
             }
-
             else if (actionType == "UPDATETEMPO")
             {
-                statePointer->songTempo = stoi(actionParameters);
+                updateTempo(statePointer, actionParameters);
             }
             else if (actionType == "PLAYFROMSTART")
             {
-                statePointer->currentStepIndex = 0;
-                statePointer->isPlaying = true;
+                playFromStart(statePointer, actionParameters);
             }
             else if (actionType == "PLAY")
             {
-                statePointer->isPlaying = true;
+                play(statePointer, actionParameters);
             }
             else if (actionType == "STOP")
             {
-                statePointer->isPlaying = false;
-                statePointer->currentStepIndex = 0;
+                stop(statePointer, actionParameters);
             }
 
             else if (actionType == "SOLOPART")
             {
-                int desiredIndex = stoi(actionParameters);
-                // for (int i = 0; i < statePointer->instruments.size(); i++)
-                // {
-                //     // if(statePointer->instruments[i] == i) {
-                //     //     // TODO
-                //     //     // statePointer->samples[statePointer->instruments[i].sampleFileRefIndex].
-                //     // } else {
-
-                //     // }
-                // }
+                soloPart(statePointer, actionParameters);
             }
             else if (actionType == "MUTEPART")
             {
-                int desiredIndex = stoi(actionParameters);
+                mutePart(statePointer, actionParameters);
             }
+
             else if (actionType == "SELECTPART")
             {
-                int desiredIndex = stoi(actionParameters);
-                if (desiredIndex >= 0 && desiredIndex < statePointer->parts.size())
-                {
-                    statePointer->currentPartIndex = desiredIndex;
-                    statePointer->currentStaveIndex = 0;
-                }
+                selectPart(statePointer, actionParameters);
             }
             else if (actionType == "CREATEPART")
             {
-                // int desiredIndex = stoi(actionParameters);
-                // if (desiredIndex >= 0 && desiredIndex >= statePointer->parts.size())
-                // {
-                //     statePointer->currentPartIndex = desiredIndex;
-                std::vector<std::vector<Step>> newPartSteps = {};
-                const int newPartStaves = 1;
-                for (int i = 0; i < STATE_PART_STEPS_LENGTH * newPartStaves; i++)
-                {
-                    switch (i)
-                    {
-                    default:
-                        newPartSteps.push_back({});
-                        break;
-                    }
-                }
-                Part newPart = {newPartStaves, newPartSteps};
-                statePointer->parts.push_back(newPart);
-                statePointer->currentPartIndex += 1;
-                statePointer->currentStaveIndex = 0;
-                // }
+                createPart(statePointer, actionParameters);
             }
             // TODO : Rename to UPDATESELECTEDSTAVE
             // TODO : Rename others containing "CURRENT" to "SELECTED"
             else if (actionType == "UPDATESTAVENUMBER")
             {
-                int desiredStaveNumber = stoi(actionParameters);
-                // if (desiredStaveNumber > 0)
-                // {
-                if (statePointer->currentStaveIndex >= desiredStaveNumber)
-                {
-                    statePointer->currentStaveIndex = desiredStaveNumber - 1;
-                }
-                statePointer->parts[statePointer->currentPartIndex].staves = desiredStaveNumber;
-
-                statePointer->parts[statePointer->currentPartIndex].steps.resize(STATE_PART_STEPS_LENGTH * statePointer->parts[statePointer->currentPartIndex].staves, {});
-                // }
+                updateStaveNumber(statePointer, actionParameters);
             }
             else if (actionType == "SELECTSTAVE")
             {
-                int desiredStaveIndex = stoi(actionParameters);
-                if (desiredStaveIndex >= 0 && desiredStaveIndex < statePointer->parts[statePointer->currentPartIndex].staves)
-                {
-                    statePointer->currentStaveIndex = desiredStaveIndex;
-                }
+                selectStave(statePointer, actionParameters);
             }
             else if (actionType == "SELECTOCTAVE")
             {
-                int desiredOctaveIndex = stoi(actionParameters);
-                // if (desiredOctaveIndex >= 0 && desiredOctaveIndex <= 8)
-                // {
-                statePointer->currentOctaveIndex = desiredOctaveIndex;
-                // }
+                selectOctave(statePointer, actionParameters);
             }
 
             else if (actionType == "SELECTINSTRUMENT")
             {
-                int desiredIntrumentIndex = stoi(actionParameters);
-                // if (desiredIntrumentIndex >=0 && < 7)
-                // {
-                statePointer->currentPartInstrumentIndex = desiredIntrumentIndex;
-                // }
+                selectInstrument(statePointer, actionParameters);
             }
-            // TODO : TODO
             else if (actionType == "UPDATESELECTEDINSTRUMENTSAMPLE")
             {
-                int desiredSampleFileIndex = stoi(actionParameters);
-                // Clear memory from previous sample
-                freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
-
-                // TODO : Error handling
-                // bool loadInstrumentRes =
-                loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-                // if (!loadInstrumentRes)
-                // {
-                //     printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
-                // }
+                updateSelectedInstrumentSample(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLEVOLUME")
             {
-                statePointer->instruments[statePointer->currentPartInstrumentIndex].volume = std::stof(actionParameters);
+                updateInstrumentSampleVolume(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPVOLUME")
             {
-                printf("UPDATEINSTRUMENTSAMPLESTEPVOLUME\n");
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
-                statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].volume = std::stof(actionParameters);
+                updateInstrumentSampleStepVolume(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLEPITCH")
             {
-                statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = stoi(actionParameters);
+                updateInstrumentSamplePitch(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPPITCH")
             {
-                printf("UPDATEINSTRUMENTSAMPLESTEPPITCH\n");
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    // int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
-                printf("stoi(actionParameters) : %i\n", stoi(actionParameters));
-                // statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].pitch = stoi(actionParameters);
-
-                printf("pitch BEFORE : %i\n", statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch);
-                statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch = stoi(actionParameters);
-                printf("pitch AFTER : %i\n", statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex][xxxIndex].pitch);
+                updateInstrumentSampleStepPitch(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTARTPOSITION")
             {
-                statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition = std::stof(actionParameters);
+                updateInstrumentSampleStartPosition(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION")
             {
-                printf("UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION\n");
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
-                statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].startPosition = std::stof(actionParameters);
+                updateInstrumentSampleStepStartPosition(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLEENDPOSITION")
             {
-                statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition = std::stof(actionParameters);
+                updateInstrumentSampleEndPosition(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION")
             {
-                printf("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION\n");
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
-                statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].endPosition = std::stof(actionParameters);
+                updateInstrumentSampleStepEndPosition(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLEISREVERSE")
             {
-                statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse = std::stof(actionParameters);
+                updateInstrumentSampleIsReverse(statePointer, actionParameters);
             }
-            // TODO : FUSIONNER COMME DANS LE FRONT
+
             else if (actionType == "UPDATEINSTRUMENTSAMPLESTEPISREVERSE")
             {
-                printf("UPDATEINSTRUMENTSAMPLESTEPISREVERSE\n");
-                int xxxIndex = 0;
-                for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
-                {
-                    int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-                    if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        xxxIndex = i;
-                    }
-                }
-                statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].isReverse = stoi(actionParameters);
+                updateInstrumentSampleStepIsReverse(statePointer, actionParameters);
             }
 
             else if (actionType == "TOGGLEINSTRUMENTSTEP")
             {
-                const int stepIndex = stoi(actionParameters);
-
-                bool isDrumRackSampleStepActive = false;
-                for (int stepContentIndex = 0; stepContentIndex < statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].size(); stepContentIndex++)
-                {
-                    if (statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex == statePointer->currentPartInstrumentIndex)
-                    {
-                        std::vector<Step>::iterator it = statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].begin() + stepContentIndex;
-                        if (it != statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].end())
-                        {
-                            isDrumRackSampleStepActive = true;
-                            statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].erase(it);
-                        }
-                        break;
-                    }
-                }
-
-                if (!isDrumRackSampleStepActive)
-                {
-                    statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 1.0, 0, 0.0, 1.0, false});
-                }
+                toggleInstrumentStep(statePointer, actionParameters);
             }
             else
             {
                 printf("Unknown message type\n");
+                // Send a response back to the client
+                broadcast_ws_message((const char *)ws_pkt.payload);
             }
-
-            // Send a response back to the client
-            trigger_async_send(req->handle, req, (const char *)ws_pkt.payload);
         }
 
         free(buf);
