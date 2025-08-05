@@ -1,11 +1,13 @@
-[{
+[
+	{
 		"masterGain":	1,
 		"currentModeIndex":	0,
 		"currentSelectedStepIndex":	0,
 		"currentSongIndex":	0,
 		"songName":	"Demo song",
 		"songTempo":	111,
-		"instruments":	[{
+		"instruments":	[
+			{
 				"sample":	{
 					"filePath":	"/sdcard/1_micro kick.wav",
 					"isMono":	true,
@@ -140,9 +142,11 @@
 		"currentPartInstrumentIndex":	6,
 		"currentStaveIndex":	0,
 		"currentOctaveIndex":	0,
-		"parts":	[{
+		"parts":	[
+			{
 				"staves":	2,
-				"steps":	[[{
+				"steps":	[
+					[{
 							"instrumentIndex":	0,
 							"volume":	1,
 							"pitch":	0,
@@ -1607,4 +1611,5 @@
 							"isReverse":	false
 						}]]
 			}]
-	}]
+	}
+]

@@ -10,8 +10,9 @@
 #include "esp_log.h"
 // #include "esp_http_server.h"
 
-#include <readJsonFile.h>
-#include <WifiConfig.h>
+// #include <readJsonFile.h>
+// #include <WifiConfig.h>
+#include <SDCard.h>
 
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;
@@ -97,7 +98,7 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
 
     gpio_set_level(LED_PIN, 1);
     std::string jsonString;
-    bool readJsonFile_ret = readJsonFile("/data/wifiConfigs.json", &jsonString);
+    bool readJsonFile_ret = readJsonFile("/sdcard/wifiConfigs.json", &jsonString);
     if (!readJsonFile_ret)
     {
         printf("Failed to read wifiConfigs.json file\n");
@@ -107,6 +108,8 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
     {
         printf("initWifi readJsonFile wifiConfigs.json : %s\n", jsonString.c_str());
     }
+
+    // TODO : Read the JSON file and parse it to fill the wifiConfigsPointerParameter vector
 
     wifi_config_t wifi_config_1 = {
         .sta = {
@@ -142,9 +145,9 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
-    wifiConfigsPointerParameter->push_back(wifi_config_3);
     wifiConfigsPointerParameter->push_back(wifi_config_1);
     wifiConfigsPointerParameter->push_back(wifi_config_2);
+    wifiConfigsPointerParameter->push_back(wifi_config_3);
 
     esp_err_t nvs_flash_init_ret = nvs_flash_init();
     if (nvs_flash_init_ret != ESP_OK)

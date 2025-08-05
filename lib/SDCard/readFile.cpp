@@ -7,6 +7,7 @@
 #include "esp_vfs_fat.h"
 #include "esp_vfs.h"
 
+// TODO : What to do with this ?
 bool readFile(const char *path)
 {
     FILE *file = fopen(path, "r");
