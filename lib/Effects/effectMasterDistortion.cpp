@@ -9,7 +9,6 @@
 
 void masterEffectDistortion(int16_t *sample)
 {
-
     // float q = 1.0;
     // float q = 1.5;
     float q = 1.75;
@@ -24,7 +23,7 @@ void masterEffectDistortion(int16_t *sample)
     // int32_t x = (b + range / 2) / range;
     // int32_t temporaryInt32 = ((x * x * (3.0 - 2.0 * x)) - 0.5) * range;
     temporaryInt32 = x * x * (3.0 - 2.0 * x) * INT16_MAX;
-    
+
     temporaryInt32 = *sample >= 0 ? temporaryInt32 : -temporaryInt32;
 
     // float q = 1.2;

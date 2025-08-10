@@ -1,7 +1,7 @@
 // #include <string>
 #include <stdio.h>
 
-// #include <Defs.h>
+#include <Defs.h>
 #include <Actions.h>
 #include <Init.h>
 #include <Songs.h>
@@ -15,7 +15,7 @@ void updateSelectedInstrumentSample(State *statePointer, std::string actionParam
 
     // TODO : Error handling
     // bool loadInstrumentRes =
-    loadInstrument(statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
+    loadInstrument(DRUM_RACK, statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, statePointer->instruments[statePointer->currentPartInstrumentIndex].isSolo, statePointer->instruments[statePointer->currentPartInstrumentIndex].isMuted, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
     // if (!loadInstrumentRes)
     // {
     //     printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);

@@ -53,24 +53,64 @@ void sequencerTask(void *parameter)
                         statePointer->instruments[5].bufferSamplesReadCounter = 0;
                     }
                     break;
+
+                case 7:
+                    // Interruption group for sample 7, 8 and 9
+                    if (statePointer->instruments[8].isPlaying)
+                    {
+                        statePointer->instruments[8].isPlaying = false;
+                        statePointer->instruments[8].bufferSamplesReadCounter = 0;
+                    }
+                    if (statePointer->instruments[9].isPlaying)
+                    {
+                        statePointer->instruments[9].isPlaying = false;
+                        statePointer->instruments[9].bufferSamplesReadCounter = 0;
+                    }
+                    break;
+                case 8:
+                    // Interruption group for sample 7, 8 and 9
+                    if (statePointer->instruments[7].isPlaying)
+                    {
+                        statePointer->instruments[7].isPlaying = false;
+                        statePointer->instruments[7].bufferSamplesReadCounter = 0;
+                    }
+                    if (statePointer->instruments[9].isPlaying)
+                    {
+                        statePointer->instruments[9].isPlaying = false;
+                        statePointer->instruments[9].bufferSamplesReadCounter = 0;
+                    }
+                    break;
+                case 9:
+                    // Interruption group for sample 7, 8 and 9
+                    if (statePointer->instruments[7].isPlaying)
+                    {
+                        statePointer->instruments[7].isPlaying = false;
+                        statePointer->instruments[7].bufferSamplesReadCounter = 0;
+                    }
+                    if (statePointer->instruments[8].isPlaying)
+                    {
+                        statePointer->instruments[8].isPlaying = false;
+                        statePointer->instruments[8].bufferSamplesReadCounter = 0;
+                    }
+                    break;
                 default:
                     break;
                 }
 
-                statePointer->instruments[stepInstrumentIndex].startingStepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].volume;
-                statePointer->instruments[stepInstrumentIndex].startingStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
-                statePointer->instruments[stepInstrumentIndex].startingStepStartPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].startPosition;
-                statePointer->instruments[stepInstrumentIndex].startingStepEndPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].endPosition;
-                statePointer->instruments[stepInstrumentIndex].startingStepIsReverse = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].isReverse;
+                statePointer->instruments[stepInstrumentIndex].previousStepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].volume;
+                statePointer->instruments[stepInstrumentIndex].previousStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
+                statePointer->instruments[stepInstrumentIndex].previousStepStartPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].startPosition;
+                statePointer->instruments[stepInstrumentIndex].previousStepEndPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].endPosition;
+                statePointer->instruments[stepInstrumentIndex].previousStepIsReverse = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].isReverse;
 
                 int playbackStartPositionInSample;
-                if (statePointer->instruments[stepInstrumentIndex].isReverse xor statePointer->instruments[stepInstrumentIndex].startingStepIsReverse)
+                if (statePointer->instruments[stepInstrumentIndex].isReverse xor statePointer->instruments[stepInstrumentIndex].previousStepIsReverse)
                 {
-                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].startingStepEndPosition == 1.0) ? statePointer->instruments[stepInstrumentIndex].endPosition : statePointer->instruments[stepInstrumentIndex].startingStepEndPosition));
+                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].previousStepEndPosition == 1.0) ? statePointer->instruments[stepInstrumentIndex].endPosition : statePointer->instruments[stepInstrumentIndex].previousStepEndPosition));
                 }
                 else
                 {
-                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].startingStepStartPosition == 0.0) ? statePointer->instruments[stepInstrumentIndex].startPosition : statePointer->instruments[stepInstrumentIndex].startingStepStartPosition));
+                    statePointer->instruments[stepInstrumentIndex].bufferSamplesReadCounter = round(statePointer->instruments[stepInstrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[stepInstrumentIndex].previousStepStartPosition == 0.0) ? statePointer->instruments[stepInstrumentIndex].startPosition : statePointer->instruments[stepInstrumentIndex].previousStepStartPosition));
                 }
                 // printf("start %i/%i : %s\n", statePointer->currentStepIndex, stepInstrumentIndex, statePointer->instruments[stepInstrumentIndex].sample.filePath);
 

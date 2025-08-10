@@ -35,7 +35,7 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
         cJSON_AddStringToObject(cJsonSampleObject, "filePath", statePointer->instruments[i].sample.filePath);
         cJSON_AddBoolToObject(cJsonSampleObject, "isMono", statePointer->instruments[i].sample.isMono);
         cJSON_AddNumberToObject(cJsonSampleObject, "fileSize", statePointer->instruments[i].sample.fileSize);
-
+        cJSON_AddNumberToObject(cJsonInstrumentObject, "type", statePointer->instruments[i].type);
         cJSON_AddBoolToObject(cJsonInstrumentObject, "isSolo", statePointer->instruments[i].isSolo);
         cJSON_AddBoolToObject(cJsonInstrumentObject, "isMuted", statePointer->instruments[i].isMuted);
         cJSON_AddNumberToObject(cJsonInstrumentObject, "volume", statePointer->instruments[i].volume);

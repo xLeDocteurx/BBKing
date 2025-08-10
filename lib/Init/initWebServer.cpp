@@ -357,6 +357,11 @@ static esp_err_t websocket_handler(httpd_req_t *req)
             {
                 toggleInstrumentStep(statePointer, actionParameters);
             }
+
+            else if (actionType == "TOGGLEBLBL")
+            {
+                statePointer->isBlbl = !statePointer->isBlbl;
+            }
             else
             {
                 printf("Unknown message type\n");

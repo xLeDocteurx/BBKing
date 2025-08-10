@@ -29,16 +29,16 @@ void audioTask(void *parameter)
         // Write all playing samples buffers to _masterBuffer
         for (int instrumentIndex = 0; instrumentIndex < statePointer->instruments.size(); instrumentIndex++)
         {
-            // Instrument *instrument = &statePointer->instruments[instrumentIndex];
+            // DrumRack *instrument = &statePointer->instruments[instrumentIndex];
             if (statePointer->instruments[instrumentIndex].isPlaying)
             {
-                bool isReverse = statePointer->instruments[instrumentIndex].isReverse xor statePointer->instruments[instrumentIndex].startingStepIsReverse;
+                bool isReverse = statePointer->instruments[instrumentIndex].isReverse xor statePointer->instruments[instrumentIndex].previousStepIsReverse;
                 int fileSizeInSamples = statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t);
 
-                float playbackVolume = statePointer->instruments[instrumentIndex].volume * statePointer->instruments[instrumentIndex].startingStepVolume;
-                float playbackSpeed = pitchToPlaybackSpeed(statePointer->instruments[instrumentIndex].pitch + statePointer->instruments[instrumentIndex].startingStepPitch);
-                int playbackStartPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].startingStepStartPosition == 0.0) ? statePointer->instruments[instrumentIndex].startPosition : statePointer->instruments[instrumentIndex].startingStepStartPosition));
-                int playbackEndPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].startingStepEndPosition == 1.0) ? statePointer->instruments[instrumentIndex].endPosition : statePointer->instruments[instrumentIndex].startingStepEndPosition));
+                float playbackVolume = statePointer->instruments[instrumentIndex].volume * statePointer->instruments[instrumentIndex].previousStepVolume;
+                float playbackSpeed = pitchToPlaybackSpeed(statePointer->instruments[instrumentIndex].pitch + statePointer->instruments[instrumentIndex].previousStepPitch);
+                int playbackStartPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].previousStepStartPosition == 0.0) ? statePointer->instruments[instrumentIndex].startPosition : statePointer->instruments[instrumentIndex].previousStepStartPosition));
+                int playbackEndPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].previousStepEndPosition == 1.0) ? statePointer->instruments[instrumentIndex].endPosition : statePointer->instruments[instrumentIndex].previousStepEndPosition));
                 int restToReadFromFileSizeInSamples = playbackEndPositionInSample - playbackStartPositionInSample;
 
                 int sizeToWriteInSamples = 0;
@@ -110,12 +110,12 @@ void audioTask(void *parameter)
 
         for (int i = 0; i < PLAY_WAV_WAV_BUFFER_SIZE; i++)
         {
-            masterEffectPreamp(statePointer, &statePointer->_masterBuffer[i]);
-            // if (statePointer->isBlbl)
-            // {
-            //     // masterEffectCompressor(&statePointer->_masterBuffer[i]);
-            //     masterEffectDistortion(&statePointer->_masterBuffer[i]);
-            // }
+            effectPreamp(statePointer->masterGain, &statePointer->_masterBuffer[i]);
+            if (statePointer->isBlbl)
+            {
+                // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                masterEffectDistortion(&statePointer->_masterBuffer[i]);
+            }
             // printf("%i\n", statePointer->_masterBuffer[i]);
         }
         // if (statePointer->isBlbl)

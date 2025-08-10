@@ -1,3 +1,4 @@
+#include <variant>
 #include <vector>
 #include <string>
 #include <stdio.h>
@@ -61,8 +62,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-
-
 struct Sample
 {
     // TODO : update as an index for wavFilePaths !?!
@@ -72,30 +71,60 @@ struct Sample
     size_t fileSize;
 };
 
+enum InstrumentType
+{
+    DRUM_RACK = 0,
+    SAMPLER = 1,
+    SYNTH = 2
+};
+
 struct Instrument
 {
-    // int sampleFileRefIndex;
-    Sample sample;
+    InstrumentType type;
     bool isSolo;
     bool isMuted;
+    bool isPlaying;
 
     float volume;
+    int previousStepVolume;
     int pitch;
+    int previousStepPitch;
     // TODO : In number of samples ???
     // For now heads are set up in relative units
     float startPosition;
+    float previousStepStartPosition;
     float endPosition;
+    float previousStepEndPosition;
+};
+
+struct DrumRack : public Instrument
+{
+    // int sampleFileRefIndex;
+    Sample sample;
     bool isReverse;
+    bool previousStepIsReverse;
 
     int16_t *buffer;
-    bool isPlaying;
     int bufferSamplesReadCounter;
-    int startingStepVolume;
-    int startingStepPitch;
-    float startingStepStartPosition;
-    float startingStepEndPosition;
-    bool startingStepIsReverse;
 };
+
+struct Sampler : public Instrument
+{
+    // int sampleFileRefIndex;
+    Sample sample;
+    bool isReverse;
+    bool previousStepIsReverse;
+
+    int16_t *buffer;
+    int bufferSamplesReadCounter;
+};
+
+struct Synth : public Instrument
+{
+    int16_t *buffer;
+    int bufferSamplesReadCounter;
+};
+
 struct Step
 {
     int instrumentIndex;
@@ -154,7 +183,8 @@ struct State
     // std::vector<Sample> samples;
     // drumRack
     // TODO : Move instruments into parts
-    std::vector<Instrument> instruments;
+    // std::vector<std::variant<DrumRack, Sampler, Synth>> instruments;
+    std::vector<DrumRack> instruments;
     // slicer
     // int slicerSampleFileRefIndex;
     // sampler

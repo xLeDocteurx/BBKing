@@ -345,7 +345,7 @@ bool initState(State *statePointer)
     statePointer->currentPartInstrumentIndex = 0;
 
     // TODO : Remove
-    statePointer->isBlbl = true;
+    statePointer->isBlbl = false;
 
     readSong(statePointer, statePointer->currentSongIndex);
 

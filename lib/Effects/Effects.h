@@ -3,7 +3,7 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-void masterEffectPreamp(State *statePointer, int16_t *sample);
+void effectPreamp(float gain, int16_t *sample);
 
 void masterEffectDelay(int16_t buffer[PLAY_WAV_WAV_BUFFER_SIZE]);
 void masterEffectReverb(int16_t buffer[PLAY_WAV_WAV_BUFFER_SIZE]);

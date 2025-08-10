@@ -14,7 +14,7 @@ void freeFile(void *filePointer)
     free(filePointer);
 }
 
-bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, float startPosition, float endPosition, bool isReverse, Instrument *instrumentPointer)
+bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volume, int pitch, float startPosition, float endPosition, bool isReverse, bool isSolo, bool isMuted, DrumRack *instrumentPointer)
 {
     // Sample sample;
     // loadSample(filePath, isMono, &sample);
@@ -71,6 +71,6 @@ bool loadInstrument(char *filePath, bool isMono, float volume, int pitch, float 
 
     fclose(file);
 
-    *instrumentPointer = {sample, false, false, volume, pitch, startPosition, endPosition, isReverse, fileBufferPointer, false, 0, 0, 0, 0.0, 1.0, false};
+    *instrumentPointer = {type, isSolo, isMuted, false, volume, 0, pitch, 0, startPosition, 0, endPosition, 1, sample, isReverse, false, fileBufferPointer, 0};
     return true;
 }
