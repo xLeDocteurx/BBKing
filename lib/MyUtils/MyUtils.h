@@ -27,7 +27,10 @@ void getWavFilesAsJsonString(State *statePointer, std::string *jsonStringPointer
 bool getIndexHtml(std::string *stringPointer);
 
 void freeFile(void *filePointer);
-// TODO : Rename as "loadSampleIntoInstrument"
+
+bool loadDrumRack();
+bool loadSampler();
+bool loadSynth();
 bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volume, int pitch, float startPosition, float endPosition, bool isReverse, bool isSolo, bool isMuted, DrumRack *instrumentPointer);
 
 float pitchToPlaybackSpeed(int pitch);

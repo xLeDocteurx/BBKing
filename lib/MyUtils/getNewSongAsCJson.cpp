@@ -15,7 +15,7 @@ void getNewSongAsCJson(State *statePointer, cJSON *cjsonObjectPointer, int newSo
     cJSON_AddStringToObject(cjsonObjectPointer, "songName", "New song");
     cJSON_AddNumberToObject(cjsonObjectPointer, "songTempo", 120);
 
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentModeIndex", 0);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentMode", PART);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSelectedStepIndex", 0);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSongIndex", newSongIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentPartIndex", 0);

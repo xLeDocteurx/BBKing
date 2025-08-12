@@ -16,7 +16,7 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
     cJSON_AddNumberToObject(cjsonObjectPointer, "songTempo", statePointer->songTempo);
     printf("getMachineStateAsCJson songTempo : %i\n", statePointer->songTempo);
 
-    cJSON_AddNumberToObject(cjsonObjectPointer, "currentModeIndex", statePointer->currentModeIndex);
+    cJSON_AddNumberToObject(cjsonObjectPointer, "currentMode", statePointer->currentMode);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSelectedStepIndex", statePointer->currentSelectedStepIndex);
     cJSON_AddNumberToObject(cjsonObjectPointer, "currentSongIndex", statePointer->currentSongIndex);
     printf("getMachineStateAsCJson currentSongIndex : %i\n", statePointer->currentSongIndex);
@@ -31,18 +31,36 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
     {
         cJSON *cJsonInstrumentObject = cJSON_CreateObject();
 
-        cJSON *cJsonSampleObject = cJSON_AddObjectToObject(cJsonInstrumentObject, "sample");
-        cJSON_AddStringToObject(cJsonSampleObject, "filePath", statePointer->instruments[i].sample.filePath);
-        cJSON_AddBoolToObject(cJsonSampleObject, "isMono", statePointer->instruments[i].sample.isMono);
-        cJSON_AddNumberToObject(cJsonSampleObject, "fileSize", statePointer->instruments[i].sample.fileSize);
-        cJSON_AddNumberToObject(cJsonInstrumentObject, "type", statePointer->instruments[i].type);
-        cJSON_AddBoolToObject(cJsonInstrumentObject, "isSolo", statePointer->instruments[i].isSolo);
-        cJSON_AddBoolToObject(cJsonInstrumentObject, "isMuted", statePointer->instruments[i].isMuted);
-        cJSON_AddNumberToObject(cJsonInstrumentObject, "volume", statePointer->instruments[i].volume);
-        cJSON_AddNumberToObject(cJsonInstrumentObject, "pitch", statePointer->instruments[i].pitch);
-        cJSON_AddNumberToObject(cJsonInstrumentObject, "startPosition", statePointer->instruments[i].startPosition);
-        cJSON_AddNumberToObject(cJsonInstrumentObject, "endPosition", statePointer->instruments[i].endPosition);
-        cJSON_AddBoolToObject(cJsonInstrumentObject, "isReverse", statePointer->instruments[i].isReverse);
+        cJSON_AddNumberToObject(cJsonInstrumentObject, "type", statePointer->instruments[i]->type);
+        cJSON_AddBoolToObject(cJsonInstrumentObject, "isSolo", statePointer->instruments[i]->isSolo);
+        cJSON_AddBoolToObject(cJsonInstrumentObject, "isMuted", statePointer->instruments[i]->isMuted);
+        // TODO : Add isPlaying ? ( quid du chargement/save ? )
+        cJSON_AddNumberToObject(cJsonInstrumentObject, "volume", statePointer->instruments[i]->volume);
+        cJSON_AddNumberToObject(cJsonInstrumentObject, "pitch", statePointer->instruments[i]->pitch);
+
+        // TODO : Same thing in save state
+        if (statePointer->instruments[i]->type == DRUM_RACK)
+        {
+            DrumRack *drumRack = statePointer->instruments[i];
+            cJSON *cJsonSampleObject = cJSON_AddObjectToObject(cJsonInstrumentObject, "sample");
+            cJSON_AddStringToObject(cJsonSampleObject, "filePath", drumRack->sample.filePath);
+            cJSON_AddBoolToObject(cJsonSampleObject, "isMono", drumRack->sample.isMono);
+            cJSON_AddNumberToObject(cJsonSampleObject, "fileSize", drumRack->sample.fileSize);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "startPosition", drumRack->startPosition);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "endPosition", drumRack->endPosition);
+            cJSON_AddBoolToObject(cJsonInstrumentObject, "isReverse", drumRack->isReverse);
+        }
+        else if (statePointer->instruments[i]->type == SAMPLER)
+        {
+        }
+        else if (statePointer->instruments[i]->type == SYNTH)
+        {
+        }
+        else
+        {
+            printf("Unknown instrument type\n");
+            continue; // Skip this iteration if the type is unknown
+        }
 
         cJSON_AddItemToArray(instrumentsArray, cJsonInstrumentObject);
     }

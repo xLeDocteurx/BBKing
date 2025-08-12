@@ -13,12 +13,19 @@ void updateSelectedInstrumentSample(State *statePointer, std::string actionParam
     // Clear memory from previous sample
     freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
 
-    // TODO : Error handling
-    // bool loadInstrumentRes =
-    loadInstrument(DRUM_RACK, statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, statePointer->instruments[statePointer->currentPartInstrumentIndex].isSolo, statePointer->instruments[statePointer->currentPartInstrumentIndex].isMuted, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-    // if (!loadInstrumentRes)
-    // {
-    //     printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
-    // }
+    // TODO : Error handling ?
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == DRUM_RACK)
+    {
+        loadDrumRack();
+    }
+    else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SAMPLER)
+    {
+        loadSampler();
+    }
+    else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SYNTH)
+    {
+        loadSynth();
+    }
+
     broadcast_ws_message(("UPDATESELECTEDINSTRUMENTSAMPLE@" + actionParameters).c_str());
 }

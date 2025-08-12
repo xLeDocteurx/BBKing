@@ -14,21 +14,18 @@ void freeFile(void *filePointer)
     free(filePointer);
 }
 
-bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volume, int pitch, float startPosition, float endPosition, bool isReverse, bool isSolo, bool isMuted, DrumRack *instrumentPointer)
+// TODO : Move to separate files ?
+bool loadDrumRack(
+    DrumRack *instrumentPointer,
+    bool isSolo, bool isMuted, float volume, int pitch, char *filePath,
+    bool isReverse, float startPosition, float endPosition)
 {
-    // Sample sample;
-    // loadSample(filePath, isMono, &sample);
-
-    printf("loadSample(%s);\n", filePath);
-
-    // FILE *file = fopen(filePath, "rb");
     FILE *file = fopen(filePath, "r");
     if (file == NULL)
     {
         printf("Failed to open file : %s\n", filePath);
         return false;
     }
-    // fseek(file, 0, SEEK_END);
 
     // Read the WAV header
     WavHeader header;
@@ -45,24 +42,10 @@ bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volu
     // size_t fileSize = ftell(file) - 44;
     size_t fileSize = header.subchunk2Size;
     printf("fileSize : %i\n", fileSize);
-    // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
-
-    //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
-    // , fileBufferPointer, false, 0, 0, 0
-
-    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
-
-    // fclose(file);
 
     // TODO : isMono from header
-    Sample sample = {filePath, isMono, fileSize};
+    Sample sample = {filePath, true, fileSize};
 
-    // FILE *file = fopen(filePath, "rb");
-    // if (file == NULL)
-    // {
-    //     printf("Failed to open file %s\n", filePath);
-    //     return false;
-    // }
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
     int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
 
@@ -71,6 +54,60 @@ bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volu
 
     fclose(file);
 
-    *instrumentPointer = {type, isSolo, isMuted, false, volume, 0, pitch, 0, startPosition, 0, endPosition, 1, sample, isReverse, false, fileBufferPointer, 0};
+    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, sample, isReverse, false, startPosition, 0, endPosition, 1};
+    return true;
+}
+
+bool loadSampler(
+    Sampler *instrumentPointer,
+    bool isSolo, bool isMuted, float volume, int pitch, char *filePath,
+    bool isReverse, float attackPosition, float previousStepAttackPosition, float decayPosition, float previousStepDecayPosition, float sustainPosition, float previousStepSustainPosition, float releasePosition, float previousStepReleasePosition)
+{
+    FILE *file = fopen(filePath, "r");
+    if (file == NULL)
+    {
+        printf("Failed to open file : %s\n", filePath);
+        return false;
+    }
+
+    // Read the WAV header
+    WavHeader header;
+    fread(reinterpret_cast<char *>(&header), sizeof(uint8_t), sizeof(WavHeader), file);
+
+    // Check if the file is a WAV file
+    if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE")
+    {
+        printf("Not a WAV file! %s\n", filePath);
+        return false;
+    }
+
+    // TODO : file size reading header data
+    // size_t fileSize = ftell(file) - 44;
+    size_t fileSize = header.subchunk2Size;
+    printf("fileSize : %i\n", fileSize);
+
+    // TODO : isMono from header
+    Sample sample = {filePath, true, fileSize};
+
+    fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
+    int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
+
+    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+    fread(fileBufferPointer, sizeof(int16_t), sample.fileSize / sizeof(int16_t), file);
+
+    fclose(file);
+
+    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, sample, isReverse, false, attackPosition, previousStepAttackPosition, decayPosition, previousStepDecayPosition, sustainPosition, previousStepSustainPosition, releasePosition, previousStepReleasePosition};
+    return true;
+}
+
+bool loadSynth(
+    Synth *instrumentPointer,
+    bool isSolo, bool isMuted, float volume, int pitch,
+    WaveFormType osc1WaveFormType, WaveFormType osc2WaveFormType, WaveFormType osc3WaveFormType)
+{
+    // TODO : Load waveforms from files ?
+    // Or from memory ?
+    // *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, osc1WaveFormType, osc2WaveFormType, osc3WaveFormType};
     return true;
 }

@@ -58,7 +58,9 @@ bool readSong(State *statePointer, int songIndex)
     for (int i = 0; i < 10; i++)
     {
         // TODO : Error handling for loadInstrument and the rest
-        DrumRack instrument;
+        // DrumRack instrument;
+        auto instrument = std::make_unique<DrumRack>();
+
         cJSON *songInstrument = cJSON_GetArrayItem(songInstruments, i);
         cJSON *songInstrumentSample = cJSON_GetObjectItemCaseSensitive(songInstrument, "sample");
         cJSON *songInstrumentFilePath = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "filePath");
@@ -70,8 +72,22 @@ bool readSong(State *statePointer, int songIndex)
         cJSON *songInstrumentStartPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "startPosition");
         cJSON *songInstrumentEndPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "endPosition");
         cJSON *songInstrumentIsReverse = cJSON_GetObjectItemCaseSensitive(songInstrument, "isReverse");
-        loadInstrument(DRUM_RACK, songInstrumentFilePath->valuestring, (bool)songInstrumentIsMono->valueint, (float)songInstrumentVolume->valuedouble, songInstrumentPitch->valueint, (float)songInstrumentStartPosition->valuedouble, (float)songInstrumentEndPosition->valuedouble, (bool)songInstrumentIsReverse->valueint, (bool)songInstrumentIsSolo->valueint, (bool)songInstrumentIsMuted->valueint, &instrument);
-        statePointer->instruments.push_back(instrument);
+
+        // TODO : Error handling ?
+        if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == DRUM_RACK)
+        {
+            loadDrumRack();
+        }
+        else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SAMPLER)
+        {
+            loadSampler();
+        }
+        else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SYNTH)
+        {
+            loadSynth();
+        }
+
+        statePointer->instruments.push_back(std::move(instrument));
     }
 
     // parts

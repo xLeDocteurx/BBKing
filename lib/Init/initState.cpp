@@ -15,7 +15,7 @@
 // bool initState(&statePointer auto)
 bool initState(State *statePointer)
 {
-    // TODO : Read from sdcard ( all files in root directory and filter by .wav extension )
+    // TODO : Read from sdcard ( all files in root directory AND filter by .wav extension AND order them by name [the same way I did below ?!?] )
     statePointer->wavFilePaths.push_back("/data/kick.wav");
     statePointer->wavFilePaths.push_back("/sdcard/1_micro kick.wav");
     statePointer->wavFilePaths.push_back("/sdcard/2_nt kick.wav");
@@ -335,7 +335,7 @@ bool initState(State *statePointer)
     statePointer->currentStepIndex = 0;
     statePointer->masterGain = 1.0;
 
-    statePointer->currentModeIndex = 0;
+    statePointer->currentMode = PART;
     statePointer->currentSelectedStepIndex = 0;
     statePointer->currentSongIndex = 0;
     // statePointer->currentSongIndex = 2;
