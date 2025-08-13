@@ -70,11 +70,6 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
             cJSON_AddNumberToObject(cJsonInstrumentObject, "osc2WaveFormType", synth->osc2WaveFormType);
             cJSON_AddNumberToObject(cJsonInstrumentObject, "osc3WaveFormType", synth->osc3WaveFormType);
         }
-        else
-        {
-            printf("Unknown instrument type\n");
-            continue; // Skip this iteration if the type is unknown
-        }
 
         cJSON_AddItemToArray(instrumentsArray, cJsonInstrumentObject);
     }
