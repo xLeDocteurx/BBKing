@@ -7,6 +7,6 @@
 
 void updateCurrentMode(State *statePointer, std::string actionParameters)
 {
-    statePointer->currentMode = static_cast<MODE>(stoi(actionParameters));
+    statePointer->currentMode = static_cast<ModeType>(stoi(actionParameters));
     broadcast_ws_message(("UPDATECURRENTMODE@" + actionParameters).c_str());
 }

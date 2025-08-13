@@ -57,37 +57,76 @@ bool readSong(State *statePointer, int songIndex)
     // TODO : cJsonForEach
     for (int i = 0; i < 10; i++)
     {
-        // TODO : Error handling for loadInstrument and the rest
-        // DrumRack instrument;
-        auto instrument = std::make_unique<DrumRack>();
-
         cJSON *songInstrument = cJSON_GetArrayItem(songInstruments, i);
-        cJSON *songInstrumentSample = cJSON_GetObjectItemCaseSensitive(songInstrument, "sample");
-        cJSON *songInstrumentFilePath = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "filePath");
-        cJSON *songInstrumentIsMono = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "isMono");
-        cJSON *songInstrumentVolume = cJSON_GetObjectItemCaseSensitive(songInstrument, "volume");
+        cJSON *songInstrumentType = cJSON_GetObjectItemCaseSensitive(songInstrument, "type");
         cJSON *songInstrumentIsSolo = cJSON_GetObjectItemCaseSensitive(songInstrument, "isSolo");
         cJSON *songInstrumentIsMuted = cJSON_GetObjectItemCaseSensitive(songInstrument, "isMuted");
+        cJSON *songInstrumentVolume = cJSON_GetObjectItemCaseSensitive(songInstrument, "volume");
         cJSON *songInstrumentPitch = cJSON_GetObjectItemCaseSensitive(songInstrument, "pitch");
-        cJSON *songInstrumentStartPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "startPosition");
-        cJSON *songInstrumentEndPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "endPosition");
-        cJSON *songInstrumentIsReverse = cJSON_GetObjectItemCaseSensitive(songInstrument, "isReverse");
 
         // TODO : Error handling ?
-        if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == DRUM_RACK)
+        if (songInstrumentType->valueint == DRUM_RACK)
         {
-            loadDrumRack();
+            auto instrument = std::make_unique<Sampler>();
+
+            cJSON *songInstrumentSample = cJSON_GetObjectItemCaseSensitive(songInstrument, "sample");
+            cJSON *songInstrumentFilePath = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "filePath");
+            cJSON *songInstrumentIsReverse = cJSON_GetObjectItemCaseSensitive(songInstrument, "isReverse");
+            cJSON *songInstrumentStartPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "startPosition");
+            cJSON *songInstrumentEndPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "endPosition");
+
+            loadDrumRack(
+                static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()),
+                songInstrumentIsSolo->valueint,
+                songInstrumentIsMuted->valueint,
+                songInstrumentVolume->valuedouble,
+                songInstrumentPitch->valueint,
+                songInstrumentFilePath->valuestring,
+                songInstrumentIsReverse->valueint,
+                songInstrumentStartPosition->valuedouble,
+                songInstrumentEndPosition->valuedouble);
         }
-        else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SAMPLER)
+        else if (songInstrumentType->valueint == SAMPLER)
         {
-            loadSampler();
+            cJSON *songInstrumentSample = cJSON_GetObjectItemCaseSensitive(songInstrument, "sample");
+            cJSON *songInstrumentFilePath = cJSON_GetObjectItemCaseSensitive(songInstrumentSample, "filePath");
+            cJSON *songInstrumentIsReverse = cJSON_GetObjectItemCaseSensitive(songInstrument, "isReverse");
+            cJSON *songInstrumentAttackPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "attackPosition");
+            cJSON *songInstrumentDecayPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "decayPosition");
+            cJSON *songInstrumentSustainPosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "sustainPosition");
+            cJSON *songInstrumentReleasePosition = cJSON_GetObjectItemCaseSensitive(songInstrument, "releasePosition");
+
+            loadSampler(
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()),
+                songInstrumentIsSolo->valueint,
+                songInstrumentIsMuted->valueint,
+                songInstrumentVolume->valuedouble,
+                songInstrumentPitch->valueint,
+                songInstrumentFilePath->valuestring,
+                songInstrumentIsReverse->valueint,
+                songInstrumentAttackPosition->valuedouble,
+                songInstrumentDecayPosition->valuedouble,
+                songInstrumentSustainPosition->valuedouble,
+                songInstrumentReleasePosition->valuedouble);
         }
-        else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SYNTH)
+        else if (songInstrumentType->valueint == SYNTH)
         {
-            loadSynth();
+            cJSON *songInstrumentOsc1WaveFormType = cJSON_GetObjectItemCaseSensitive(songInstrument, "osc1WaveFormType");
+            cJSON *songInstrumentOsc2WaveFormType = cJSON_GetObjectItemCaseSensitive(songInstrument, "osc2WaveFormType");
+            cJSON *songInstrumentOsc3WaveFormType = cJSON_GetObjectItemCaseSensitive(songInstrument, "osc3WaveFormType");
+
+            loadSynth(
+                static_cast<Synth *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()),
+                songInstrumentIsSolo->valueint,
+                songInstrumentIsMuted->valueint,
+                songInstrumentVolume->valuedouble,
+                songInstrumentPitch->valueint,
+                static_cast<WaveFormType>(songInstrumentOsc1WaveFormType->valueint),
+                static_cast<WaveFormType>(songInstrumentOsc2WaveFormType->valueint),
+                static_cast<WaveFormType>(songInstrumentOsc3WaveFormType->valueint));
         }
 
-        statePointer->instruments.push_back(std::move(instrument));
+        // statePointer->instruments.push_back(std::move(instrument));
     }
 
     // parts

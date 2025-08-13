@@ -37,24 +37,38 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
         // TODO : Add isPlaying ? ( quid du chargement/save ? )
         cJSON_AddNumberToObject(cJsonInstrumentObject, "volume", statePointer->instruments[i]->volume);
         cJSON_AddNumberToObject(cJsonInstrumentObject, "pitch", statePointer->instruments[i]->pitch);
+        cJSON_AddBoolToObject(cJsonInstrumentObject, "isReverse", statePointer->instruments[i]->isReverse);
 
         // TODO : Same thing in save state
         if (statePointer->instruments[i]->type == DRUM_RACK)
         {
-            DrumRack *drumRack = statePointer->instruments[i];
+            DrumRack *drumRack = static_cast<DrumRack *>(statePointer->instruments[i].get());
             cJSON *cJsonSampleObject = cJSON_AddObjectToObject(cJsonInstrumentObject, "sample");
             cJSON_AddStringToObject(cJsonSampleObject, "filePath", drumRack->sample.filePath);
             cJSON_AddBoolToObject(cJsonSampleObject, "isMono", drumRack->sample.isMono);
             cJSON_AddNumberToObject(cJsonSampleObject, "fileSize", drumRack->sample.fileSize);
             cJSON_AddNumberToObject(cJsonInstrumentObject, "startPosition", drumRack->startPosition);
             cJSON_AddNumberToObject(cJsonInstrumentObject, "endPosition", drumRack->endPosition);
-            cJSON_AddBoolToObject(cJsonInstrumentObject, "isReverse", drumRack->isReverse);
         }
         else if (statePointer->instruments[i]->type == SAMPLER)
         {
+            Sampler *sampler = static_cast<Sampler *>(statePointer->instruments[i].get());
+            cJSON *cJsonSampleObject = cJSON_AddObjectToObject(cJsonInstrumentObject, "sample");
+            cJSON_AddStringToObject(cJsonSampleObject, "filePath", sampler->sample.filePath);
+            cJSON_AddBoolToObject(cJsonSampleObject, "isMono", sampler->sample.isMono);
+            cJSON_AddNumberToObject(cJsonSampleObject, "fileSize", sampler->sample.fileSize);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "attackPosition", sampler->attackPosition);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "decayPosition", sampler->decayPosition);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "sustainPosition", sampler->sustainPosition);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "releasePosition", sampler->releasePosition);
         }
         else if (statePointer->instruments[i]->type == SYNTH)
         {
+            Synth *synth = static_cast<Synth *>(statePointer->instruments[i].get());
+            cJSON *cJsonSampleObject = cJSON_AddObjectToObject(cJsonInstrumentObject, "sample");
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "osc1WaveFormType", synth->osc1WaveFormType);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "osc2WaveFormType", synth->osc2WaveFormType);
+            cJSON_AddNumberToObject(cJsonInstrumentObject, "osc3WaveFormType", synth->osc3WaveFormType);
         }
         else
         {

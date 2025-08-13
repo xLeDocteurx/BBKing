@@ -98,6 +98,8 @@ struct Instrument
     int previousStepVolume;
     int pitch;
     int previousStepPitch;
+    bool isReverse;
+    bool previousStepIsReverse;
 
     int16_t *buffer;
     int bufferSamplesReadCounter;
@@ -107,8 +109,6 @@ struct DrumRack : public Instrument
 {
     // int sampleFileRefIndex;
     Sample sample;
-    bool isReverse;
-    bool previousStepIsReverse;
 
     // TODO : In number of samples ???
     // For now heads are set up in relative units
@@ -122,8 +122,6 @@ struct Sampler : public Instrument
 {
     // int sampleFileRefIndex;
     Sample sample;
-    bool isReverse;
-    bool previousStepIsReverse;
 
     // TODO : In number of samples ???
     // For now heads are set up in relative units
@@ -185,7 +183,7 @@ struct WavHeader
     uint32_t subchunk2Size;
 };
 
-enum MODE
+enum ModeType
 {
     PART = 0,
     STEP = 1,
@@ -204,7 +202,7 @@ struct State
     float masterGain;
 
     int currentSongIndex;
-    MODE currentMode;
+    ModeType currentMode;
     int currentSelectedStepIndex;
     char *songName;
     int songTempo;

@@ -8,17 +8,11 @@
 #include <Defs.h>
 // #include <MyUtils.h>
 
-// TODO : wtf ?
-void freeFile(void *filePointer)
-{
-    free(filePointer);
-}
-
 // TODO : Move to separate files ?
 bool loadDrumRack(
     DrumRack *instrumentPointer,
-    bool isSolo, bool isMuted, float volume, int pitch, char *filePath,
-    bool isReverse, float startPosition, float endPosition)
+    bool isSolo, bool isMuted, float volume, int pitch, bool isReverse, const char *filePath,
+    float startPosition, float endPosition)
 {
     FILE *file = fopen(filePath, "r");
     if (file == NULL)
@@ -54,14 +48,14 @@ bool loadDrumRack(
 
     fclose(file);
 
-    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, sample, isReverse, false, startPosition, 0, endPosition, 1};
+    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, isReverse, false, fileBufferPointer, 0, sample, startPosition, 0, endPosition, 1};
     return true;
 }
 
 bool loadSampler(
     Sampler *instrumentPointer,
-    bool isSolo, bool isMuted, float volume, int pitch, char *filePath,
-    bool isReverse, float attackPosition, float previousStepAttackPosition, float decayPosition, float previousStepDecayPosition, float sustainPosition, float previousStepSustainPosition, float releasePosition, float previousStepReleasePosition)
+    bool isSolo, bool isMuted, float volume, int pitch, bool isReverse, const char *filePath,
+    float attackPosition, float decayPosition, float sustainPosition, float releasePosition)
 {
     FILE *file = fopen(filePath, "r");
     if (file == NULL)
@@ -97,17 +91,20 @@ bool loadSampler(
 
     fclose(file);
 
-    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, sample, isReverse, false, attackPosition, previousStepAttackPosition, decayPosition, previousStepDecayPosition, sustainPosition, previousStepSustainPosition, releasePosition, previousStepReleasePosition};
+    *instrumentPointer = {SAMPLER, isSolo, isMuted, false, volume, 0, pitch, 0, isReverse, false, fileBufferPointer, 0, sample, attackPosition, 0, decayPosition, 0, sustainPosition, 0, releasePosition, 0};
     return true;
 }
 
 bool loadSynth(
     Synth *instrumentPointer,
-    bool isSolo, bool isMuted, float volume, int pitch,
+    bool isSolo, bool isMuted, float volume, int pitch, bool isReverse,
     WaveFormType osc1WaveFormType, WaveFormType osc2WaveFormType, WaveFormType osc3WaveFormType)
 {
+    // int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
+    int16_t *fileBufferPointer = nullptr;
+
     // TODO : Load waveforms from files ?
     // Or from memory ?
-    // *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, osc1WaveFormType, osc2WaveFormType, osc3WaveFormType};
+    *instrumentPointer = {SYNTH, isSolo, isMuted, false, volume, 0, pitch, 0, isReverse, false, fileBufferPointer, 0, osc1WaveFormType, osc2WaveFormType, osc3WaveFormType};
     return true;
 }
