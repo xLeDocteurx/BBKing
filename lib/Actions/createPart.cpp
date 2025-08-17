@@ -12,7 +12,7 @@ void createPart(State *statePointer, std::string actionParameters)
     // if (desiredIndex >= 0 && desiredIndex >= statePointer->parts.size())
     // {
     //     statePointer->currentPartIndex = desiredIndex;
-    std::vector<std::vector<Step>> newPartSteps = {};
+    std::vector<std::vector<std::unique_ptr<Step>>> newPartSteps = {};
     const int newPartStaves = 1;
     for (int i = 0; i < STATE_PART_STEPS_LENGTH * newPartStaves; i++)
     {

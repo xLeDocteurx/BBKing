@@ -156,13 +156,13 @@ bool readSong(State *statePointer, int songIndex)
         const int partStaves = songPartStaves->valueint;
         cJSON *songPartSteps = cJSON_GetObjectItemCaseSensitive(songPart, "steps");
         int songPartStepsLength = cJSON_GetArraySize(songPartSteps);
-        std::vector<std::vector<Step>> partSteps = {};
+        std::vector<std::vector<std::unique_ptr<Step>>> partSteps = {};
         for (int j = 0; j < STATE_PART_STEPS_LENGTH * partStaves; j++)
         // for (int j = 0; j < songPartStepsLength; j++)
         {
             cJSON *songPartStep = cJSON_GetArrayItem(songPartSteps, j);
             int songPartStepContentLength = cJSON_GetArraySize(songPartStep);
-            std::vector<Step> partStepContent = {};
+            std::vector<std::unique_ptr<Step>> partStepContent = {};
 
             // printf("songPartStepContentLength : %i\n", songPartStepContentLength);
             for (int k = 0; k < songPartStepContentLength; k++)
@@ -172,47 +172,49 @@ bool readSong(State *statePointer, int songIndex)
                 cJSON *songPartStepContentVolume = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "volume");
                 cJSON *songPartStepContentPitch = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "pitch");
 
-                if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == DRUM_RACK_STEP)
+                if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == DRUM_RACK_STEP)
                 {
                     cJSON *songPartStepContentIsReverse = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "isReverse");
                     cJSON *songPartStepContentStartPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "startPosition");
                     cJSON *songPartStepContentEndPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "endPosition");
 
-                    partStepContent.push_back({songPartStepContentInstrumentIndex->valueint,
-                                               (float)songPartStepContentVolume->valuedouble,
-                                               songPartStepContentPitch->valueint,
-                                               (bool)songPartStepContentIsReverse->valueint,
-                                               (float)songPartStepContentStartPosition->valuedouble,
-                                               (float)songPartStepContentEndPosition->valuedouble});
+                    auto step = std::make_unique<DrumRackStep>(songPartStepContentInstrumentIndex->valueint,
+                                                               (float)songPartStepContentVolume->valuedouble,
+                                                               songPartStepContentPitch->valueint,
+                                                               (bool)songPartStepContentIsReverse->valueint,
+                                                               (float)songPartStepContentStartPosition->valuedouble,
+                                                               (float)songPartStepContentEndPosition->valuedouble);
+                    partStepContent.push_back(std::move(step));
                 }
-                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == SAMPLER_STEP)
+                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == SAMPLER_STEP)
                 {
-                    cJSON *songPartStepContentIsLooping = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "isLooping");
-                    cJSON *songPartStepContentLoopStartPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "loopStartPosition");
-                    cJSON *songPartStepContentLoopEndPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "loopEndPosition");
-                    cJSON *songPartStepContentAttackPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "attackPosition");
-                    cJSON *songPartStepContentDecayPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "decayPosition");
-                    cJSON *songPartStepContentSustainPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "sustainPosition");
-                    cJSON *songPartStepContentReleasePosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "releasePosition");
+                    // cJSON *songPartStepContentIsLooping = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "isLooping");
+                    // cJSON *songPartStepContentLoopStartPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "loopStartPosition");
+                    // cJSON *songPartStepContentLoopEndPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "loopEndPosition");
+                    // cJSON *songPartStepContentAttackPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "attackPosition");
+                    // cJSON *songPartStepContentDecayPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "decayPosition");
+                    // cJSON *songPartStepContentSustainPosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "sustainPosition");
+                    // cJSON *songPartStepContentReleasePosition = cJSON_GetObjectItemCaseSensitive(songPartStepContent, "releasePosition");
 
-                    partStepContent.push_back({
-                        songPartStepContentInstrumentIndex->valueint,
-                        (float)songPartStepContentVolume->valuedouble,
-                        songPartStepContentPitch->valueint
-                        // ,(bool)songPartStepContentIsLooping->valueint
-                        // (float)songPartStepContentLoopStartPosition->valuedouble,
-                        // (float)songPartStepContentLoopEndPosition->valuedouble,
-                        // (float)songPartStepContentAttackPosition->valuedouble,
-                        // (float)songPartStepContentDecayPosition->valuedouble,
-                        // (float)songPartStepContentSustainPosition->valuedouble,
-                        // (float)songPartStepContentReleasePosition->valuedouble,
-                    });
+                    auto step = std::make_unique<SamplerStep>(songPartStepContentInstrumentIndex->valueint,
+                                                              (float)songPartStepContentVolume->valuedouble,
+                                                              songPartStepContentPitch->valueint
+                                                              // ,(bool)songPartStepContentIsLooping->valueint
+                                                              // (float)songPartStepContentLoopStartPosition->valuedouble,
+                                                              // (float)songPartStepContentLoopEndPosition->valuedouble,
+                                                              // (float)songPartStepContentAttackPosition->valuedouble,
+                                                              // (float)songPartStepContentDecayPosition->valuedouble,
+                                                              // (float)songPartStepContentSustainPosition->valuedouble,
+                                                              // (float)songPartStepContentReleasePosition->valuedouble,
+                    );
+                    partStepContent.push_back(std::move(step));
                 }
-                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == SYNTH_STEP)
+                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == SYNTH_STEP)
                 {
-                    partStepContent.push_back({songPartStepContentInstrumentIndex->valueint,
-                                               (float)songPartStepContentVolume->valuedouble,
-                                               songPartStepContentPitch->valueint});
+                    auto step = std::make_unique<SynthStep>(songPartStepContentInstrumentIndex->valueint,
+                                                            (float)songPartStepContentVolume->valuedouble,
+                                                            songPartStepContentPitch->valueint);
+                    partStepContent.push_back(std::move(step));
                 }
             }
 

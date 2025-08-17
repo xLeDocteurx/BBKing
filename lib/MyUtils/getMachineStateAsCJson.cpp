@@ -101,18 +101,18 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
             for (int k = 0; k < statePointer->parts[i].steps[j].size(); k++)
             {
                 cJSON *stepItem = cJSON_CreateObject();
-                cJSON_AddNumberToObject(stepItem, "instrumentIndex", statePointer->parts[i].steps[j][k].instrumentIndex);
-                cJSON_AddNumberToObject(stepItem, "volume", statePointer->parts[i].steps[j][k].volume);
-                cJSON_AddNumberToObject(stepItem, "pitch", statePointer->parts[i].steps[j][k].pitch);
+                cJSON_AddNumberToObject(stepItem, "instrumentIndex", statePointer->parts[i].steps[j][k].get()->instrumentIndex);
+                cJSON_AddNumberToObject(stepItem, "volume", statePointer->parts[i].steps[j][k].get()->volume);
+                cJSON_AddNumberToObject(stepItem, "pitch", statePointer->parts[i].steps[j][k].get()->pitch);
 
-                if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == DRUM_RACK_STEP)
+                if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == DRUM_RACK_STEP)
                 {
-                    DrumRackStep *drumStep = static_cast<DrumRackStep *>(&statePointer->parts[i].steps[j][k]);
+                    DrumRackStep *drumStep = static_cast<DrumRackStep *>(statePointer->parts[i].steps[j][k].get());
                     cJSON_AddBoolToObject(stepItem, "isReverse", drumStep->isReverse);
                     cJSON_AddNumberToObject(stepItem, "startPosition", drumStep->startPosition);
                     cJSON_AddNumberToObject(stepItem, "endPosition", drumStep->endPosition);
                 }
-                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == SAMPLER_STEP)
+                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == SAMPLER_STEP)
                 {
                     // SamplerStep *samplerStep = static_cast<SamplerStep *>(&statePointer->parts[i].steps[j][k]);
                     // cJSON_AddBoolToObject(stepItem, "isLooping", samplerStep->isLooping);
@@ -123,7 +123,7 @@ void getMachineStateAsCJson(State *statePointer, cJSON *cjsonObjectPointer)
                     // cJSON_AddNumberToObject(stepItem, "sustainPosition", samplerStep->sustainPosition);
                     // cJSON_AddNumberToObject(stepItem, "releasePosition", samplerStep->releasePosition);
                 }
-                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].instrumentIndex].get()->type == SYNTH_STEP)
+                else if (statePointer->instruments[statePointer->parts[i].steps[j][k].get()->instrumentIndex].get()->type == SYNTH_STEP)
                 {
                 }
 

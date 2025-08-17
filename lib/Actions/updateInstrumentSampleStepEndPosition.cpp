@@ -18,13 +18,13 @@ void updateInstrumentSampleStepEndPosition(State *statePointer, std::string acti
         int xxxIndex = 0;
         for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
         {
-            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].get()->instrumentIndex;
             if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
             {
                 xxxIndex = i;
             }
         }
-        static_cast<DrumRackStep *>(&statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex])->endPosition = std::stof(actionParameters);
+        static_cast<DrumRackStep *>(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].get())->endPosition = std::stof(actionParameters);
         broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION@" + actionParameters).c_str());
     }
 }

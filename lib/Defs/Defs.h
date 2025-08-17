@@ -199,7 +199,7 @@ struct Part
     // std::vector<Instrument> instruments;
 
     // std::vector<std::vector<int>> steps;
-    std::vector<std::vector<Step>> steps;
+    std::vector<std::vector<std::unique_ptr<Step>>> steps;
 };
 
 // Define the WAV file header structure
