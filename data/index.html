@@ -34,7 +34,8 @@
         BBKing
       </h1>
     </header> -->
-    <div class="h-full p-4 grid grid-cols-4 grid-rows-3 gap-4">
+
+    <div v-if="isInit" class="h-full p-4 grid grid-cols-4 grid-rows-3 gap-4">
       <div
         class="row-start-1 row-end-3 col-start-1 col-end-2 border border-solid p-4"
       >
@@ -65,7 +66,7 @@
           </div>
           <div class="flex rounded-lg shadow-sm my-2">
             <!-- <i class="fas fa-music"></i> -->
-            <!-- :class="{ 'btn-primary': machineState.currentModeIndex == 2, 'btn-outline-primary': !machineState.currentModeIndex == 2}" -->
+            <!-- :class="{ 'btn-primary': machineState.currentMode == 2, 'btn-outline-primary': !machineState.currentMode == 2}" -->
             <button
               disabled
               class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
@@ -78,7 +79,7 @@
               class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
               @click="() => {updateCurrentMode(0);}"
               type="button"
-              :class="{ 'btn-primary': machineState.currentModeIndex == 0, 'btn-outline-primary': !machineState.currentModeIndex == 0}"
+              :class="{ 'btn-primary': machineState.currentMode == 0, 'btn-outline-primary': !machineState.currentMode == 0}"
             >
               <i class="fas fa-guitar"></i>
             </button>
@@ -86,7 +87,7 @@
               class="py-2 px-3 w-full inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none"
               @click="() => {updateCurrentMode(1);}"
               type="button"
-              :class="{ 'btn-primary': machineState.currentModeIndex == 1, 'btn-outline-primary': !machineState.currentModeIndex == 1}"
+              :class="{ 'btn-primary': machineState.currentMode == 1, 'btn-outline-primary': !machineState.currentMode == 1}"
             >
               <i class="fas fa-shoe-prints"></i>
             </button>
@@ -285,6 +286,7 @@
               max="48"
               step="1"
               id="pitchSustainRange"
+              v-if="!!getCommonsControlValues()"
               :value="getCommonsControlValues().pitch"
               @change="($event)=>{updatePitch($event);}"
             />
@@ -305,6 +307,7 @@
               max="1"
               step="0.025"
               id="volumeRange"
+              v-if="!!getCommonsControlValues()"
               :value="getCommonsControlValues().volume"
               @change="($event)=>{updateVolume($event);}"
             />
@@ -325,6 +328,7 @@
               max="1"
               step="0.0025"
               id="startPositionRange"
+              v-if="!!getCommonsControlValues()"
               :value="getCommonsControlValues().startPosition"
               @change="($event)=>{updateStartPosition($event);}"
             />
@@ -345,6 +349,7 @@
               max="1"
               step="0.0025"
               id="endPositionRange"
+              v-if="!!getCommonsControlValues()"
               :value="getCommonsControlValues().endPosition"
               @change="($event)=>{updateEndPosition($event);}"
             />
@@ -363,6 +368,7 @@
               type="checkbox"
               role="switch"
               id="isReverseSwitch"
+              v-if="!!getCommonsControlValues()"
               :value="getCommonsControlValues().isReverse"
               @change="($event)=>{updateIsReverse($event);}"
             />
@@ -616,9 +622,14 @@
     // allPromises.then((allPromisesRet) => {
     createApp({
       setup() {
+        const isInit = ref(false);
+
+        const ws = ref(null);
+        const wsStatus = ref(false);
+
         const machineState = ref({
           masterGain: 0,
-          currentModeIndex: 0,
+          currentMode: 0,
           currentSelectedStepIndex: 0,
           currentSongIndex: 0,
           songName: "NULL song",
@@ -673,9 +684,6 @@
 
         const wavFilesList = ref([]);
 
-        const wsStatus = ref(false);
-        const ws = ref(null);
-
         const recoverMachineStateRef = async function () {
           const response = await fetch(`/state`);
           const json = await response.json();
@@ -720,7 +728,7 @@
                 machineState.value.masterGain = Number(messageContent);
                 break;
               case "UPDATECURRENTMODE":
-                machineState.value.currentModeIndex = Number(messageContent);
+                machineState.value.currentMode = Number(messageContent);
                 break;
               case "UPDATESONGNAME":
                 machineState.value.songName = messageContent;
@@ -912,7 +920,7 @@
                 break;
               default:
                 console.log("Unknown message received :", message);
-                recoverWavFilesListRef();
+                recoverMachineStateRef();
             }
           };
         };
@@ -939,11 +947,12 @@
 
         // TODO : Refactor to prevent code duplication ( returns and var initialization outside the if statement )
         const getCommonsControlValues = function () {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             const obj =
               machineState.value.instruments[
                 machineState.value.currentPartInstrumentIndex
               ];
+            // console.log("getCommonsControlValues obj 1 ", obj);
             return {
               volume: obj.volume,
               pitch: obj.pitch,
@@ -951,7 +960,7 @@
               endPosition: obj.endPosition,
               isReverse: obj.isReverse,
             };
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             // console.log(
             //   machineState.value.currentSelectedStepIndex + 16 * machineState.value.currentStaveIndex,
             //   " / ",
@@ -989,6 +998,7 @@
                 st.instrumentIndex ==
                 machineState.value.currentPartInstrumentIndex
             );
+            // console.log("getCommonsControlValues obj 2 ", obj);
             return {
               volume: obj.volume,
               pitch: obj.pitch,
@@ -996,7 +1006,7 @@
               endPosition: obj.endPosition,
               isReverse: obj.isReverse,
             };
-          } else if (machineState.value.currentModeIndex == 2) {
+          } else if (machineState.value.currentMode == 2) {
             // TODO : implement for fx
             return null;
           } else {
@@ -1004,9 +1014,9 @@
           }
         };
         const isStepClickable = function (stepIndex) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             return true;
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             return machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
@@ -1014,7 +1024,7 @@
                 st.instrumentIndex ==
                 machineState.value.currentPartInstrumentIndex
             );
-          } else if (machineState.value.currentModeIndex == 2) {
+          } else if (machineState.value.currentMode == 2) {
             // TODO : implement for fx
             return null;
           } else {
@@ -1022,7 +1032,7 @@
           }
         };
         const isStepActive = function (stepIndex) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             return machineState.value.parts[
               machineState.value.currentPartIndex
             ].steps[stepIndex + 16 * machineState.value.currentStaveIndex].some(
@@ -1030,12 +1040,12 @@
                 st.instrumentIndex ==
                 machineState.value.currentPartInstrumentIndex
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             return (
               stepIndex + 16 * machineState.value.currentStaveIndex ==
               machineState.value.currentSelectedStepIndex
             );
-          } else if (machineState.value.currentModeIndex == 2) {
+          } else if (machineState.value.currentMode == 2) {
             // TODO : implement for fx
             return null;
           } else {
@@ -1127,9 +1137,9 @@
           console.log("toggleInstrumentStep stepIndex : ", stepIndex);
           const stepIndexToUpdate =
             stepIndex + 16 * machineState.value.currentStaveIndex;
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket("TOGGLEINSTRUMENTSTEP", stepIndexToUpdate);
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATECURRENTSELECTEDSTEP",
               stepIndexToUpdate
@@ -1138,12 +1148,12 @@
         };
 
         const updateVolume = function (event) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEVOLUME",
               Number(event.target.value)
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPVOLUME",
               Number(event.target.value)
@@ -1152,12 +1162,12 @@
         };
 
         const updatePitch = function (event) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEPITCH",
               Number(event.target.value)
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPPITCH",
               Number(event.target.value)
@@ -1166,12 +1176,12 @@
         };
 
         const updateStartPosition = function (event) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTARTPOSITION",
               Number(event.target.value)
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION",
               Number(event.target.value)
@@ -1180,12 +1190,12 @@
         };
 
         const updateEndPosition = function (event) {
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEENDPOSITION",
               Number(event.target.value)
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPENDPOSITION",
               Number(event.target.value)
@@ -1199,12 +1209,12 @@
           //   event.target.checked
           // );
           const isChecked = event.target.checked ? 1 : 0;
-          if (machineState.value.currentModeIndex == 0) {
+          if (machineState.value.currentMode == 0) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLEISREVERSE",
               isChecked
             );
-          } else if (machineState.value.currentModeIndex == 1) {
+          } else if (machineState.value.currentMode == 1) {
             sendMessageViaWebsocket(
               "UPDATEINSTRUMENTSAMPLESTEPISREVERSE",
               isChecked
@@ -1222,9 +1232,13 @@
           })
           .then((_) => {
             connectToWebsocket();
+          })
+          .then((_) => {
+            isInit.value = true;
           });
 
         return {
+          isInit,
           wsStatus,
           machineState,
           wavFilesList,

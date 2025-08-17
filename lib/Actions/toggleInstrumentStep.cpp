@@ -23,11 +23,27 @@ void toggleInstrumentStep(State *statePointer, std::string actionParameters)
             }
             break;
         }
-    }
 
-    if (!isDrumRackSampleStepActive)
-    {
-        statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 1.0, 0, 0.0, 1.0, false});
+        if (!isDrumRackSampleStepActive)
+        {
+
+            if (statePointer->instruments[statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex].get()->type == DRUM_RACK_STEP)
+            {
+                statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 1.0, 0, false, 0.0, 1.0});
+            }
+            else if (statePointer->instruments[statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex].get()->type == SAMPLER_STEP)
+            {
+                statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({statePointer->currentPartInstrumentIndex, 1.0, 0});
+            }
+            else if (statePointer->instruments[statePointer->parts[statePointer->currentPartIndex].steps[stepIndex][stepContentIndex].instrumentIndex].get()->type == SYNTH_STEP)
+            {
+                statePointer->parts[statePointer->currentPartIndex].steps[stepIndex].push_back({
+                    statePointer->currentPartInstrumentIndex,
+                    1.0,
+                    0,
+                });
+            }
+        }
+        broadcast_ws_message(("TOGGLEINSTRUMENTSTEP@" + actionParameters).c_str());
     }
-    broadcast_ws_message(("TOGGLEINSTRUMENTSTEP@" + actionParameters).c_str());
 }

@@ -26,6 +26,8 @@ void selectStave(State *statePointer, std::string actionParameters);
 void selectOctave(State *statePointer, std::string actionParameters);
 void selectInstrument(State *statePointer, std::string actionParameters);
 void updateSelectedInstrumentSample(State *statePointer, std::string actionParameters);
+// TODO
+// void updateSelectedInstrumentWaveform(State *statePointer, std::string actionParameters);
 void updateInstrumentSampleVolume(State *statePointer, std::string actionParameters);
 void updateInstrumentSampleStepVolume(State *statePointer, std::string actionParameters);
 void updateInstrumentSamplePitch(State *statePointer, std::string actionParameters);

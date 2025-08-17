@@ -30,80 +30,91 @@ void audioTask(void *parameter)
         for (int instrumentIndex = 0; instrumentIndex < statePointer->instruments.size(); instrumentIndex++)
         {
             // DrumRack *instrument = &statePointer->instruments[instrumentIndex];
-            if (statePointer->instruments[instrumentIndex].isPlaying)
+            if (statePointer->instruments[instrumentIndex].get()->isPlaying)
             {
-                bool isReverse = statePointer->instruments[instrumentIndex].isReverse xor statePointer->instruments[instrumentIndex].previousStepIsReverse;
-                int fileSizeInSamples = statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t);
+                if (statePointer->instruments[instrumentIndex].get()->type == DRUM_RACK)
+                {
+                    bool isReverse = static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->isReverse xor static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepIsReverse;
+                    int fileSizeInSamples = static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->sample.fileSize / sizeof(int16_t);
 
-                float playbackVolume = statePointer->instruments[instrumentIndex].volume * statePointer->instruments[instrumentIndex].previousStepVolume;
-                float playbackSpeed = pitchToPlaybackSpeed(statePointer->instruments[instrumentIndex].pitch + statePointer->instruments[instrumentIndex].previousStepPitch);
-                int playbackStartPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].previousStepStartPosition == 0.0) ? statePointer->instruments[instrumentIndex].startPosition : statePointer->instruments[instrumentIndex].previousStepStartPosition));
-                int playbackEndPositionInSample = round(statePointer->instruments[instrumentIndex].sample.fileSize / sizeof(int16_t) * ((statePointer->instruments[instrumentIndex].previousStepEndPosition == 1.0) ? statePointer->instruments[instrumentIndex].endPosition : statePointer->instruments[instrumentIndex].previousStepEndPosition));
-                int restToReadFromFileSizeInSamples = playbackEndPositionInSample - playbackStartPositionInSample;
+                    float playbackVolume = statePointer->instruments[instrumentIndex].get()->volume * static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepVolume;
+                    float playbackSpeed = pitchToPlaybackSpeed(statePointer->instruments[instrumentIndex].get()->pitch + statePointer->instruments[instrumentIndex].get()->previousStepPitch);
+                    int playbackStartPositionInSample = round(static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepStartPosition == 0.0) ? static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->startPosition : static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepStartPosition));
+                    int playbackEndPositionInSample = round(static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepEndPosition == 1.0) ? static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->endPosition : static_cast<DrumRack *>(statePointer->instruments[instrumentIndex].get())->previousStepEndPosition));
+                    int restToReadFromFileSizeInSamples = playbackEndPositionInSample - playbackStartPositionInSample;
 
-                int sizeToWriteInSamples = 0;
-                int sizeIWantToWriteInSamples;
-                if (isReverse)
-                {
-                    sizeIWantToWriteInSamples = round((restToReadFromFileSizeInSamples - (restToReadFromFileSizeInSamples - statePointer->instruments[instrumentIndex].bufferSamplesReadCounter)) / playbackSpeed);
-                }
-                else
-                {
-                    sizeIWantToWriteInSamples = round((restToReadFromFileSizeInSamples - statePointer->instruments[instrumentIndex].bufferSamplesReadCounter) / playbackSpeed);
-                }
-
-                if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
-                {
-                    sizeToWriteInSamples = sizeIWantToWriteInSamples;
-                }
-                else
-                {
-                    sizeToWriteInSamples = PLAY_WAV_WAV_BUFFER_SIZE;
-                }
-
-                // When reaching sample end
-                if (sizeToWriteInSamples <= 0)
-                {
-                    // printf("stop : %s\n", statePointer->instruments[instrumentIndex].sample.filePath);
-                    statePointer->instruments[instrumentIndex].isPlaying = false;
-                    statePointer->instruments[instrumentIndex].bufferSamplesReadCounter = 0;
-                    continue; // End of file or error
-                }
-
-                if (isReverse)
-                {
-                    // Write sample buffer to _masterBuffer
-                    for (int i = 0; i < sizeToWriteInSamples; i++)
+                    int sizeToWriteInSamples = 0;
+                    int sizeIWantToWriteInSamples;
+                    if (isReverse)
                     {
-                        // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        // TODO : Rethink this later ... It feels wrong
-                        // TODO NB : temporaryInt32 outside the for loop ?
-                        int32_t temporaryInt32 = 0;
-                        temporaryInt32 += statePointer->_masterBuffer[i];
-                        temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
-                        statePointer->_masterBuffer[i] = temporaryInt32;
-                        // masterEffectCompressor(&statePointer->_masterBuffer[i]);
-                        // masterEffectDistortion(&statePointer->_masterBuffer[i]);
+                        sizeIWantToWriteInSamples = round((restToReadFromFileSizeInSamples - (restToReadFromFileSizeInSamples - statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter)) / playbackSpeed);
                     }
-                    statePointer->instruments[instrumentIndex].bufferSamplesReadCounter -= round(sizeToWriteInSamples * playbackSpeed);
-                }
-                else
-                {
-                    // Write sample buffer to _masterBuffer
-                    for (int i = 0; i < sizeToWriteInSamples; i++)
+                    else
                     {
-                        // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        // TODO : Rethink this later ... It feels wrong
-                        // TODO NB : temporaryInt32 outside the for loop ?
-                        int32_t temporaryInt32 = 0;
-                        temporaryInt32 += statePointer->_masterBuffer[i];
-                        temporaryInt32 += statePointer->instruments[instrumentIndex].buffer[(int)(statePointer->instruments[instrumentIndex].bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].volume;
-                        temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
-                        statePointer->_masterBuffer[i] = temporaryInt32;
+                        sizeIWantToWriteInSamples = round((restToReadFromFileSizeInSamples - statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter) / playbackSpeed);
                     }
 
-                    statePointer->instruments[instrumentIndex].bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
+                    if (sizeIWantToWriteInSamples < PLAY_WAV_WAV_BUFFER_SIZE)
+                    {
+                        sizeToWriteInSamples = sizeIWantToWriteInSamples;
+                    }
+                    else
+                    {
+                        sizeToWriteInSamples = PLAY_WAV_WAV_BUFFER_SIZE;
+                    }
+
+                    // When reaching sample end
+                    if (sizeToWriteInSamples <= 0)
+                    {
+                        // printf("stop : %s\n", statePointer->instruments[instrumentIndex].sample.filePath);
+                        statePointer->instruments[instrumentIndex].get()->isPlaying = false;
+                        statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter = 0;
+                        continue; // End of file or error
+                    }
+
+                    if (isReverse)
+                    {
+                        // Write sample buffer to _masterBuffer
+                        for (int i = 0; i < sizeToWriteInSamples; i++)
+                        {
+                            // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].get()->buffer[(int)(statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].get()->volume;
+                            // TODO : Rethink this later ... It feels wrong
+                            // TODO NB : temporaryInt32 outside the for loop ?
+                            int32_t temporaryInt32 = 0;
+                            temporaryInt32 += statePointer->_masterBuffer[i];
+                            temporaryInt32 += statePointer->instruments[instrumentIndex].get()->buffer[(int)(statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter - round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].get()->volume;
+                            temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                            statePointer->_masterBuffer[i] = temporaryInt32;
+                            // masterEffectCompressor(&statePointer->_masterBuffer[i]);
+                            // masterEffectDistortion(&statePointer->_masterBuffer[i]);
+                        }
+                        statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter -= round(sizeToWriteInSamples * playbackSpeed);
+                    }
+                    else
+                    {
+                        // Write sample buffer to _masterBuffer
+                        for (int i = 0; i < sizeToWriteInSamples; i++)
+                        {
+                            // statePointer->_masterBuffer[i] += statePointer->instruments[instrumentIndex].get()->buffer[(int)(statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].get()->volume;
+                            // TODO : Rethink this later ... It feels wrong
+                            // TODO NB : temporaryInt32 outside the for loop ?
+                            int32_t temporaryInt32 = 0;
+                            temporaryInt32 += statePointer->_masterBuffer[i];
+                            temporaryInt32 += statePointer->instruments[instrumentIndex].get()->buffer[(int)(statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter + round(i * playbackSpeed))] * statePointer->instruments[instrumentIndex].get()->volume;
+                            temporaryInt32 = clip(temporaryInt32, (int32_t)INT16_MIN, (int32_t)INT16_MAX);
+                            statePointer->_masterBuffer[i] = temporaryInt32;
+                        }
+
+                        statePointer->instruments[instrumentIndex].get()->bufferSamplesReadCounter += round(sizeToWriteInSamples * playbackSpeed);
+                    }
+                }
+                else if (statePointer->instruments[instrumentIndex]->type == SAMPLER)
+                {
+                    // TODO
+                }
+                else if (statePointer->instruments[instrumentIndex]->type == SYNTH)
+                {
+                    // TODO
                 }
             }
         }

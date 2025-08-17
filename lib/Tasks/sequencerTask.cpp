@@ -99,28 +99,29 @@ void sequencerTask(void *parameter)
 
                 statePointer->instruments[stepInstrumentIndex].get()->previousStepVolume = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].volume;
                 statePointer->instruments[stepInstrumentIndex].get()->previousStepPitch = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].pitch;
-                statePointer->instruments[stepInstrumentIndex].get()->previousStepIsReverse = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].isReverse;
                 if (statePointer->instruments[stepInstrumentIndex]->type == DRUM_RACK)
                 {
-                    static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].startPosition;
-                    static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex].endPosition;
+                    static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition = static_cast<DrumRackStep>(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex]).startPosition;
+                    static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition = static_cast<DrumRackStep>(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][stepContentIndex]).endPosition;
 
                     int playbackStartPositionInSample;
-                    if (statePointer->instruments[stepInstrumentIndex].get()->isReverse xor statePointer->instruments[stepInstrumentIndex].get()->previousStepIsReverse)
+                    if (static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->isReverse xor static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepIsReverse)
                     {
-                        statePointer->instruments[stepInstrumentIndex].get()->bufferSamplesReadCounter = round(static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition == 1.0) ? static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->endPosition : static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition));
+                        statePointer->instruments[stepInstrumentIndex].get()->bufferSamplesReadCounter = round(static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition == 1.0) ? static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->endPosition : static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepEndPosition));
                     }
                     else
                     {
-                        statePointer->instruments[stepInstrumentIndex].get()->bufferSamplesReadCounter = round(static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition == 0.0) ? static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->startPosition : static_cast<DrumRack>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition));
+                        statePointer->instruments[stepInstrumentIndex].get()->bufferSamplesReadCounter = round(static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->sample.fileSize / sizeof(int16_t) * ((static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition == 0.0) ? static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->startPosition : static_cast<DrumRack *>(statePointer->instruments[stepInstrumentIndex].get())->previousStepStartPosition));
                     }
                     // printf("start %i/%i : %s\n", statePointer->currentStepIndex, stepInstrumentIndex, statePointer->instruments[stepInstrumentIndex].sample.filePath);
                 }
                 else if (statePointer->instruments[stepInstrumentIndex]->type == SAMPLER)
                 {
+                    // TODO
                 }
                 else if (statePointer->instruments[stepInstrumentIndex]->type == SYNTH)
                 {
+                    // TODO
                 }
 
                 statePointer->instruments[stepInstrumentIndex]->isPlaying = true;

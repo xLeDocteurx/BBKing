@@ -29,7 +29,7 @@ bool getIndexHtml(std::string *stringPointer);
 void freeFile(void *filePointer);
 
 bool loadDrumRack(DrumRack *instrumentPointer, bool isSolo, bool isMuted, float volume, int pitch, const char *filePath, bool isReverse, float startPosition, float endPosition);
-bool loadSampler(Sampler *instrumentPointer, bool isSolo, bool isMuted, float volume, int pitch, const char *filePath, bool isReverse, float attackPosition, float decayPosition, float sustainPosition, float releasePosition);
+bool loadSampler(Sampler *instrumentPointer, bool isSolo, bool isMuted, float volume, int pitch, const char *filePath, bool isLooping, float loopStartPosition, float loopEndPosition, float attackPosition, float decayPosition, float sustainPosition, float releasePosition);
 bool loadSynth(Synth *instrumentPointer, bool isSolo, bool isMuted, float volume, int pitch, WaveFormType osc1WaveFormType, WaveFormType osc2WaveFormType, WaveFormType osc3WaveFormType);
 
 float pitchToPlaybackSpeed(int pitch);

@@ -98,8 +98,6 @@ struct Instrument
     int previousStepVolume;
     int pitch;
     int previousStepPitch;
-    bool isReverse;
-    bool previousStepIsReverse;
 
     int16_t *buffer;
     int bufferSamplesReadCounter;
@@ -109,6 +107,9 @@ struct DrumRack : public Instrument
 {
     // int sampleFileRefIndex;
     Sample sample;
+
+    bool isReverse;
+    bool previousStepIsReverse;
 
     // TODO : In number of samples ???
     // For now heads are set up in relative units
@@ -123,8 +124,13 @@ struct Sampler : public Instrument
     // int sampleFileRefIndex;
     Sample sample;
 
+    bool isLooping;
+
     // TODO : In number of samples ???
     // For now heads are set up in relative units
+    float loopStartPosition;
+    float loopEndPosition;
+
     float attackPosition;
     float previousStepAttackPosition;
     float decayPosition;
@@ -144,14 +150,45 @@ struct Synth : public Instrument
     WaveFormType osc3WaveFormType;
 };
 
+enum StepType
+{
+    DRUM_RACK_STEP = 0,
+    SAMPLER_STEP = 1,
+    SYNTH_STEP = 2,
+};
+
 struct Step
 {
+    // StepType type;
+
     int instrumentIndex;
     float volume;
     int pitch;
+};
+
+struct DrumRackStep : public Step
+{
+    bool isReverse;
+
     float startPosition;
     float endPosition;
-    bool isReverse;
+};
+
+struct SamplerStep : public Step
+{
+    // bool isLooping;
+
+    // float loopStartPosition;
+    // float loopEndPosition;
+
+    // float attackPosition;
+    // float decayPosition;
+    // float sustainPosition;
+    // float releasePosition;
+};
+
+struct SynthStep : public Step
+{
 };
 
 struct Part
