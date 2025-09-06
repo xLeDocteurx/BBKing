@@ -172,6 +172,17 @@ struct DrumRackStep : public Step
 
     float startPosition;
     float endPosition;
+
+    DrumRackStep(const int &instrumentIndex_, const float &volume_, const int &pitch_, const bool &isReverse_, const float &startPosition_, const float &endPosition_) : isReverse{isReverse_}, startPosition{startPosition_}, endPosition{endPosition_}
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+
+        // this->isReverse = isReverse_;
+        // this->startPosition = startPosition_;
+        // this->endPosition = endPosition_;
+    }
 };
 
 struct SamplerStep : public Step
@@ -185,10 +196,24 @@ struct SamplerStep : public Step
     // float decayPosition;
     // float sustainPosition;
     // float releasePosition;
+
+    SamplerStep(const int &instrumentIndex_, const float &volume_, const int &pitch_)
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+    }
 };
 
 struct SynthStep : public Step
 {
+
+    SynthStep(const int &instrumentIndex_, const float &volume_, const int &pitch_)
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+    }
 };
 
 struct Part
