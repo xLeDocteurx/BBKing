@@ -8,6 +8,6 @@
 
 void updateInstrumentSampleVolume(State *statePointer, std::string actionParameters)
 {
-    statePointer->instruments[statePointer->currentPartInstrumentIndex].volume = std::stof(actionParameters);
+    statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->volume = std::stof(actionParameters);
     broadcast_ws_message(("UPDATEINSTRUMENTSAMPLEVOLUME@" + actionParameters).c_str());
 }

@@ -7,6 +7,9 @@
 
 void updateInstrumentSampleStartPosition(State *statePointer, std::string actionParameters)
 {
-    statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition = std::stof(actionParameters);
-    broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTARTPOSITION@" + actionParameters).c_str());
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type == DRUM_RACK)
+    {
+        static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->startPosition = std::stof(actionParameters);
+        broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTARTPOSITION@" + actionParameters).c_str());
+    }
 }

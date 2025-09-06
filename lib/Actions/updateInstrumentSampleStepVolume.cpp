@@ -12,12 +12,12 @@ void updateInstrumentSampleStepVolume(State *statePointer, std::string actionPar
     int xxxIndex = 0;
     for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
     {
-        int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
+        int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].get()->instrumentIndex;
         if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
         {
             xxxIndex = i;
         }
     }
-    statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].volume = std::stof(actionParameters);
+    statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].get()->volume = std::stof(actionParameters);
     broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPVOLUME@" + actionParameters).c_str());
 }

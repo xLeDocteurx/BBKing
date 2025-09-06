@@ -17,6 +17,30 @@
 // esp_netif_t *sta_netif;
 std::vector<wifi_config_t> *wifiConfigsPointer;
 
+#include "esp_netif.h"
+#include "esp_wifi.h"
+#include "lwip/ip4_addr.h"
+#include "lwip/netif.h"
+
+// TODO : In a separate utils file ?
+void printLocalIP(esp_netif_t *netif)
+{
+    if (!netif)
+        return;
+
+    esp_netif_ip_info_t ip_info;
+    if (esp_netif_get_ip_info(netif, &ip_info) == ESP_OK)
+    {
+        printf("Local IP: %s\n", ip4addr_ntoa((ip4_addr_t *)&ip_info));
+        printf("Netmask: %s\n", ip4addr_ntoa((ip4_addr_t *)&ip_info.netmask));
+        printf("Gateway: %s\n", ip4addr_ntoa((ip4_addr_t *)&ip_info.gw));
+    }
+    else
+    {
+        printf("Failed to get IP info\n");
+    }
+}
+
 bool reconnect(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
 {
 
@@ -74,6 +98,11 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id
         // Turn off the LED
         gpio_set_level(LED_PIN, 0);
     }
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    {
+        esp_netif_t *netif = (esp_netif_t *)arg;
+        printLocalIP(netif);
+    }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
         printf("!!! Event !!! Wi-Fi disconnected\n");
@@ -111,6 +140,7 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
 
     // TODO : Read the JSON file and parse it to fill the wifiConfigsPointerParameter vector
 
+    // Maison
     wifi_config_t wifi_config_1 = {
         .sta = {
             .ssid = "SFR_25AF",
@@ -123,6 +153,7 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
+    // Telephone
     wifi_config_t wifi_config_2 = {
         .sta = {
             .ssid = "Tardigrad",
@@ -134,6 +165,7 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
             .failure_retry_cnt = 10,
         },
     };
+    // Travail
     wifi_config_t wifi_config_3 = {
         .sta = {
             .ssid = "Backstage-WiFi",
@@ -188,7 +220,15 @@ esp_netif_t *initWifi(std::vector<wifi_config_t> *wifiConfigsPointerParameter)
     // TODO : Event handler
     // Register event handlers
     esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &instance_any_id);
+    esp_event_handler_instance_register(
+        WIFI_EVENT,
+        ESP_EVENT_ANY_ID,
+        &wifi_event_handler,
+        netif_ret, // pass the netif here
+        &instance_any_id);
+
+    esp_event_handler_instance_t instance_got_ip;
+    esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, netif_ret, &instance_got_ip);
 
     // Set the default Wi-Fi event handler
     esp_wifi_set_default_wifi_sta_handlers();

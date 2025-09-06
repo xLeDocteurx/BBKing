@@ -1,5 +1,6 @@
 #include <variant>
 #include <vector>
+#include <memory>
 #include <string>
 #include <stdio.h>
 #include "driver/gpio.h"
@@ -78,6 +79,14 @@ enum InstrumentType
     SYNTH = 2
 };
 
+enum WaveFormType
+{
+    SINE = 0,
+    TRIANGLE = 1,
+    SAW = 2,
+    SQUARE = 3
+};
+
 struct Instrument
 {
     InstrumentType type;
@@ -89,6 +98,19 @@ struct Instrument
     int previousStepVolume;
     int pitch;
     int previousStepPitch;
+
+    int16_t *buffer;
+    int bufferSamplesReadCounter;
+};
+
+struct DrumRack : public Instrument
+{
+    // int sampleFileRefIndex;
+    Sample sample;
+
+    bool isReverse;
+    bool previousStepIsReverse;
+
     // TODO : In number of samples ???
     // For now heads are set up in relative units
     float startPosition;
@@ -97,42 +119,101 @@ struct Instrument
     float previousStepEndPosition;
 };
 
-struct DrumRack : public Instrument
-{
-    // int sampleFileRefIndex;
-    Sample sample;
-    bool isReverse;
-    bool previousStepIsReverse;
-
-    int16_t *buffer;
-    int bufferSamplesReadCounter;
-};
-
 struct Sampler : public Instrument
 {
     // int sampleFileRefIndex;
     Sample sample;
-    bool isReverse;
-    bool previousStepIsReverse;
 
-    int16_t *buffer;
-    int bufferSamplesReadCounter;
+    bool isLooping;
+
+    // TODO : In number of samples ???
+    // For now heads are set up in relative units
+    float loopStartPosition;
+    float loopEndPosition;
+
+    float attackPosition;
+    float previousStepAttackPosition;
+    float decayPosition;
+    float previousStepDecayPosition;
+    float sustainPosition;
+    float previousStepSustainPosition;
+    float releasePosition;
+    float previousStepReleasePosition;
 };
 
 struct Synth : public Instrument
 {
-    int16_t *buffer;
-    int bufferSamplesReadCounter;
+    WaveFormType osc1WaveFormType;
+    WaveFormType osc2WaveFormType;
+    // TODO : Really need a 3rd one ?
+    // Check Monark design
+    WaveFormType osc3WaveFormType;
+};
+
+enum StepType
+{
+    DRUM_RACK_STEP = 0,
+    SAMPLER_STEP = 1,
+    SYNTH_STEP = 2,
 };
 
 struct Step
 {
+    // StepType type;
+
     int instrumentIndex;
     float volume;
     int pitch;
+};
+
+struct DrumRackStep : public Step
+{
+    bool isReverse;
+
     float startPosition;
     float endPosition;
-    bool isReverse;
+
+    DrumRackStep(const int &instrumentIndex_, const float &volume_, const int &pitch_, const bool &isReverse_, const float &startPosition_, const float &endPosition_) : isReverse{isReverse_}, startPosition{startPosition_}, endPosition{endPosition_}
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+
+        // this->isReverse = isReverse_;
+        // this->startPosition = startPosition_;
+        // this->endPosition = endPosition_;
+    }
+};
+
+struct SamplerStep : public Step
+{
+    // bool isLooping;
+
+    // float loopStartPosition;
+    // float loopEndPosition;
+
+    // float attackPosition;
+    // float decayPosition;
+    // float sustainPosition;
+    // float releasePosition;
+
+    SamplerStep(const int &instrumentIndex_, const float &volume_, const int &pitch_)
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+    }
+};
+
+struct SynthStep : public Step
+{
+
+    SynthStep(const int &instrumentIndex_, const float &volume_, const int &pitch_)
+    {
+        this->instrumentIndex = instrumentIndex_;
+        this->volume = volume_;
+        this->pitch = pitch_;
+    }
 };
 
 struct Part
@@ -143,7 +224,7 @@ struct Part
     // std::vector<Instrument> instruments;
 
     // std::vector<std::vector<int>> steps;
-    std::vector<std::vector<Step>> steps;
+    std::vector<std::vector<std::unique_ptr<Step>>> steps;
 };
 
 // Define the WAV file header structure
@@ -164,6 +245,14 @@ struct WavHeader
     uint32_t subchunk2Size;
 };
 
+enum ModeType
+{
+    PART = 0,
+    STEP = 1,
+    FX = 2,
+    SAMPLE = 3
+};
+
 struct State
 {
     // TODO : Remove
@@ -175,7 +264,7 @@ struct State
     float masterGain;
 
     int currentSongIndex;
-    int currentModeIndex;
+    ModeType currentMode;
     int currentSelectedStepIndex;
     char *songName;
     int songTempo;
@@ -184,7 +273,8 @@ struct State
     // drumRack
     // TODO : Move instruments into parts
     // std::vector<std::variant<DrumRack, Sampler, Synth>> instruments;
-    std::vector<DrumRack> instruments;
+    // std::vector<DrumRack> instruments;
+    std::vector<std::unique_ptr<Instrument>> instruments;
     // slicer
     // int slicerSampleFileRefIndex;
     // sampler

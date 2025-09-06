@@ -8,15 +8,23 @@
 void updateInstrumentSampleStepEndPosition(State *statePointer, std::string actionParameters)
 {
     printf("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION\n");
-    int xxxIndex = 0;
-    for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type != DRUM_RACK)
     {
-        int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-        if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-        {
-            xxxIndex = i;
-        }
+        printf("Error: UPDATEINSTRUMENTSAMPLESTEPENDPOSITION called on non-DrumRack instrument\n");
+        return;
     }
-    statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].endPosition = std::stof(actionParameters);
-    broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION@" + actionParameters).c_str());
+    else
+    {
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].get()->instrumentIndex;
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        static_cast<DrumRackStep *>(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].get())->endPosition = std::stof(actionParameters);
+        broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPENDPOSITION@" + actionParameters).c_str());
+    }
 }

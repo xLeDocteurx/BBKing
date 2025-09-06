@@ -8,27 +8,17 @@
 #include <Defs.h>
 // #include <MyUtils.h>
 
-// TODO : wtf ?
-void freeFile(void *filePointer)
+bool loadDrumRack(
+    DrumRack *instrumentPointer,
+    bool isSolo, bool isMuted, float volume, int pitch, const char *filePath,
+    bool isReverse, float startPosition, float endPosition)
 {
-    free(filePointer);
-}
-
-bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volume, int pitch, float startPosition, float endPosition, bool isReverse, bool isSolo, bool isMuted, DrumRack *instrumentPointer)
-{
-    // Sample sample;
-    // loadSample(filePath, isMono, &sample);
-
-    printf("loadSample(%s);\n", filePath);
-
-    // FILE *file = fopen(filePath, "rb");
     FILE *file = fopen(filePath, "r");
     if (file == NULL)
     {
         printf("Failed to open file : %s\n", filePath);
         return false;
     }
-    // fseek(file, 0, SEEK_END);
 
     // Read the WAV header
     WavHeader header;
@@ -45,24 +35,10 @@ bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volu
     // size_t fileSize = ftell(file) - 44;
     size_t fileSize = header.subchunk2Size;
     printf("fileSize : %i\n", fileSize);
-    // fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
-
-    //     int16_t *fileBufferPointer = (int16_t *)malloc(fileSize);
-    // , fileBufferPointer, false, 0, 0, 0
-
-    // size_t bytes_read = fread(fileBufferPointer, sizeof(int16_t), fileSize / sizeof(int16_t), file);
-
-    // fclose(file);
 
     // TODO : isMono from header
-    Sample sample = {filePath, isMono, fileSize};
+    Sample sample = {filePath, true, fileSize};
 
-    // FILE *file = fopen(filePath, "rb");
-    // if (file == NULL)
-    // {
-    //     printf("Failed to open file %s\n", filePath);
-    //     return false;
-    // }
     fseek(file, 44, SEEK_SET); // Skip WAV file header (44 bytes)
     int16_t *fileBufferPointer = (int16_t *)malloc(sample.fileSize);
 
@@ -71,6 +47,6 @@ bool loadInstrument(InstrumentType type, char *filePath, bool isMono, float volu
 
     fclose(file);
 
-    *instrumentPointer = {type, isSolo, isMuted, false, volume, 0, pitch, 0, startPosition, 0, endPosition, 1, sample, isReverse, false, fileBufferPointer, 0};
+    *instrumentPointer = {DRUM_RACK, isSolo, isMuted, false, volume, 0, pitch, 0, fileBufferPointer, 0, sample, isReverse, 0, startPosition, 0, endPosition, 1};
     return true;
 }

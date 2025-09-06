@@ -8,15 +8,24 @@
 void updateInstrumentSampleStepStartPosition(State *statePointer, std::string actionParameters)
 {
     printf("UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION\n");
-    int xxxIndex = 0;
-    for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+    // TODO : Do the same on all other instrument dependent actions
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type != DRUM_RACK)
     {
-        int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].instrumentIndex;
-        if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
-        {
-            xxxIndex = i;
-        }
+        printf("Error: UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION called on non-DrumRack instrument\n");
+        return;
     }
-    statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].startPosition = std::stof(actionParameters);
-    broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION@" + actionParameters).c_str());
+    else
+    {
+        int xxxIndex = 0;
+        for (int i = 0; i < statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex].size(); i++)
+        {
+            int stepInstrumentIndex = statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentStepIndex][i].get()->instrumentIndex;
+            if (stepInstrumentIndex == statePointer->currentPartInstrumentIndex)
+            {
+                xxxIndex = i;
+            }
+        }
+        static_cast<DrumRackStep *>(statePointer->parts[statePointer->currentPartIndex].steps[statePointer->currentSelectedStepIndex + STATE_PART_STEPS_LENGTH * statePointer->currentStaveIndex][xxxIndex].get())->startPosition = std::stof(actionParameters);
+        broadcast_ws_message(("UPDATEINSTRUMENTSAMPLESTEPSTARTPOSITION@" + actionParameters).c_str());
+    }
 }

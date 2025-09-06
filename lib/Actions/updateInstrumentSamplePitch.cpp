@@ -8,6 +8,6 @@
 
 void updateInstrumentSamplePitch(State *statePointer, std::string actionParameters)
 {
-    statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch = stoi(actionParameters);
+    statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->pitch = stoi(actionParameters);
     broadcast_ws_message(("UPDATEINSTRUMENTSAMPLEPITCH@" + actionParameters).c_str());
 }

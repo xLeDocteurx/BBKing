@@ -8,6 +8,9 @@
 
 void updateInstrumentSampleIsReverse(State *statePointer, std::string actionParameters)
 {
-    statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse = std::stof(actionParameters);
-    broadcast_ws_message(("UPDATEINSTRUMENTSAMPLEISREVERSE@" + actionParameters).c_str());
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type == DRUM_RACK)
+    {
+        static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->isReverse = std::stof(actionParameters);
+        broadcast_ws_message(("UPDATEINSTRUMENTSAMPLEISREVERSE@" + actionParameters).c_str());
+    }
 }

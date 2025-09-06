@@ -9,16 +9,43 @@
 
 void updateSelectedInstrumentSample(State *statePointer, std::string actionParameters)
 {
-    int desiredSampleFileIndex = stoi(actionParameters);
-    // Clear memory from previous sample
-    freeFile(statePointer->instruments[statePointer->currentPartInstrumentIndex].buffer);
+    if (statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type == DRUM_RACK || statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->type == SAMPLER)
+    {
+        // Clear memory from previous sample
+        free(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()->buffer);
 
-    // TODO : Error handling
-    // bool loadInstrumentRes =
-    loadInstrument(DRUM_RACK, statePointer->wavFilePaths[desiredSampleFileIndex], true, statePointer->instruments[statePointer->currentPartInstrumentIndex].volume, statePointer->instruments[statePointer->currentPartInstrumentIndex].pitch, statePointer->instruments[statePointer->currentPartInstrumentIndex].startPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].endPosition, statePointer->instruments[statePointer->currentPartInstrumentIndex].isReverse, statePointer->instruments[statePointer->currentPartInstrumentIndex].isSolo, statePointer->instruments[statePointer->currentPartInstrumentIndex].isMuted, &statePointer->instruments[statePointer->currentPartInstrumentIndex]);
-    // if (!loadInstrumentRes)
-    // {
-    //     printf("Failed to update file from %s to %s\n", statePointer->instruments[statePointer->currentPartInstrumentIndex].sample.filePath, statePointer->wavFilePaths[desiredSampleFileIndex]);
-    // }
-    broadcast_ws_message(("UPDATESELECTEDINSTRUMENTSAMPLE@" + actionParameters).c_str());
+        // TODO : Error handling ?
+        if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == DRUM_RACK)
+        {
+            loadDrumRack(
+                static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()),
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->isSolo,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->isMuted,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->volume,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->pitch,
+                statePointer->wavFilePaths[stoi(actionParameters)],
+                static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->isReverse,
+                static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->startPosition,
+                static_cast<DrumRack *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->endPosition);
+        }
+        else if (statePointer->instruments[statePointer->currentPartInstrumentIndex]->type == SAMPLER)
+        {
+            loadSampler(
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get()),
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->isSolo,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->isMuted,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->volume,
+                statePointer->instruments[statePointer->currentPartInstrumentIndex]->pitch,
+                statePointer->wavFilePaths[stoi(actionParameters)],
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->isLooping,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->loopStartPosition,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->loopEndPosition,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->attackPosition,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->decayPosition,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->sustainPosition,
+                static_cast<Sampler *>(statePointer->instruments[statePointer->currentPartInstrumentIndex].get())->releasePosition);
+        }
+
+        broadcast_ws_message(("UPDATESELECTEDINSTRUMENTSAMPLE@" + actionParameters).c_str());
+    }
 }
